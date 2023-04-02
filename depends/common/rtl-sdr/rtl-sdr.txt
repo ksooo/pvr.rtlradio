@@ -1,0 +1,1 @@
+rtl-sdr https://github.com/osmocom/rtl-sdr/archive/142325a93c6ad70f851f43434acfdf75e12dfe03.tar.gz

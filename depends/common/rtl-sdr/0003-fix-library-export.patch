@@ -1,0 +1,31 @@
+From dbedea45e61c9cfc71ee3db7c159da82989cab3e Mon Sep 17 00:00:00 2001
+From: Alwin Esch <alwin.esch@web.de>
+Date: Sat, 1 Apr 2023 21:15:56 +0100
+Subject: [PATCH] fix-library-export
+
+---
+ CMakeLists.txt | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index a19a1c4..c461562 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -133,6 +133,14 @@ else (ENABLE_ZEROCOPY)
+     message (STATUS "Building with usbfs zero-copy support disabled, use -DENABLE_ZEROCOPY=ON to enable")
+ endif (ENABLE_ZEROCOPY)
+ 
++option(ENABLE_EXPORT "Enable export about library functions" OFF)
++if (ENABLE_EXPORT)
++    message (STATUS "Building with exported library functions")
++    add_definitions(-Drtlsdr_EXPORTS=1)
++else (ENABLE_EXPORT)
++    message (STATUS "Building library with export disabled")
++endif (ENABLE_EXPORT)
++
+ ########################################################################
+ # Install public header files
+ ########################################################################
+-- 
+2.34.1.windows.1
+

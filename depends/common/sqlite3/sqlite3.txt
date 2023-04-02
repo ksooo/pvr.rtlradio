@@ -1,0 +1,1 @@
+sqlite3 https://github.com/alex85k/sqlite3-cmake/archive/refs/tags/sqlite-v1.0.30.tar.gz

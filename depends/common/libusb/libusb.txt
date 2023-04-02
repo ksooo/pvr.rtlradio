@@ -1,0 +1,1 @@
+libusb https://github.com/libusb/libusb/archive/refs/tags/v1.0.26.tar.gz

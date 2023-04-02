@@ -20,10 +20,13 @@
 // SOFTWARE.
 //---------------------------------------------------------------------------
 
+
 #ifndef __ANGLEPCH_H_
 #define __ANGLEPCH_H_
 #pragma once
 
+#include <kodi/gui/gl/GL.h>
+/*
 #ifndef D3DERR_OUTOFVIDEOMEMORY
 #define D3DERR_OUTOFVIDEOMEMORY E_FAIL
 #endif
@@ -320,6 +323,7 @@
 #include "libANGLE/renderer/d3d/d3d11/VertexArray11.h"
 #include "libANGLE/renderer/d3d/d3d11/VertexBuffer11.h"
 
+*/
 //---------------------------------------------------------------------------
 
 #endif	// __ANGLEPCH_H_

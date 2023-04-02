@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon
+  id="pvr.rtlradio"
+  version="21.0.0"
+  name="RTL-SDR Radio PVR Client"
+  provider-name="Michael Brehm (djp952)">
+  <requires>@ADDON_DEPENDS@</requires>
+  <extension
+    point="kodi.pvrclient"
+    library_@PLATFORM@="@LIBRARY_FILENAME@"/>
+  <extension point="xbmc.addon.metadata">
+    <platform>@PLATFORM@</platform>
+    <license>MIT License (https://opensource.org/licenses/MIT)</license>
+    <website>https://github.com/djp952/pvr.rtlradio/wiki</website>
+    <source>https://github.com/djp952/pvr.rtlradio</source>
+    <assets>
+      <icon>resources/icon.png</icon>
+    </assets>
+    <summary lang="en_GB">RTL-SDR Radio PVR Client</summary>
+    <description lang="en_GB">Realtek RTL28xxu Software Defined Radio (SDR) PVR client
+
+Concept based on project pvr.rtl.radiofm (https://github.com/AlwinEsch/pvr.rtl.radiofm) - Copyright (C) 2015-2018 Alwin Esch
+
+FM Radio Digital Signal Processing adapted from project CuteSDR (https://sourceforge.net/projects/cutesdr) - Copyright (C) 2010 Moe Wheatley
+
+Hybrid Digital (HD) Radio Digital Signal Processing adapted from project NRSC5 (https://github.com/theori-io/nrsc5)
+
+Digital Audio Broadcast (DAB) Digital Signal Processing adapted from project welle.io (https://github.com/AlbrechtL/welle.io)</description>
+  </extension>
+</addon>

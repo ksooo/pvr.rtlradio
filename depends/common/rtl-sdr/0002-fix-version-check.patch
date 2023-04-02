@@ -1,0 +1,25 @@
+From 69ea89ccaeac07950d14a30fa36796d536ff651e Mon Sep 17 00:00:00 2001
+From: Alwin Esch <alwin.esch@web.de>
+Date: Fri, 31 Mar 2023 15:53:47 +0100
+Subject: [PATCH] fix-version-check
+
+---
+ CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 6b94827..5d4f118 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -43,7 +43,7 @@ include(CMakePackageConfigHelpers)
+ # Set the version information here
+ set(VERSION_INFO_MAJOR_VERSION 0) # increment major on api compatibility changes
+ set(VERSION_INFO_MINOR_VERSION 6) # increment minor on feature-level changes
+-set(VERSION_INFO_PATCH_VERSION git) # increment patch for bug fixes and docs
++set(VERSION_INFO_PATCH_VERSION 0) # increment patch for bug fixes and docs
+ include(Version) # setup version info
+ 
+ ########################################################################
+-- 
+2.34.1.windows.1
+

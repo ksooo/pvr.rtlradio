@@ -24,12 +24,16 @@
 #include "tcpdevice.h"
 
 #include <algorithm>
+#ifdef WIN32
+#include <Winsock2.h>
+#else
 #include <arpa/inet.h>
-#include <cstring>
 #include <netinet/tcp.h>
 #include <netdb.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#endif
+#include <cstring>
 
 #include "align.h"
 #include "socket_exception.h"

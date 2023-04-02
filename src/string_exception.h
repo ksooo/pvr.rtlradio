@@ -28,7 +28,7 @@
 #include <sstream>
 #include <string>
 
-#pragma warning(push, 4)	
+#pragma warning(push, 4)  
 
 //-----------------------------------------------------------------------------
 // Class string_exception
@@ -39,63 +39,63 @@ class string_exception : public std::exception
 {
 public:
 
-	// Instance Constructor
-	//
-	template<typename... _args>
-	string_exception(_args&&... args) : m_what(format_message(std::forward<_args>(args)...)) {}
+  // Instance Constructor
+  //
+  template<typename... _args>
+  string_exception(_args&&... args) : m_what(format_message(std::forward<_args>(args)...)) {}
 
-	// Copy Constructor
-	//
-	string_exception(string_exception const& rhs) : m_what(rhs.m_what) {}
+  // Copy Constructor
+  //
+  string_exception(string_exception const& rhs) : m_what(rhs.m_what) {}
 
-	// Move Constructor
-	//
-	string_exception(string_exception&& rhs) noexcept : m_what(std::move(rhs.m_what)) {}
+  // Move Constructor
+  //
+  string_exception(string_exception&& rhs) noexcept : m_what(std::move(rhs.m_what)) {}
 
-	// char const* conversion operator
-	//
-	operator char const*() const
-	{
-		return m_what.c_str();
-	}
+  // char const* conversion operator
+  //
+  operator char const*() const
+  {
+    return m_what.c_str();
+  }
 
-	//-------------------------------------------------------------------------
-	// Member Functions
+  //-------------------------------------------------------------------------
+  // Member Functions
 
-	// what (std::exception)
-	//
-	// Gets a pointer to the exception message text
-	virtual char const* what(void) const noexcept override
-	{
-		return m_what.c_str();
-	}
-		
+  // what (std::exception)
+  //
+  // Gets a pointer to the exception message text
+  virtual char const* what(void) const noexcept override
+  {
+    return m_what.c_str();
+  }
+    
 private:
 
-	//-----------------------------------------------------------------------
-	// Private Member Functions
+  //-----------------------------------------------------------------------
+  // Private Member Functions
 
-	// format_message
-	//
-	// Variadic string generator used by the constructor
-	template<typename... _args>
-	static std::string format_message(_args&&... args)
-	{
-		std::ostringstream stream;
-		int unpack[] = {0, ( static_cast<void>(stream << args), 0 ) ... };
-		(void)unpack;
+  // format_message
+  //
+  // Variadic string generator used by the constructor
+  template<typename... _args>
+  static std::string format_message(_args&&... args)
+  {
+    std::ostringstream stream;
+    int unpack[] = {0, ( static_cast<void>(stream << args), 0 ) ... };
+    (void)unpack;
 
-		return stream.str();
-	}
+    return stream.str();
+  }
 
-	//-------------------------------------------------------------------------
-	// Member Variables
+  //-------------------------------------------------------------------------
+  // Member Variables
 
-	std::string					m_what;			// Exception message
+  std::string          m_what;      // Exception message
 };
 
 //-----------------------------------------------------------------------------
 
 #pragma warning(pop)
 
-#endif	// __STRING_EXCEPTION_H_
+#endif  // __STRING_EXCEPTION_H_

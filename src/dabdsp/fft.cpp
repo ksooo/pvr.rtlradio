@@ -33,7 +33,7 @@ namespace fft {
 #ifndef KISSFFT
 Forward::Forward(int32_t fft_size)
 {
-    vector = (DSPCOMPLEX *)FFTW_MALLOC(sizeof (DSPCOMPLEX) * fft_size);
+    vector = (DSPCOMPLEX *)fftwf_malloc(sizeof (DSPCOMPLEX) * fft_size);
     memset((void*)vector, 0, sizeof(DSPCOMPLEX) * fft_size);
     plan  = FFTW_PLAN_DFT_1D(fft_size,
             reinterpret_cast<fftwf_complex*>(vector),
@@ -60,7 +60,7 @@ void Forward::do_FFT()
 Backward::Backward(int32_t fft_size) :
     fft_size(fft_size)
 {
-    vector = (DSPCOMPLEX*)FFTW_MALLOC(sizeof(DSPCOMPLEX) * fft_size);
+    vector = (DSPCOMPLEX*)fftwf_malloc(sizeof(DSPCOMPLEX) * fft_size);
     for (int i = 0; i < fft_size; i ++) {
         vector [i] = 0;
     }

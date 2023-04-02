@@ -64,75 +64,75 @@ class connectionpool
 {
 public:
 
-	// Instance Constructor
-	//
-	connectionpool(char const* connstr, size_t poolsize, int flags);
+  // Instance Constructor
+  //
+  connectionpool(char const* connstr, size_t poolsize, int flags);
 
-	// Destructor
-	//
-	~connectionpool();
+  // Destructor
+  //
+  ~connectionpool();
 
-	//-----------------------------------------------------------------------
-	// Member Functions
+  //-----------------------------------------------------------------------
+  // Member Functions
 
-	// acquire
-	//
-	// Acquires a connection from the pool, creating a new one as necessary
-	sqlite3* acquire(void);
+  // acquire
+  //
+  // Acquires a connection from the pool, creating a new one as necessary
+  sqlite3* acquire(void);
 
-	// release
-	//
-	// Releases a previously acquired connection back into the pool
-	void release(sqlite3* handle);
+  // release
+  //
+  // Releases a previously acquired connection back into the pool
+  void release(sqlite3* handle);
 
-	//-----------------------------------------------------------------------
-	// Type Declarations
+  //-----------------------------------------------------------------------
+  // Type Declarations
 
-	// handle
-	//
-	// RAII class to acquire and release connections from the pool
-	class handle
-	{
-	public:
+  // handle
+  //
+  // RAII class to acquire and release connections from the pool
+  class handle
+  {
+  public:
 
-		// Constructor / Destructor
-		//
-		handle(std::shared_ptr<connectionpool> const& pool) : m_pool(pool), m_handle(pool->acquire()) { }
-		~handle() { m_pool->release(m_handle); }
+    // Constructor / Destructor
+    //
+    handle(std::shared_ptr<connectionpool> const& pool) : m_pool(pool), m_handle(pool->acquire()) { }
+    ~handle() { m_pool->release(m_handle); }
 
-		// sqlite3* type conversion operator
-		//
-		operator sqlite3*(void) const { return m_handle; }
+    // sqlite3* type conversion operator
+    //
+    operator sqlite3*(void) const { return m_handle; }
 
-	private:
+  private:
 
-		handle(handle const&) = delete;
-		handle& operator=(handle const&) = delete;
+    handle(handle const&) = delete;
+    handle& operator=(handle const&) = delete;
 
-		// m_pool
-		//
-		// Shared pointer to the parent connection pool
-		std::shared_ptr<connectionpool> const m_pool;
+    // m_pool
+    //
+    // Shared pointer to the parent connection pool
+    std::shared_ptr<connectionpool> const m_pool;
 
-		// m_handle
-		//
-		// SQLite handle acquired from the pool
-		sqlite3* m_handle;
-	};
+    // m_handle
+    //
+    // SQLite handle acquired from the pool
+    sqlite3* m_handle;
+  };
 
 private:
 
-	connectionpool(connectionpool const&) = delete;
-	connectionpool& operator=(connectionpool const&) = delete;
+  connectionpool(connectionpool const&) = delete;
+  connectionpool& operator=(connectionpool const&) = delete;
 
-	//-----------------------------------------------------------------------
-	// Member Variables
+  //-----------------------------------------------------------------------
+  // Member Variables
 
-	std::string	const			m_connstr;			// Connection string
-	int	const					m_flags;			// Connection flags
-	std::vector<sqlite3*>		m_connections;		// All active connections
-	std::queue<sqlite3*>		m_queue;			// Queue of unused connection
-	mutable std::mutex			m_lock;				// Synchronization object
+  std::string  const      m_connstr;      // Connection string
+  int  const          m_flags;      // Connection flags
+  std::vector<sqlite3*>    m_connections;    // All active connections
+  std::queue<sqlite3*>    m_queue;      // Queue of unused connection
+  mutable std::mutex      m_lock;        // Synchronization object
 };
 
 //---------------------------------------------------------------------------
@@ -220,7 +220,7 @@ int get_channel_count(sqlite3* instance);
 // Gets the tuning properties of a channel from the database
 bool get_channel_properties(sqlite3* instance, uint32_t frequency, enum modulation modulation, struct channelprops& channelprops);
 bool get_channel_properties(sqlite3* instance, uint32_t frequency, enum modulation modulation, struct channelprops& channelprops,
-	std::vector<struct subchannelprops>& subchannelprops);
+  std::vector<struct subchannelprops>& subchannelprops);
 
 // has_rawfiles
 //
@@ -258,4 +258,4 @@ bool update_channel(sqlite3* instance, struct channelprops const& channelprops, 
 
 #pragma warning(pop)
 
-#endif	// __DATABASE_H_
+#endif  // __DATABASE_H_

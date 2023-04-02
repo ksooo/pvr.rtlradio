@@ -1,5 +1,6 @@
 #pragma once
 
+#define __ STDC_NO_COMPLEX __
 #include <complex.h>
 #include <fftw3.h>
 #include "firdecim_q15.h"

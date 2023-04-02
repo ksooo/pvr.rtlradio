@@ -30,7 +30,7 @@
 #if defined(_WINDOWS)
 
 #define HAVE_COMPLEX_I
-#define HAVE_FAAD2
+//#define HAVE_FAAD2
 #define strdup _strdup
 
 // Android
@@ -57,7 +57,7 @@ float crealf(float _Complex __z);
 #define HAVE_STRNDUP
 #define HAVE_CMPLXF
 #define HAVE_COMPLEX_I
-#define HAVE_FAAD2
+//#define HAVE_FAAD2
 
 // Linux
 #else
@@ -66,7 +66,7 @@ float crealf(float _Complex __z);
 #define HAVE_STRNDUP
 #define HAVE_CMPLXF
 #define HAVE_COMPLEX_I
-#define HAVE_FAAD2
+//#define HAVE_FAAD2
 
 #endif
 

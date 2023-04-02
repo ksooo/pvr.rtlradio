@@ -28,7 +28,7 @@
 #include <string>
 #include <sqlite3.h>
 
-#pragma warning(push, 4)	
+#pragma warning(push, 4)  
 
 //-----------------------------------------------------------------------------
 // Class sqlite_exception
@@ -39,41 +39,41 @@ class sqlite_exception : public std::exception
 {
 public:
 
-	// Instance Constructors
-	//
-	sqlite_exception(int code);
-	sqlite_exception(int code, char const* message);
+  // Instance Constructors
+  //
+  sqlite_exception(int code);
+  sqlite_exception(int code, char const* message);
 
-	// Copy Constructor
-	//
-	sqlite_exception(sqlite_exception const& rhs);
+  // Copy Constructor
+  //
+  sqlite_exception(sqlite_exception const& rhs);
 
-	// Move Constructor
-	//
-	sqlite_exception(sqlite_exception&& rhs);
+  // Move Constructor
+  //
+  sqlite_exception(sqlite_exception&& rhs);
 
-	// char const* conversion operator
-	//
-	operator char const*() const;
+  // char const* conversion operator
+  //
+  operator char const*() const;
 
-	//-------------------------------------------------------------------------
-	// Member Functions
+  //-------------------------------------------------------------------------
+  // Member Functions
 
-	// what (std::exception)
-	//
-	// Gets a pointer to the exception message text
-	virtual char const* what(void) const noexcept override;
-		
+  // what (std::exception)
+  //
+  // Gets a pointer to the exception message text
+  virtual char const* what(void) const noexcept override;
+    
 private:
 
-	//-------------------------------------------------------------------------
-	// Member Variables
+  //-------------------------------------------------------------------------
+  // Member Variables
 
-	std::string					m_what;			// SQLite error message
+  std::string          m_what;      // SQLite error message
 };
 
 //-----------------------------------------------------------------------------
 
 #pragma warning(pop)
 
-#endif	// __SQLITE_EXCEPTION_H_
+#endif  // __SQLITE_EXCEPTION_H_

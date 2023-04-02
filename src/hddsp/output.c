@@ -19,7 +19,9 @@
 #include <errno.h>
 #include <limits.h>
 #include <string.h>
+#ifndef _WIN32
 #include <sys/time.h>
+#endif
 
 #include "defines.h"
 #include "output.h"

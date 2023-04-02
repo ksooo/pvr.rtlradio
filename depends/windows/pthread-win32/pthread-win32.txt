@@ -1,0 +1,1 @@
+pthread-win32 https://github.com/GerHobbelt/pthread-win32/archive/refs/tags/version-3.1.0-release.tar.gz

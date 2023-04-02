@@ -36,7 +36,7 @@
 namespace fft {
 
 #ifndef KISSFFT
-#  define FFTW_MALLOC     fftwf_malloc
+//#  define FFTW_MALLOC     fftwf_malloc
 #  define FFTW_PLAN_DFT_1D    fftwf_plan_dft_1d
 #  define FFTW_DESTROY_PLAN   fftwf_destroy_plan
 #  define FFTW_FREE       fftwf_free

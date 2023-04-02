@@ -43,90 +43,90 @@ class ATTR_DLL_LOCAL channeladd : public kodi::gui::CWindow
 {
 public:
 
-	//-----------------------------------------------------------------------
-	// Member Functions
+  //-----------------------------------------------------------------------
+  // Member Functions
 
-	// create (static)
-	//
-	// Factory method, creates a new channelsettings instance
-	static std::unique_ptr<channeladd> create(enum modulation modulation);
+  // create (static)
+  //
+  // Factory method, creates a new channelsettings instance
+  static std::unique_ptr<channeladd> create(enum modulation modulation);
 
-	// get_channel_properties
-	//
-	// Gets the updated channel properties from the dialog box
-	void get_channel_properties(struct channelprops& channelprops) const;
+  // get_channel_properties
+  //
+  // Gets the updated channel properties from the dialog box
+  void get_channel_properties(struct channelprops& channelprops) const;
 
-	// get_dialog_result
-	//
-	// Gets the result code from the dialog box
-	bool get_dialog_result(void) const;
+  // get_dialog_result
+  //
+  // Gets the result code from the dialog box
+  bool get_dialog_result(void) const;
 
 private:
 
-	channeladd(channeladd const&) = delete;
-	channeladd& operator=(channeladd const&) = delete;
+  channeladd(channeladd const&) = delete;
+  channeladd& operator=(channeladd const&) = delete;
 
-	// Instance Constructor
-	//
-	channeladd(enum modulation modulation);
+  // Instance Constructor
+  //
+  channeladd(enum modulation modulation);
 
-	//-------------------------------------------------------------------------
-	// CWindow Implementation
+  //-------------------------------------------------------------------------
+  // CWindow Implementation
 
-	// OnAction
-	//
-	// Receives action codes that are sent to this window
-	bool OnAction(ADDON_ACTION actionId) override;
+  // OnAction
+  //
+  // Receives action codes that are sent to this window
+  bool OnAction(ADDON_ACTION actionId) override;
 
-	// OnClick
-	//
-	// Receives click event notifications for a control
-	bool OnClick(int controlId) override;
+  // OnClick
+  //
+  // Receives click event notifications for a control
+  bool OnClick(int controlId) override;
 
-	// OnInit
-	//
-	// Called to initialize the window object
-	bool OnInit(void) override;
+  // OnInit
+  //
+  // Called to initialize the window object
+  bool OnInit(void) override;
 
-	//-------------------------------------------------------------------------
-	// Private Member Functions
+  //-------------------------------------------------------------------------
+  // Private Member Functions
 
-	// format_input
-	//
-	// Formats the current input string for display
-	std::string format_input(std::string const& input) const;
+  // format_input
+  //
+  // Formats the current input string for display
+  std::string format_input(std::string const& input) const;
 
-	// get_frequency
-	//
-	// Attempts to parse a formatted input string to get the frequency
-	bool get_frequency(std::string const& input, uint32_t& frequency) const;
+  // get_frequency
+  //
+  // Attempts to parse a formatted input string to get the frequency
+  bool get_frequency(std::string const& input, uint32_t& frequency) const;
 
-	// on_backspace
-	//
-	// Handles input of a backspace character
-	void on_backspace(void);
+  // on_backspace
+  //
+  // Handles input of a backspace character
+  void on_backspace(void);
 
-	// on_digit
-	//
-	// Handles input of a digit character
-	void on_digit(int number);
+  // on_digit
+  //
+  // Handles input of a digit character
+  void on_digit(int number);
 
-	//-------------------------------------------------------------------------
-	// Member Variables
+  //-------------------------------------------------------------------------
+  // Member Variables
 
-	enum modulation const		m_modulation;				// Channel modulation
-	struct channelprops			m_channelprops = {};		// Channel properties
-	bool						m_result = false;			// Dialog result
-	std::string					m_input;					// Input string
+  enum modulation const    m_modulation;        // Channel modulation
+  struct channelprops      m_channelprops = {};    // Channel properties
+  bool            m_result = false;      // Dialog result
+  std::string          m_input;          // Input string
 
-	// CONTROLS
-	//
-	std::unique_ptr<CLabel>		m_label_input;				// Input
-	std::unique_ptr<CButton>	m_button_add;				// Add button
+  // CONTROLS
+  //
+  std::unique_ptr<CLabel>    m_label_input;        // Input
+  std::unique_ptr<CButton>  m_button_add;        // Add button
 };
 
 //-----------------------------------------------------------------------------
 
 #pragma warning(pop)
 
-#endif	// __CHANNELADD_H_
+#endif  // __CHANNELADD_H_
