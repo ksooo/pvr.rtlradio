@@ -1,16 +1,16 @@
 //---------------------------------------------------------------------------
 // Copyright (c) 2020-2022 Michael G. Brehm
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -27,7 +27,7 @@
 #include <exception>
 #include <string>
 
-#pragma warning(push, 4)	
+#pragma warning(push, 4)
 
 //-----------------------------------------------------------------------------
 // Class win32_exception
@@ -37,50 +37,48 @@
 class win32_exception : public std::exception
 {
 public:
+  // Instance Constructors
+  //
+  win32_exception(DWORD code);
+  win32_exception(HRESULT code);
 
-	// Instance Constructors
-	//
-	win32_exception(DWORD code);
-	win32_exception(HRESULT code);
+  // Copy Constructor
+  //
+  win32_exception(win32_exception const& rhs);
 
-	// Copy Constructor
-	//
-	win32_exception(win32_exception const& rhs);
+  // Move Constructor
+  //
+  win32_exception(win32_exception&& rhs);
 
-	// Move Constructor
-	//
-	win32_exception(win32_exception&& rhs);
+  // char const* conversion operator
+  //
+  operator char const*() const;
 
-	// char const* conversion operator
-	//
-	operator char const*() const;
+  //-------------------------------------------------------------------------
+  // Member Functions
 
-	//-------------------------------------------------------------------------
-	// Member Functions
-
-	// what (std::exception)
-	//
-	// Gets a pointer to the exception message text
-	virtual char const* what(void) const noexcept override;
+  // what (std::exception)
+  //
+  // Gets a pointer to the exception message text
+  virtual char const* what(void) const noexcept override;
 
 private:
+  //-------------------------------------------------------------------------
+  // Private Member Functions
 
-	//-------------------------------------------------------------------------
-	// Private Member Functions
+  // format_message
+  //
+  // Generates the formatted message string from the project resources
+  static std::string format_message(DWORD result);
 
-	// format_message
-	//
-	// Generates the formatted message string from the project resources
-	static std::string format_message(DWORD result);
+  //-------------------------------------------------------------------------
+  // Member Variables
 
-	//-------------------------------------------------------------------------
-	// Member Variables
-
-	std::string					m_what;			// Win32 error message
+  std::string m_what; // Win32 error message
 };
 
 //-----------------------------------------------------------------------------
 
 #pragma warning(pop)
 
-#endif	// __WIN32_EXCEPTION_H_
+#endif // __WIN32_EXCEPTION_H_

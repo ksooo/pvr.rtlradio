@@ -1,16 +1,16 @@
 //-----------------------------------------------------------------------------
 // Copyright (c) 2020-2022 Michael G. Brehm
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -28,7 +28,7 @@
 #include <sstream>
 #include <string>
 
-#pragma warning(push, 4)  
+#pragma warning(push, 4)
 
 //-----------------------------------------------------------------------------
 // Class string_exception
@@ -38,11 +38,12 @@
 class string_exception : public std::exception
 {
 public:
-
   // Instance Constructor
   //
   template<typename... _args>
-  string_exception(_args&&... args) : m_what(format_message(std::forward<_args>(args)...)) {}
+  string_exception(_args&&... args) : m_what(format_message(std::forward<_args>(args)...))
+  {
+  }
 
   // Copy Constructor
   //
@@ -54,10 +55,7 @@ public:
 
   // char const* conversion operator
   //
-  operator char const*() const
-  {
-    return m_what.c_str();
-  }
+  operator char const*() const { return m_what.c_str(); }
 
   //-------------------------------------------------------------------------
   // Member Functions
@@ -65,13 +63,9 @@ public:
   // what (std::exception)
   //
   // Gets a pointer to the exception message text
-  virtual char const* what(void) const noexcept override
-  {
-    return m_what.c_str();
-  }
-    
-private:
+  virtual char const* what(void) const noexcept override { return m_what.c_str(); }
 
+private:
   //-----------------------------------------------------------------------
   // Private Member Functions
 
@@ -82,7 +76,7 @@ private:
   static std::string format_message(_args&&... args)
   {
     std::ostringstream stream;
-    int unpack[] = {0, ( static_cast<void>(stream << args), 0 ) ... };
+    int unpack[] = {0, (static_cast<void>(stream << args), 0)...};
     (void)unpack;
 
     return stream.str();
@@ -91,11 +85,11 @@ private:
   //-------------------------------------------------------------------------
   // Member Variables
 
-  std::string          m_what;      // Exception message
+  std::string m_what; // Exception message
 };
 
 //-----------------------------------------------------------------------------
 
 #pragma warning(pop)
 
-#endif  // __STRING_EXCEPTION_H_
+#endif // __STRING_EXCEPTION_H_

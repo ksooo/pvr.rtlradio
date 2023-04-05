@@ -24,15 +24,15 @@
 #define __ADDON_H_
 #pragma once
 
-#include <kodi/addon-instance/PVR.h>
-#include <memory>
-#include <mutex>
-
 #include "database.h"
 #include "props.h"
 #include "pvrstream.h"
 #include "pvrtypes.h"
 #include "rtldevice.h"
+
+#include <kodi/addon-instance/PVR.h>
+#include <memory>
+#include <mutex>
 
 #pragma warning(push, 4)
 
@@ -41,8 +41,7 @@
 //
 // Implements the PVR addon instance
 
-class ATTR_DLL_LOCAL addon : public kodi::addon::CAddonBase,
-                             public kodi::addon::CInstancePVRClient
+class ATTR_DLL_LOCAL addon : public kodi::addon::CAddonBase, public kodi::addon::CInstancePVRClient
 {
 public:
   // Instance Constructor
@@ -65,7 +64,8 @@ public:
   // SetSetting
   //
   // Notifies the addon that a setting has been changed
-  ADDON_STATUS SetSetting(std::string const& settingName, kodi::addon::CSettingValue const& settingValue) override;
+  ADDON_STATUS SetSetting(std::string const& settingName,
+                          kodi::addon::CSettingValue const& settingValue) override;
 
   //-------------------------------------------------------------------------
   // CInstancePVRClient
@@ -134,7 +134,8 @@ public:
   // GetChannelGroupMembers
   //
   // Request the list of all group members of a group from the backend
-  PVR_ERROR GetChannelGroupMembers(kodi::addon::PVRChannelGroup const& group, kodi::addon::PVRChannelGroupMembersResultSet& results) override;
+  PVR_ERROR GetChannelGroupMembers(kodi::addon::PVRChannelGroup const& group,
+                                   kodi::addon::PVRChannelGroupMembersResultSet& results) override;
 
   // GetChannelGroups
   //
@@ -154,12 +155,17 @@ public:
   // GetChannelStreamProperties
   //
   // Get the stream properties for a channel from the backend
-  PVR_ERROR GetChannelStreamProperties(kodi::addon::PVRChannel const& channel, std::vector<kodi::addon::PVRStreamProperty>& properties) override;
+  PVR_ERROR GetChannelStreamProperties(
+      kodi::addon::PVRChannel const& channel,
+      std::vector<kodi::addon::PVRStreamProperty>& properties) override;
 
   // GetEPGForChannel
   //
   // Request the EPG for a channel from the backend
-  PVR_ERROR GetEPGForChannel(int channelUid, time_t start, time_t end, kodi::addon::PVREPGTagsResultSet& results) override;
+  PVR_ERROR GetEPGForChannel(int channelUid,
+                             time_t start,
+                             time_t end,
+                             kodi::addon::PVREPGTagsResultSet& results) override;
 
   // GetSignalStatus
   //
@@ -222,8 +228,8 @@ public:
   int64_t SeekLiveStream(int64_t position, int whence) override;
 
 private:
-  addon(addon const&)=delete;
-  addon& operator=(addon const&)=delete;
+  addon(addon const&) = delete;
+  addon& operator=(addon const&) = delete;
 
   //-------------------------------------------------------------------------
   // Private Member Functions
@@ -247,17 +253,24 @@ private:
   // Exception Helpers
   //
   void handle_generalexception(char const* function);
-  template<typename _result> _result handle_generalexception(char const* function, _result result);
+  template<typename _result>
+  _result handle_generalexception(char const* function, _result result);
   void handle_stdexception(char const* function, std::exception const& ex);
-  template<typename _result> _result handle_stdexception(char const* function, std::exception const& ex, _result result);
+  template<typename _result>
+  _result handle_stdexception(char const* function, std::exception const& ex, _result result);
 
   // Log Helpers
   //
-  template<typename... _args> void log_debug(_args&&... args) const;
-  template<typename... _args> void log_error(_args&&... args) const;
-  template<typename... _args> void log_info(_args&&... args) const;
-  template<typename... _args> void log_message(ADDON_LOG level, _args&&... args) const;
-  template<typename... _args> void log_warning(_args&&... args) const;
+  template<typename... _args>
+  void log_debug(_args&&... args) const;
+  template<typename... _args>
+  void log_error(_args&&... args) const;
+  template<typename... _args>
+  void log_info(_args&&... args) const;
+  template<typename... _args>
+  void log_message(ADDON_LOG level, _args&&... args) const;
+  template<typename... _args>
+  void log_warning(_args&&... args) const;
 
   // Menu Hook Helpers
   //
@@ -280,15 +293,15 @@ private:
   //-------------------------------------------------------------------------
   // Member Variables
 
-  std::shared_ptr<connectionpool>  m_connpool;        // Database connection pool
-  std::unique_ptr<pvrstream>    m_pvrstream;      // Active PVR stream instance
-  mutable std::mutex        m_pvrstream_lock;    // Synchronization object
-  struct settings          m_settings;        // Custom addon settings
-  mutable std::recursive_mutex  m_settings_lock;    // Synchronization object
+  std::shared_ptr<connectionpool> m_connpool; // Database connection pool
+  std::unique_ptr<pvrstream> m_pvrstream; // Active PVR stream instance
+  mutable std::mutex m_pvrstream_lock; // Synchronization object
+  struct settings m_settings; // Custom addon settings
+  mutable std::recursive_mutex m_settings_lock; // Synchronization object
 };
 
 //-----------------------------------------------------------------------------
 
 #pragma warning(pop)
 
-#endif  // __ADDON_H_
+#endif // __ADDON_H_

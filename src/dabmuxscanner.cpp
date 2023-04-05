@@ -1,16 +1,16 @@
 //---------------------------------------------------------------------------
 // Copyright (c) 2020-2022 Michael G. Brehm
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,8 +20,9 @@
 // SOFTWARE.
 //---------------------------------------------------------------------------
 
-#include "stdafx.h"
 #include "dabmuxscanner.h"
+
+#include "stdafx.h"
 
 #include <algorithm>
 #include <stdexcept>
@@ -31,7 +32,7 @@
 // dabmuxscanner::RING_BUFFER_SIZE
 //
 // Input ring buffer size
-size_t const dabmuxscanner::RING_BUFFER_SIZE = (4 MiB);		// 1 second @ 2048000
+size_t const dabmuxscanner::RING_BUFFER_SIZE = (4 MiB); // 1 second @ 2048000
 
 // dabmuxscanner::SAMPLE_RATE
 //
@@ -43,9 +44,9 @@ uint32_t const dabmuxscanner::SAMPLE_RATE = 2048000;
 // Trims an std::string instance
 inline std::string trim(const std::string& str)
 {
-	auto left = std::find_if_not(str.begin(), str.end(), isspace);
-	auto right = std::find_if_not(str.rbegin(), str.rend(), isspace);
-	return (right.base() <= left) ? std::string() : std::string(left, right.base());
+  auto left = std::find_if_not(str.begin(), str.end(), isspace);
+  auto right = std::find_if_not(str.rbegin(), str.rend(), isspace);
+  return (right.base() <= left) ? std::string() : std::string(left, right.base());
 }
 
 //---------------------------------------------------------------------------
@@ -56,19 +57,20 @@ inline std::string trim(const std::string& str)
 //	samplerate		- Sample rate of the input data
 //	callback		- Callback function to invoke on status change
 
-dabmuxscanner::dabmuxscanner(uint32_t samplerate, callback const& callback) : m_callback(callback),
-	m_ringbuffer(RING_BUFFER_SIZE)
+dabmuxscanner::dabmuxscanner(uint32_t samplerate, callback const& callback)
+  : m_callback(callback), m_ringbuffer(RING_BUFFER_SIZE)
 {
-	assert(samplerate == SAMPLE_RATE);
-	if(samplerate != SAMPLE_RATE) throw std::invalid_argument("samplerate");
+  assert(samplerate == SAMPLE_RATE);
+  if (samplerate != SAMPLE_RATE)
+    throw std::invalid_argument("samplerate");
 
-	// Construct and initialize the demodulator instance
-	RadioControllerInterface& controllerinterface = *static_cast<RadioControllerInterface*>(this);
-	InputInterface& inputinterface = *static_cast<InputInterface*>(this);
-	RadioReceiverOptions options = {};
-	options.disableCoarseCorrector = true;
-	m_receiver = make_aligned<RadioReceiver>(controllerinterface, inputinterface, options, 1);
-	m_receiver->restart(false);
+  // Construct and initialize the demodulator instance
+  RadioControllerInterface& controllerinterface = *static_cast<RadioControllerInterface*>(this);
+  InputInterface& inputinterface = *static_cast<InputInterface*>(this);
+  RadioReceiverOptions options = {};
+  options.disableCoarseCorrector = true;
+  m_receiver = make_aligned<RadioReceiver>(controllerinterface, inputinterface, options, 1);
+  m_receiver->restart(false);
 }
 
 //---------------------------------------------------------------------------
@@ -76,8 +78,9 @@ dabmuxscanner::dabmuxscanner(uint32_t samplerate, callback const& callback) : m_
 
 dabmuxscanner::~dabmuxscanner()
 {
-	if(m_receiver) m_receiver->stop();			// Stop receiver
-	m_receiver.reset();							// Reset receiver instance
+  if (m_receiver)
+    m_receiver->stop(); // Stop receiver
+  m_receiver.reset(); // Reset receiver instance
 }
 
 //---------------------------------------------------------------------------
@@ -92,7 +95,7 @@ dabmuxscanner::~dabmuxscanner()
 
 std::unique_ptr<dabmuxscanner> dabmuxscanner::create(uint32_t samplerate, callback const& callback)
 {
-	return std::unique_ptr<dabmuxscanner>(new dabmuxscanner(samplerate, callback));
+  return std::unique_ptr<dabmuxscanner>(new dabmuxscanner(samplerate, callback));
 }
 
 //---------------------------------------------------------------------------
@@ -107,121 +110,144 @@ std::unique_ptr<dabmuxscanner> dabmuxscanner::create(uint32_t samplerate, callba
 
 void dabmuxscanner::inputsamples(uint8_t const* samples, size_t length)
 {
-	bool			invokecallback = false;			// Flag to invoke the callback
+  bool invokecallback = false; // Flag to invoke the callback
 
-	assert(length <= std::numeric_limits<int32_t>::max());
-	m_ringbuffer.putDataIntoBuffer(samples, static_cast<int32_t>(length));
+  assert(length <= std::numeric_limits<int32_t>::max());
+  m_ringbuffer.putDataIntoBuffer(samples, static_cast<int32_t>(length));
 
-	// Check for and process any new events
-	std::unique_lock<std::mutex> eventslock(m_eventslock);
-	if(m_events.empty() == false) {
+  // Check for and process any new events
+  std::unique_lock<std::mutex> eventslock(m_eventslock);
+  if (m_events.empty() == false)
+  {
 
-		// The threading model is a bit weird here; the callback that queued a new
-		// event needs to be free to continue execution otherwise the DSP may deadlock 
-		// while we process that event. Combat this by swapping the queue<> with a new
-		// one, release the lock, then go ahead and process each of the queued events
+    // The threading model is a bit weird here; the callback that queued a new
+    // event needs to be free to continue execution otherwise the DSP may deadlock
+    // while we process that event. Combat this by swapping the queue<> with a new
+    // one, release the lock, then go ahead and process each of the queued events
 
-		event_queue_t events;							// Empty event queue<>
-		m_events.swap(events);							// Swap with existing queue<>
-		eventslock.unlock();							// Release the queue<> lock
+    event_queue_t events; // Empty event queue<>
+    m_events.swap(events); // Swap with existing queue<>
+    eventslock.unlock(); // Release the queue<> lock
 
-		while(!events.empty()) {
+    while (!events.empty())
+    {
 
-			event_t event = events.front();				// event_t
-			events.pop();								// Remove from queue<>
+      event_t event = events.front(); // event_t
+      events.pop(); // Remove from queue<>
 
-			// Sync
-			//
-			// Signal synchronization/lock has been achieved
-			if(event.eventid == eventid_t::Sync) {
+      // Sync
+      //
+      // Signal synchronization/lock has been achieved
+      if (event.eventid == eventid_t::Sync)
+      {
 
-				if(m_muxdata.sync == false) {
+        if (m_muxdata.sync == false)
+        {
 
-					m_muxdata.sync = true;
-					invokecallback = true;
-				}
-			}
+          m_muxdata.sync = true;
+          invokecallback = true;
+        }
+      }
 
-			// LostSync
-			//
-			// Signal synchronization/lock has been lost
-			else if(event.eventid == eventid_t::LostSync) {
+      // LostSync
+      //
+      // Signal synchronization/lock has been lost
+      else if (event.eventid == eventid_t::LostSync)
+      {
 
-				if(m_muxdata.sync == true) {
+        if (m_muxdata.sync == true)
+        {
 
-					m_muxdata.sync = false;
-					invokecallback = true;
-				}
-			}
+          m_muxdata.sync = false;
+          invokecallback = true;
+        }
+      }
 
-			// ServiceDetected
-			//
-			// A new service has been detected
-			else if(event.eventid == eventid_t::ServiceDetected) {
+      // ServiceDetected
+      //
+      // A new service has been detected
+      else if (event.eventid == eventid_t::ServiceDetected)
+      {
 
-				// Iterate over each detected component within the service
-				for(auto const& component : m_receiver->getComponents(m_receiver->getService(event.serviceid))) {
+        // Iterate over each detected component within the service
+        for (auto const& component :
+             m_receiver->getComponents(m_receiver->getService(event.serviceid)))
+        {
 
-					// We only care about audio components; the presense of an SCId and/or a 
-					// Packet address *appears* to indicate a data-only component
-					if((component.SCId == 0) && (component.packetAddress == 0)) {
+          // We only care about audio components; the presense of an SCId and/or a
+          // Packet address *appears* to indicate a data-only component
+          if ((component.SCId == 0) && (component.packetAddress == 0))
+          {
 
-						// Check to see if we already have this subchannel in the mux data
-						auto found = std::find_if(m_muxdata.subchannels.begin(), m_muxdata.subchannels.end(),
-							[&](auto const& val) -> bool { return val.number == static_cast<uint32_t>(component.subchannelId); });
+            // Check to see if we already have this subchannel in the mux data
+            auto found =
+                std::find_if(m_muxdata.subchannels.begin(), m_muxdata.subchannels.end(),
+                             [&](auto const& val) -> bool {
+                               return val.number == static_cast<uint32_t>(component.subchannelId);
+                             });
 
-						// New subchannel detected; the label (name) will come later via SetServiceLabel
-						if(found == m_muxdata.subchannels.end()) {
+            // New subchannel detected; the label (name) will come later via SetServiceLabel
+            if (found == m_muxdata.subchannels.end())
+            {
 
-							m_muxdata.subchannels.push_back({ static_cast<uint32_t>(component.subchannelId), std::string() });
-							invokecallback = true;
-						}
-					}
-				}
-			}
+              m_muxdata.subchannels.push_back(
+                  {static_cast<uint32_t>(component.subchannelId), std::string()});
+              invokecallback = true;
+            }
+          }
+        }
+      }
 
-			// SetEnsembleLabel
-			//
-			// A new ensemble label has been received
-			else if(event.eventid == eventid_t::SetEnsembleLabel) {
+      // SetEnsembleLabel
+      //
+      // A new ensemble label has been received
+      else if (event.eventid == eventid_t::SetEnsembleLabel)
+      {
 
-				std::string label = trim(m_receiver->getEnsembleLabel().utf8_label());
-				if(label != m_muxdata.name) {
+        std::string label = trim(m_receiver->getEnsembleLabel().utf8_label());
+        if (label != m_muxdata.name)
+        {
 
-					m_muxdata.name = label;
-					invokecallback = true;
-				}
-			}
+          m_muxdata.name = label;
+          invokecallback = true;
+        }
+      }
 
-			// SetServiceLabel
-			//
-			// A new service label has been received
-			else if(event.eventid == eventid_t::SetServiceLabel) {
+      // SetServiceLabel
+      //
+      // A new service label has been received
+      else if (event.eventid == eventid_t::SetServiceLabel)
+      {
 
-				// Iterate over each detected component within the service
-				Service service = m_receiver->getService(event.serviceid);
-				for(auto const& component : m_receiver->getComponents(service)) {
+        // Iterate over each detected component within the service
+        Service service = m_receiver->getService(event.serviceid);
+        for (auto const& component : m_receiver->getComponents(service))
+        {
 
-					// Update the label for any subchannels associated with the component
-					for(auto& it : m_muxdata.subchannels) {
+          // Update the label for any subchannels associated with the component
+          for (auto& it : m_muxdata.subchannels)
+          {
 
-						if(it.number == static_cast<uint32_t>(component.subchannelId)) {
+            if (it.number == static_cast<uint32_t>(component.subchannelId))
+            {
 
-							std::string label = trim(service.serviceLabel.utf8_label());
-							if(label != it.name) {
+              std::string label = trim(service.serviceLabel.utf8_label());
+              if (label != it.name)
+              {
 
-								it.name = label;
-								invokecallback = true;
-							}
-						}
-					}
-				}
-			}
-		}
-	}
+                it.name = label;
+                invokecallback = true;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 
-	// If anything about the multiplex has changed, invoke the callback
-	if(invokecallback) m_callback(m_muxdata);
+  // If anything about the multiplex has changed, invoke the callback
+  if (invokecallback)
+    m_callback(m_muxdata);
 }
 
 //---------------------------------------------------------------------------
@@ -236,24 +262,25 @@ void dabmuxscanner::inputsamples(uint8_t const* samples, size_t length)
 
 int32_t dabmuxscanner::getSamples(DSPCOMPLEX* buffer, int32_t size)
 {
-	int32_t			numsamples = 0;			// Number of available samples in the buffer
+  int32_t numsamples = 0; // Number of available samples in the buffer
 
-	// Allocate a temporary buffer to pull the data out of the ring buffer
-	std::unique_ptr<uint8_t[]> tempbuffer(new uint8_t[size * 2]);
+  // Allocate a temporary buffer to pull the data out of the ring buffer
+  std::unique_ptr<uint8_t[]> tempbuffer(new uint8_t[size * 2]);
 
-	// Get the data from the ring buffer
-	numsamples = m_ringbuffer.getDataFromBuffer(tempbuffer.get(), size * 2);
+  // Get the data from the ring buffer
+  numsamples = m_ringbuffer.getDataFromBuffer(tempbuffer.get(), size * 2);
 
-	// Scale the input data from [0,255] to [-1,1] for the demodulator
-	for(int32_t index = 0; index < numsamples / 2; index++) {
+  // Scale the input data from [0,255] to [-1,1] for the demodulator
+  for (int32_t index = 0; index < numsamples / 2; index++)
+  {
 
-		buffer[index] = DSPCOMPLEX(
-			(static_cast<float>(tempbuffer[index * 2]) - 128.0f) / 128.0f,			// real
-			(static_cast<float>(tempbuffer[(index * 2) + 1]) - 128.0f) / 128.0f		// imaginary
-		);
-	}
+    buffer[index] =
+        DSPCOMPLEX((static_cast<float>(tempbuffer[index * 2]) - 128.0f) / 128.0f, // real
+                   (static_cast<float>(tempbuffer[(index * 2) + 1]) - 128.0f) / 128.0f // imaginary
+        );
+  }
 
-	return numsamples / 2;
+  return numsamples / 2;
 }
 
 //---------------------------------------------------------------------------
@@ -267,7 +294,7 @@ int32_t dabmuxscanner::getSamples(DSPCOMPLEX* buffer, int32_t size)
 
 int32_t dabmuxscanner::getSamplesToRead(void)
 {
-	return m_ringbuffer.GetRingBufferReadAvailable() / 2;
+  return m_ringbuffer.GetRingBufferReadAvailable() / 2;
 }
 
 //---------------------------------------------------------------------------
@@ -281,7 +308,7 @@ int32_t dabmuxscanner::getSamplesToRead(void)
 
 bool dabmuxscanner::is_ok(void)
 {
-	return true;
+  return true;
 }
 
 //---------------------------------------------------------------------------
@@ -295,7 +322,7 @@ bool dabmuxscanner::is_ok(void)
 
 bool dabmuxscanner::restart(void)
 {
-	return true;
+  return true;
 }
 
 //---------------------------------------------------------------------------
@@ -309,8 +336,8 @@ bool dabmuxscanner::restart(void)
 
 void dabmuxscanner::onServiceDetected(uint32_t sId)
 {
-	std::unique_lock<std::mutex> lock(m_eventslock);
-	m_events.emplace(event_t{ eventid_t::ServiceDetected, sId });
+  std::unique_lock<std::mutex> lock(m_eventslock);
+  m_events.emplace(event_t{eventid_t::ServiceDetected, sId});
 }
 
 //---------------------------------------------------------------------------
@@ -324,8 +351,8 @@ void dabmuxscanner::onServiceDetected(uint32_t sId)
 
 void dabmuxscanner::onSetEnsembleLabel(DabLabel& /*label*/)
 {
-	std::unique_lock<std::mutex> lock(m_eventslock);
-	m_events.emplace(event_t{ eventid_t::SetEnsembleLabel, 0 });
+  std::unique_lock<std::mutex> lock(m_eventslock);
+  m_events.emplace(event_t{eventid_t::SetEnsembleLabel, 0});
 }
 
 //---------------------------------------------------------------------------
@@ -340,8 +367,8 @@ void dabmuxscanner::onSetEnsembleLabel(DabLabel& /*label*/)
 
 void dabmuxscanner::onSetServiceLabel(uint32_t sId, DabLabel& /*label*/)
 {
-	std::unique_lock<std::mutex> lock(m_eventslock);
-	m_events.emplace(event_t{ eventid_t::SetServiceLabel, sId });
+  std::unique_lock<std::mutex> lock(m_eventslock);
+  m_events.emplace(event_t{eventid_t::SetServiceLabel, sId});
 }
 
 //---------------------------------------------------------------------------
@@ -355,8 +382,8 @@ void dabmuxscanner::onSetServiceLabel(uint32_t sId, DabLabel& /*label*/)
 
 void dabmuxscanner::onSyncChange(bool isSync)
 {
-	std::unique_lock<std::mutex> lock(m_eventslock);
-	m_events.emplace(event_t{ (isSync) ? eventid_t::Sync : eventid_t::LostSync, 0 });
+  std::unique_lock<std::mutex> lock(m_eventslock);
+  m_events.emplace(event_t{(isSync) ? eventid_t::Sync : eventid_t::LostSync, 0});
 }
 
 //---------------------------------------------------------------------------

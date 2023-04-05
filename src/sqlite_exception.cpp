@@ -1,16 +1,16 @@
 //---------------------------------------------------------------------------
 // Copyright (c) 2020-2022 Michael G. Brehm
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,8 +20,9 @@
 // SOFTWARE.
 //---------------------------------------------------------------------------
 
-#include "stdafx.h"
 #include "sqlite_exception.h"
+
+#include "stdafx.h"
 
 #pragma warning(push, 4)
 
@@ -34,9 +35,9 @@
 
 sqlite_exception::sqlite_exception(int code)
 {
-	char* what = sqlite3_mprintf("%s (%d)", sqlite3_errstr(code), code);
-	m_what.assign((what) ? what : "sqlite_exception(code)");
-	sqlite3_free(reinterpret_cast<void*>(what));
+  char* what = sqlite3_mprintf("%s (%d)", sqlite3_errstr(code), code);
+  m_what.assign((what) ? what : "sqlite_exception(code)");
+  sqlite3_free(reinterpret_cast<void*>(what));
 }
 
 //-----------------------------------------------------------------------------
@@ -49,9 +50,9 @@ sqlite_exception::sqlite_exception(int code)
 
 sqlite_exception::sqlite_exception(int code, char const* message)
 {
-	char* what = sqlite3_mprintf("%s (%d)", (message) ? message : sqlite3_errstr(code), code);
-	m_what.assign((what) ? what : "sqlite_exception(code, message)");
-	sqlite3_free(reinterpret_cast<void*>(what));
+  char* what = sqlite3_mprintf("%s (%d)", (message) ? message : sqlite3_errstr(code), code);
+  m_what.assign((what) ? what : "sqlite_exception(code, message)");
+  sqlite3_free(reinterpret_cast<void*>(what));
 }
 
 //-----------------------------------------------------------------------------
@@ -73,7 +74,7 @@ sqlite_exception::sqlite_exception(sqlite_exception&& rhs) : m_what(std::move(rh
 
 sqlite_exception::operator char const*() const
 {
-	return m_what.c_str();
+  return m_what.c_str();
 }
 
 //-----------------------------------------------------------------------------
@@ -87,7 +88,7 @@ sqlite_exception::operator char const*() const
 
 char const* sqlite_exception::what(void) const noexcept
 {
-	return m_what.c_str();
+  return m_what.c_str();
 }
 
 //---------------------------------------------------------------------------

@@ -1,16 +1,16 @@
 //-----------------------------------------------------------------------------
 // Copyright (c) 2020-2022 Michael G. Brehm
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -24,11 +24,11 @@
 #define __CHANNELADD_H_
 #pragma once
 
+#include "props.h"
+
+#include <kodi/gui/Window.h>
 #include <kodi/gui/controls/Button.h>
 #include <kodi/gui/controls/Label.h>
-#include <kodi/gui/Window.h>
-
-#include "props.h"
 
 #pragma warning(push, 4)
 
@@ -42,7 +42,6 @@ using namespace kodi::gui::controls;
 class ATTR_DLL_LOCAL channeladd : public kodi::gui::CWindow
 {
 public:
-
   //-----------------------------------------------------------------------
   // Member Functions
 
@@ -62,7 +61,6 @@ public:
   bool get_dialog_result(void) const;
 
 private:
-
   channeladd(channeladd const&) = delete;
   channeladd& operator=(channeladd const&) = delete;
 
@@ -114,19 +112,19 @@ private:
   //-------------------------------------------------------------------------
   // Member Variables
 
-  enum modulation const    m_modulation;        // Channel modulation
-  struct channelprops      m_channelprops = {};    // Channel properties
-  bool            m_result = false;      // Dialog result
-  std::string          m_input;          // Input string
+  enum modulation const m_modulation; // Channel modulation
+  struct channelprops m_channelprops = {}; // Channel properties
+  bool m_result = false; // Dialog result
+  std::string m_input; // Input string
 
   // CONTROLS
   //
-  std::unique_ptr<CLabel>    m_label_input;        // Input
-  std::unique_ptr<CButton>  m_button_add;        // Add button
+  std::unique_ptr<CLabel> m_label_input; // Input
+  std::unique_ptr<CButton> m_button_add; // Add button
 };
 
 //-----------------------------------------------------------------------------
 
 #pragma warning(pop)
 
-#endif  // __CHANNELADD_H_
+#endif // __CHANNELADD_H_

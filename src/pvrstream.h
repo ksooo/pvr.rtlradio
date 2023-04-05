@@ -1,16 +1,16 @@
 //-----------------------------------------------------------------------------
 // Copyright (c) 2020-2022 Michael G. Brehm
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -24,12 +24,11 @@
 #define __PVRSTREAM_H_
 #pragma once
 
-#include <kodi/addon-instance/PVR.h>
+#include "props.h"
 
 #include <functional>
+#include <kodi/addon-instance/PVR.h>
 #include <string>
-
-#include "props.h"
 
 #pragma warning(push, 4)
 
@@ -41,7 +40,6 @@
 class pvrstream
 {
 public:
-
   // Constructor / Destructor
   //
   pvrstream() {}
@@ -88,7 +86,8 @@ public:
   // enumproperties
   //
   // Enumerates the stream properties
-  virtual void enumproperties(std::function<void(struct streamprops const& props)> const& callback) = 0;
+  virtual void enumproperties(
+      std::function<void(struct streamprops const& props)> const& callback) = 0;
 
   // length
   //
@@ -131,7 +130,6 @@ public:
   virtual void signalquality(int& quality, int& snr) const = 0;
 
 private:
-
   pvrstream(pvrstream const&) = delete;
   pvrstream& operator=(pvrstream const&) = delete;
 };
@@ -140,4 +138,4 @@ private:
 
 #pragma warning(pop)
 
-#endif  // __PVRSTREAM_H_
+#endif // __PVRSTREAM_H_

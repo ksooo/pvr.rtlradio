@@ -1,16 +1,16 @@
 //---------------------------------------------------------------------------
 // Copyright (c) 2020-2022 Michael G. Brehm
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all
 // copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -50,26 +50,29 @@ static int const MENUHOOK_SETTING_CLEARCHANNELS = 12;
 // device_connection
 //
 // Defines the RTL-SDR device connection type
-enum device_connection {
+enum device_connection
+{
 
-  usb = 0,        // Locally connected USB device
-  rtltcp = 1,        // Device connected via rtl_tcp
+  usb = 0, // Locally connected USB device
+  rtltcp = 1, // Device connected via rtl_tcp
 };
 
 // downsample_quality
 //
 // Defines the FM DSP downsample quality factor
-enum downsample_quality {
+enum downsample_quality
+{
 
-  fast = 0,        // Optimize for speed
-  standard = 1,      // Standard quality
-  maximum = 2,      // Optimize for quality
+  fast = 0, // Optimize for speed
+  standard = 1, // Standard quality
+  maximum = 2, // Optimize for quality
 };
 
 // settings
 //
 // Defines all of the configurable addon settings
-struct settings {
+struct settings
+{
 
   // device_connection
   //
@@ -181,4 +184,4 @@ struct settings {
 
 #pragma warning(pop)
 
-#endif  // __PVRTYPES_H_
+#endif // __PVRTYPES_H_

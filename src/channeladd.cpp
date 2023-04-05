@@ -20,8 +20,9 @@
 // SOFTWARE.
 //---------------------------------------------------------------------------
 
-#include "stdafx.h"
 #include "channeladd.h"
+
+#include "stdafx.h"
 
 #include <assert.h>
 #include <kodi/General.h>
@@ -30,21 +31,21 @@
 
 // Control Identifiers
 //
-static const int CONTROL_LABEL_HEADERLABEL  = 2;
-static const int CONTROL_BUTTON_ADD      = 100;
-static const int CONTROL_BUTTON_CLOSE    = 101;
-static const int CONTROL_BUTTON_0      = 200;
-static const int CONTROL_BUTTON_1      = 201;
-static const int CONTROL_BUTTON_2      = 202;
-static const int CONTROL_BUTTON_3      = 203;
-static const int CONTROL_BUTTON_4      = 204;
-static const int CONTROL_BUTTON_5      = 205;
-static const int CONTROL_BUTTON_6      = 206;
-static const int CONTROL_BUTTON_7      = 207;
-static const int CONTROL_BUTTON_8      = 208;
-static const int CONTROL_BUTTON_9      = 209;
-static const int CONTROL_BUTTON_BACKSPACE  = 210;
-static const int CONTROL_LABEL_INPUT    = 300;
+static const int CONTROL_LABEL_HEADERLABEL = 2;
+static const int CONTROL_BUTTON_ADD = 100;
+static const int CONTROL_BUTTON_CLOSE = 101;
+static const int CONTROL_BUTTON_0 = 200;
+static const int CONTROL_BUTTON_1 = 201;
+static const int CONTROL_BUTTON_2 = 202;
+static const int CONTROL_BUTTON_3 = 203;
+static const int CONTROL_BUTTON_4 = 204;
+static const int CONTROL_BUTTON_5 = 205;
+static const int CONTROL_BUTTON_6 = 206;
+static const int CONTROL_BUTTON_7 = 207;
+static const int CONTROL_BUTTON_8 = 208;
+static const int CONTROL_BUTTON_9 = 209;
+static const int CONTROL_BUTTON_BACKSPACE = 210;
+static const int CONTROL_LABEL_INPUT = 300;
 
 //---------------------------------------------------------------------------
 // channeladd Constructor (private)
@@ -53,8 +54,8 @@ static const int CONTROL_LABEL_INPUT    = 300;
 //
 //  modulation    - Modulation of the channel being added
 
-channeladd::channeladd(enum modulation modulation) : kodi::gui::CWindow("channeladd.xml", "skin.estuary", true),
-  m_modulation(modulation)
+channeladd::channeladd(enum modulation modulation)
+  : kodi::gui::CWindow("channeladd.xml", "skin.estuary", true), m_modulation(modulation)
 {
 }
 
@@ -86,10 +87,12 @@ std::string channeladd::format_input(std::string const& input) const
   std::string formatted(input);
 
   // 8x.x, 9x.x
-  if((formatted.length() == 3) && ((formatted[0] == '8') || (formatted[0] == '9'))) formatted.insert(2, ".");
+  if ((formatted.length() == 3) && ((formatted[0] == '8') || (formatted[0] == '9')))
+    formatted.insert(2, ".");
 
   // 1xx.x[xx]
-  else if(formatted.length() >= 4) formatted.insert(3, ".");
+  else if (formatted.length() >= 4)
+    formatted.insert(3, ".");
 
   return formatted;
 }
@@ -134,16 +137,18 @@ bool channeladd::get_dialog_result(void) const
 
 bool channeladd::get_frequency(std::string const& input, uint32_t& frequency) const
 {
-  uint32_t  mhz = 0;      // Megahertz component
-  uint32_t  khz = 0;      // Kilohertz component
+  uint32_t mhz = 0; // Megahertz component
+  uint32_t khz = 0; // Kilohertz component
 
-  frequency = 0;          // Initialize [out] reference
+  frequency = 0; // Initialize [out] reference
 
   // There should be two integer parts to the string, megahertz and kilohertz
-  if(sscanf(input.c_str(), "%u.%u", &mhz, &khz) != 2) return false;
+  if (sscanf(input.c_str(), "%u.%u", &mhz, &khz) != 2)
+    return false;
 
   // FM channels are specified as 100KHz, scale the value
-  if(khz < 10) khz *= 100;
+  if (khz < 10)
+    khz *= 100;
 
   // Convert the megahertz and kilohertz portions into hertz
   frequency = (mhz MHz) + (khz KHz);
@@ -162,8 +167,10 @@ bool channeladd::get_frequency(std::string const& input, uint32_t& frequency) co
 
 void channeladd::on_backspace(void)
 {
-  if(m_input.empty()) return;
-  else m_input.erase(m_input.length() - 1);
+  if (m_input.empty())
+    return;
+  else
+    m_input.erase(m_input.length() - 1);
 }
 
 //---------------------------------------------------------------------------
@@ -177,7 +184,7 @@ void channeladd::on_backspace(void)
 
 void channeladd::on_digit(int digit)
 {
-  std::string    input(m_input);        // Copy the existing value
+  std::string input(m_input); // Copy the existing value
 
   // Convert the digit into a character
   char chdigit = static_cast<char>('0' + digit);
@@ -189,79 +196,102 @@ void channeladd::on_digit(int digit)
 
   // Position 0
   //
-  if(input.length() == 0) {
+  if (input.length() == 0)
+  {
 
     // [1, 8, 9]
-    if((digit == 1) || (digit == 8) || (digit == 9)) input += chdigit;
+    if ((digit == 1) || (digit == 8) || (digit == 9))
+      input += chdigit;
   }
 
   // Position 1
   //
-  else if(input.length() == 1) {
+  else if (input.length() == 1)
+  {
 
     // 8x -> [7-9]
-    if((input[0] == '8') && (digit >= 7) && (digit <= 9)) input += chdigit;
+    if ((input[0] == '8') && (digit >= 7) && (digit <= 9))
+      input += chdigit;
 
     // 9x -> [0-9]
-    else if(input[0] == '9') input += chdigit;
+    else if (input[0] == '9')
+      input += chdigit;
 
     // 1x -> [0]
-    else if((input[0] == '1') && (digit == 0)) input += chdigit;
+    else if ((input[0] == '1') && (digit == 0))
+      input += chdigit;
   }
 
   // Position 2
   //
-  else if(input.length() == 2) {
+  else if (input.length() == 2)
+  {
 
-    if(m_modulation == modulation::hd) {
+    if (m_modulation == modulation::hd)
+    {
 
       // 87.x -> [9]
-      if((input[0] == '8') && (input[1] == '7') && (digit == 9)) input += chdigit;
+      if ((input[0] == '8') && (input[1] == '7') && (digit == 9))
+        input += chdigit;
 
       // 88.x / 89.x -> [1, 3, 5, 7, 9]
-      else if((input[0] == '8') && (input[1] > '7') && ((digit % 2) == 1)) input += chdigit;
+      else if ((input[0] == '8') && (input[1] > '7') && ((digit % 2) == 1))
+        input += chdigit;
 
       // 9x.x -> [1, 3, 5, 7, 9]
-      else if((input[0] == '9') && ((digit % 2) == 1)) input += chdigit;
+      else if ((input[0] == '9') && ((digit % 2) == 1))
+        input += chdigit;
 
       // 10x -> [0-7]
-      else if((input[0] == '1') && (input[1] == '0') && (digit <= 7)) input += chdigit;
+      else if ((input[0] == '1') && (input[1] == '0') && (digit <= 7))
+        input += chdigit;
     }
 
-    else {
+    else
+    {
 
 
       // 87.x -> [5, 6, 7, 8, 9]
-      if((input[0] == '8') && (input[1] == '7') && (digit >= 5)) input += chdigit;
+      if ((input[0] == '8') && (input[1] == '7') && (digit >= 5))
+        input += chdigit;
 
       // 8x.x -> [0-9]
-      else if((input[0] == '8') && (input[1] > '7')) input += chdigit;
+      else if ((input[0] == '8') && (input[1] > '7'))
+        input += chdigit;
 
       // 9x.x -> [0-9]
-      else if(input[0] == '9') input += chdigit;
+      else if (input[0] == '9')
+        input += chdigit;
 
       // 10x -> [0-8]
-      else if((input[0] == '1') && (input[1] == '0') && (digit <= 8)) input += chdigit;
+      else if ((input[0] == '1') && (input[1] == '0') && (digit <= 8))
+        input += chdigit;
     }
   }
 
   // Position 3
   //
-  else if(input.length() == 3) {
+  else if (input.length() == 3)
+  {
 
-    if(m_modulation == modulation::hd) {
+    if (m_modulation == modulation::hd)
+    {
 
       // 10x.x -> [1, 3, 5, 7, 9]
-      if((input[0] == '1') && (input[1] == '0') && ((digit % 2) == 1)) input += chdigit;
+      if ((input[0] == '1') && (input[1] == '0') && ((digit % 2) == 1))
+        input += chdigit;
     }
 
-    else {
+    else
+    {
 
       // 108.x -> [0]
-      if((input[0] == '1') && (input[1] == '0') && (input[2] == '8') && (digit == 0)) input += chdigit;
+      if ((input[0] == '1') && (input[1] == '0') && (input[2] == '8') && (digit == 0))
+        input += chdigit;
 
       // 10x.x -> [0-9]
-      else if((input[0] == '1') && (input[1] == '0') && (input[2] < '8')) input += chdigit;
+      else if ((input[0] == '1') && (input[1] == '0') && (input[2] < '8'))
+        input += chdigit;
     }
   }
 
@@ -283,11 +313,12 @@ void channeladd::on_digit(int digit)
 
 bool channeladd::OnAction(ADDON_ACTION actionId)
 {
-  bool    handled = false;      // Flag if handled by the addon
+  bool handled = false; // Flag if handled by the addon
 
   // ADDON_ACTION_REMOTE_0 - ADDON_ACTION_REMOTE_9 --> Digit keypress
   //
-  if((actionId >= ADDON_ACTION_REMOTE_0) && (actionId <= ADDON_ACTION_REMOTE_9)) {
+  if ((actionId >= ADDON_ACTION_REMOTE_0) && (actionId <= ADDON_ACTION_REMOTE_9))
+  {
 
     on_digit(actionId - ADDON_ACTION_REMOTE_0);
     handled = true;
@@ -295,7 +326,8 @@ bool channeladd::OnAction(ADDON_ACTION actionId)
 
   // ADDON_ACTION_NAV_BACK --> Backspace
   //
-  else if(actionId == ADDON_ACTION_NAV_BACK) {
+  else if (actionId == ADDON_ACTION_NAV_BACK)
+  {
 
     on_backspace();
     handled = true;
@@ -303,11 +335,13 @@ bool channeladd::OnAction(ADDON_ACTION actionId)
 
   // ADDON_ACTION_SELECT_ITEM --> Add
   //
-  else if(actionId == ADDON_ACTION_SELECT_ITEM) {
+  else if (actionId == ADDON_ACTION_SELECT_ITEM)
+  {
 
     // If the user has entered a complete frequency and pressed ENTER
     // (or the equivalent), close the dialog as if the Add button was pressed
-    if(get_frequency(m_label_input->GetLabel(), m_channelprops.frequency)) {
+    if (get_frequency(m_label_input->GetLabel(), m_channelprops.frequency))
+    {
 
       m_result = handled = true;
       Close();
@@ -315,7 +349,8 @@ bool channeladd::OnAction(ADDON_ACTION actionId)
   }
 
   // Skip actions that we didn't specifically handle (like mouse events)
-  if(handled) {
+  if (handled)
+  {
 
     // Reformat and update the input control text
     std::string formatted(format_input(m_input));
@@ -338,9 +373,10 @@ bool channeladd::OnAction(ADDON_ACTION actionId)
 
 bool channeladd::OnClick(int controlId)
 {
-  bool    handled = false;      // Flag if handled by the addon
+  bool handled = false; // Flag if handled by the addon
 
-  switch(controlId) {
+  switch (controlId)
+  {
 
     case CONTROL_BUTTON_0:
     case CONTROL_BUTTON_1:
@@ -372,7 +408,8 @@ bool channeladd::OnClick(int controlId)
   }
 
   // Skip click events that we didn't actually handle
-  if(handled) {
+  if (handled)
+  {
 
     // Reformat and update the input control text
     std::string formatted(format_input(m_input));
@@ -397,7 +434,8 @@ bool channeladd::OnClick(int controlId)
 
 bool channeladd::OnInit(void)
 {
-  try {
+  try
+  {
 
     // Get references to all of the manipulable dialog controls
     m_label_input = std::unique_ptr<CLabel>(new CLabel(this, CONTROL_LABEL_INPUT));
@@ -416,7 +454,10 @@ bool channeladd::OnInit(void)
     m_channelprops.autogain = false;
   }
 
-  catch(...) { return false; }
+  catch (...)
+  {
+    return false;
+  }
 
   return kodi::gui::CWindow::OnInit();
 }
