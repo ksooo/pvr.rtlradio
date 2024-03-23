@@ -21,8 +21,19 @@
 //---------------------------------------------------------------------------
 
 #include "addon.h"
-
+#include "channeladd.h"
+#include "channelsettings.h"
+#include "dabstream.h"
+#include "dbtypes.h"
+#include "filedevice.h"
+#include "fmstream.h"
+#include "hdstream.h"
 #include "stdafx.h"
+#include "sqlite_exception.h"
+#include "string_exception.h"
+#include "tcpdevice.h"
+#include "usbdevice.h"
+#include "wxstream.h"
 
 #include <assert.h>
 #include <kodi/Filesystem.h>
@@ -35,25 +46,17 @@
 #include <rapidjson/prettywriter.h>
 #include <utility>
 #include <vector>
-// #include <version.h>
 
-#ifdef __ANDROID__
+#ifdef WIN32
+#include <Windows.h>
+
+#ifdef CreateDirectory
+#undef CreateDirectory
+#endif // CreateDirectory
+
+#elif defined(__ANDROID__)
 #include <android/log.h>
 #endif
-
-#include "channeladd.h"
-#include "channelsettings.h"
-#include "dabstream.h"
-#include "dbtypes.h"
-#include "filedevice.h"
-#include "fmstream.h"
-#include "hdstream.h"
-#include "sqlite_exception.h"
-#include "string_exception.h"
-#include "tcpdevice.h"
-#include "usbdevice.h"
-#include "wxstream.h"
-
 #pragma warning(push, 4)
 
 // Addon Entry Points

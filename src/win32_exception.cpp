@@ -22,8 +22,6 @@
 
 #include "win32_exception.h"
 
-#include "stdafx.h"
-
 #pragma warning(push, 4)
 
 //-----------------------------------------------------------------------------

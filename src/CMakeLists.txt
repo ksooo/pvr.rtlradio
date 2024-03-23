@@ -59,3 +59,5 @@ if(WIN32)
 endif()
 
 add_library(code_src OBJECT ${SOURCES} ${HEADERS})
+target_link_libraries(code_src ${DEPLIBS})
+

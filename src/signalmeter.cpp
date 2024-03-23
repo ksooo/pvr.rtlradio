@@ -26,6 +26,7 @@
 #include "stdafx.h"
 #include "string_exception.h"
 
+#include <assert.h>
 #include <cmath>
 #include <string.h>
 

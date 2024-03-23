@@ -87,9 +87,9 @@ public:
   // Stop (virtual)
   //
   // Stop the rendering process
-  //virtual void Stop(void)
-  //{
-  //}
+  virtual void Stop(void)
+  {
+  }
 
 protected:
   //-------------------------------------------------------------------------

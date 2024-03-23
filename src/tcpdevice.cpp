@@ -22,11 +22,13 @@
 
 #include "tcpdevice.h"
 
-#include "stdafx.h"
-
 #include <algorithm>
+#include <assert.h>
 #ifdef WIN32
-#include <Winsock2.h>
+#include <WS2tcpip.h>
+#include <WinSock2.h>
+#include <Windows.h>
+#include <wchar.h> // Prevents redefinition of WCHAR_MIN by libusb
 #else
 #include <arpa/inet.h>
 #include <netdb.h>

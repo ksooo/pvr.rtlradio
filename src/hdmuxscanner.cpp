@@ -25,6 +25,7 @@
 #include "stdafx.h"
 
 #include <algorithm>
+#include <assert.h>
 #include <stdexcept>
 
 #pragma warning(push, 4)
