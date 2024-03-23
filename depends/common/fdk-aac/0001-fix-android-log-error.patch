@@ -1,0 +1,26 @@
+From 51b8342905042b5abb82066a213c61d8c5717cc7 Mon Sep 17 00:00:00 2001
+From: Alwin Esch <alwin.esch@web.de>
+Date: Sat, 23 Mar 2024 18:23:20 +0100
+Subject: [PATCH] fix-android-log-error
+
+---
+ libSBRdec/include/log/log.h | 7 +++++++
+ 1 file changed, 7 insertions(+)
+ create mode 100644 libSBRdec/include/log/log.h
+
+diff --git a/libSBRdec/include/log/log.h b/libSBRdec/include/log/log.h
+new file mode 100644
+index 0000000..f6f398d
+--- /dev/null
++++ b/libSBRdec/include/log/log.h
+@@ -0,0 +1,7 @@
++#pragma once
++
++#ifdef __ANDROID__
++#include <android/log.h>
++
++#define android_errorWriteLog(tag, y, ...) __android_log_write(ANDROID_LOG_ERROR, #tag, y, ##__VA_ARGS__)
++#endif
+-- 
+2.43.0
+
