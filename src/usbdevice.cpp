@@ -56,8 +56,9 @@ usbdevice::usbdevice(uint32_t index)
   char serialnumber[256] = {'\0'}; // Serial number string
 
 #ifdef __ANDROID__
+  // NOTE: Before in original was LIBUSB_OPTION_ANDROID_JNIENV used, needs to investigate how.
   kodi::platform::CInterfaceAndroidSystem system;
-  libusb_set_option(nullptr, LIBUSB_OPTION_ANDROID_JNIENV, system.GetJNIEnv());
+  libusb_set_option(nullptr, LIBUSB_OPTION_NO_DEVICE_DISCOVERY, system.GetJNIEnv());
 #endif
 
   // Make sure that the specified index is going to correspond with an actual device

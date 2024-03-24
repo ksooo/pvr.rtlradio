@@ -26,6 +26,7 @@
 
 #include <exception>
 #include <string>
+#include <windows.h>
 
 #pragma warning(push, 4)
 

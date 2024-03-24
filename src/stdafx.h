@@ -24,66 +24,6 @@
 #define __STDAFX_H_
 #pragma once
 
-//---------------------------------------------------------------------------
-// Windows
-//---------------------------------------------------------------------------
-
-#if defined(_WINDOWS)
-
-#define WINVER _WIN32_WINNT_WIN8
-#define _WIN32_WINNT _WIN32_WINNT_WIN8
-#define _WIN32_IE _WIN32_IE_IE80
-#define NOMINMAX
-
-#include <WS2tcpip.h>
-#include <WinSock2.h>
-#include <Windows.h>
-#include <wchar.h> // Prevents redefinition of WCHAR_MIN by libusb
-
-#define TARGET_WINDOWS
-#define HAS_ANGLE
-#define HAS_GLES 3 // ANGLE supports GLESv3
-
-#define LIBANGLE_IMPLEMENTATION
-#define ANGLE_EXPORT
-#define ANGLE_UTIL_EXPORT
-#define EGLAPI
-#define GL_APICALL
-#define GL_API
-
-#define GL_GLES_PROTOTYPES 1
-#define EGL_EGL_PROTOTYPES 1
-#define GL_GLEXT_PROTOTYPES 1
-#define EGL_EGLEXT_PROTOTYPES 1
-
-// Android
-#elif defined(__ANDROID__)
-
-#define TARGET_POSIX
-#define TARGET_LINUX
-#define TARGET_ANDROID
-#define HAS_GLES 3 // Android supports GLESv3
-
-// MacOS
-#elif defined(__APPLE__)
-
-#define TARGET_POSIX
-#define TARGET_DARWIN
-#define TARGET_DARWIN_OSX
-#define HAS_GL 1
-
-// Linux
-#else
-
-#define TARGET_POSIX
-#define TARGET_LINUX
-#define HAS_GLES 2 // Assume GLESv2 support on Linux
-
-#endif
-
-#include <assert.h>
-#include <stdint.h>
-
 // KiB / MiB / GiB
 //
 #define KiB *(1 << 10)

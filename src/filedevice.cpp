@@ -22,9 +22,9 @@
 
 #include "filedevice.h"
 
-#include "stdafx.h"
 #include "string_exception.h"
 
+#include <assert.h>
 #include <chrono>
 #include <limits.h>
 #include <stdio.h>

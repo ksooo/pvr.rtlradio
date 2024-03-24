@@ -1,0 +1,22 @@
+Source: kodi-pvr-rtlradio
+Priority: extra
+Maintainer: Nobody <nobody@kodi.tv>
+Build-Depends: debhelper (>= 9.0.0), cmake,
+               kodi-addon-dev, libfdk-aac-dev, librtlsdr-dev, libfftw3-dev, libgles2-mesa-dev [arm64 armhf], libgl1-mesa-dev [i386 amd64], libglm-dev, libusb-1.0-0-dev, libmpg123-dev, rapidjson-dev, libsqlite3-dev
+Standards-Version: 3.9.4
+Section: libs
+
+Package: kodi-pvr-rtlradio
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: rtlradio PVR for Kodi
+ rtlradio PVR for Kodi
+
+Package: kodi-pvr-rtlradio-dbg
+Section: debug
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: debug symbols for rtlradio PVR for Kodi
+ debug symbols for rtlradio PVR for Kodi
+

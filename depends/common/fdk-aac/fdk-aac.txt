@@ -1,1 +1,1 @@
-fdk-aac https://github.com/mstorsjo/fdk-aac/archive/refs/tags/v2.0.2.tar.gz
+fdk-aac https://github.com/mstorsjo/fdk-aac/archive/refs/tags/v2.0.3.tar.gz
