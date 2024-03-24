@@ -10,6 +10,6 @@ find_library(FDK_AAC_LIBRARIES fdk-aac
                               PATHS ${PC_FDK_AAC_LIBDIR})
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(fdk-aac REQUIRED_VARS FDK_AAC_LIBRARIES FDK_AAC_INCLUDE_DIRS)
+find_package_handle_standard_args(FDK_AAC REQUIRED_VARS FDK_AAC_LIBRARIES FDK_AAC_INCLUDE_DIRS)
 
 mark_as_advanced(FDK_AAC_INCLUDE_DIRS FDK_AAC_LIBRARIES)
