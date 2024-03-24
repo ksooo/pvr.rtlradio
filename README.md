@@ -7,11 +7,9 @@ FM Radio Digital Signal Processing derived from [__CuteSDR__](https://sourceforg
 Hybrid Digital (HD) Radio Digital Signal Processing derived from [__NRSC5__](https://github.com/theori-io/nrsc5)   
 Digital Audio Broadcast (DAB) Digital Signal Processing adapted from project [__welle.io__](https://github.com/AlbrechtL/welle.io)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE.md)
 [![Build and run tests](https://github.com/kodi-pvr/pvr.rtlradio/actions/workflows/build.yml/badge.svg?branch=Omega)](https://github.com/kodi-pvr/pvr.rtlradio/actions/workflows/build.yml)
-[![Build Status](https://dev.azure.com/teamkodi/kodi-pvr/_apis/build/status/kodi-pvr.pvr.rtlradio?branchName=Omega)](https://dev.azure.com/teamkodi/kodi-pvr/_build/latest?definitionId=62&branchName=Omega)
+[![Build Status](https://dev.azure.com/teamkodi/kodi-pvr/_apis/build/status/kodi-pvr.pvr.rtlradio?branchName=Omega)](https://dev.azure.com/teamkodi/kodi-pvr/_build/latest?definitionId=85&branchName=Omega)
 [![Build Status](https://jenkins.kodi.tv/view/Addons/job/kodi-pvr/job/pvr.rtlradio/job/Omega/badge/icon)](https://jenkins.kodi.tv/blue/organizations/jenkins/kodi-pvr%2Fpvr.rtlradio/branches/)
-[![Coverity Scan Build Status](https://scan.coverity.com/projects/5120/badge.svg)](https://scan.coverity.com/projects/5120)
 
 ## Build instructions
 
