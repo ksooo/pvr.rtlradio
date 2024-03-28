@@ -1,20 +1,2 @@
-v20.2.0 (2022.07.xx)
-  - Update SQLite database engine to v3.39.2
-
-v20.1.0 (2022.05.05)
-  - Update libusb dependency to v1.0.25
-  - Update rtl-sdr dependency to 20220119
-  - Update SQLite database engine to v3.38.3
-  - Add support for Hybrid Digital (HD) Radio channels (primary audio stream only)
-  - (Android) Add support for locally attached USB RTL-SDR devices
-  - Add channel-specific frequency correction fine tuning in Channel Settings dialog
-  - Remove global Device 'Input sample rate' setting in favor of separate settings for FM Radio and Weather Radio
-  - Rename channel groups from 'FM Radio'/'HD Radio'/'Weather Radio' to 'FM channels'/'HD channels'/'Weather channels'
-  - Improve behavior of BACKSPACE and ENTER keypresses in the Add Channel dialog to be more intuitive
-  - Chain the channel settings dialog after the channel add dialog to allow the user to set the channel modulation and settings before persisting
-  - Fix bug causing constant RBDS call sign recalculations if Program Identification (PI) code falls into a special case category
-  - (rtl_tcp) Reset the RTL-SDR device buffers prior to reading each time a stream is created rather than just once at startup
-  - (rtl_tcp) Fix garbled/corrupt output of attached RTL-SDR device information on Windows if driver has not been reconfigured with Zadig
-
-v2.0.0 (2021.07.14)
-  - Initial release
+v21.0.0
+- Initial Team Kodi release
