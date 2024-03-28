@@ -19,13 +19,11 @@ find_path(SQLITE3_INCLUDE_DIR sqlite3.h PATHS ${PC_SQLITE3_INCLUDEDIR})
 find_library(SQLITE3_LIBRARY NAMES sqlite3 PATHS ${PC_SQLITE3_LIBDIR})
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(sqlite3
-                                  REQUIRED_VARS SQLITE3_INCLUDE_DIR SQLITE3_VERSION
-                                  VERSION_VAR SQLITE3_VERSION)
+find_package_handle_standard_args(SQLite3
+                                  REQUIRED_VARS SQLITE3_INCLUDE_DIR SQLITE3_LIBRARY)
 
 if(SQLITE3_FOUND)
   set(SQLITE3_INCLUDE_DIRS ${SQLITE3_INCLUDE_DIR})
 endif()
 
 mark_as_advanced(SQLITE3_INCLUDE_DIR)
-

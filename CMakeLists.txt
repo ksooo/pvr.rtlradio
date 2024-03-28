@@ -5,7 +5,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
 
 find_package(Kodi REQUIRED)
 find_package(FFTW REQUIRED)
-find_package(FDK-AAC REQUIRED)
+find_package(FDK_AAC REQUIRED)
 find_package(glm REQUIRED)
 find_package(libusb-1.0 REQUIRED)
 find_package(MPG123 REQUIRED)
