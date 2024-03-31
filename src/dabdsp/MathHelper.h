@@ -36,11 +36,9 @@
 #include <complex>
 #include <cstring>
 
-// These conflict with project-wide macros (stdafx.h), only KHz was used by ofdm-processor.cpp
-//
-//#define Hz(x) (x)
-//#define kHz(x) (x * 1000)
-//#define MHz(x) (kHz(x) * 1000)
+#define HzValue(x) (x)
+#define kHzValue(x) (x * 1000)
+#define MHzValue(x) (kHzValue(x) * 1000)
 
 static inline float get_db_over_256(float x)
 {
