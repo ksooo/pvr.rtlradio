@@ -32,7 +32,9 @@
 #include "sqlite_exception.h"
 #include "string_exception.h"
 #include "tcpdevice.h"
+#ifdef HAS_LIBUSB
 #include "usbdevice.h"
+#endif
 #include "wxstream.h"
 
 #include <assert.h>
@@ -549,9 +551,11 @@ std::unique_ptr<rtldevice> addon::create_device(struct settings const& settings)
     }
   }
 
+#ifdef HAS_LIBUSB
   // USB device
   if (settings.device_connection == device_connection::usb)
     return usbdevice::create(settings.device_connection_usb_index);
+#endif
 
   // Network device
   if (settings.device_connection == device_connection::rtltcp)

@@ -10,14 +10,12 @@ set(SOURCES anglepch.cpp
             hdstream.cpp
             id3v1tag.cpp
             id3v2tag.cpp
-            libusb_exception.cpp
             rdsdecoder.cpp
             signalmeter.cpp
             stdafx.cpp
             sqlite_exception.cpp
             tcpdevice.cpp
             uecp.cpp
-            usbdevice.cpp
             wxstream.cpp)
 
 set(HEADERS align.h
@@ -33,7 +31,6 @@ set(HEADERS align.h
             hdstream.h
             id3v1tag.h
             id3v2tag.h
-            libusb_exception.h
             dbtypes.h
             muxscanner.h
             props.h
@@ -50,8 +47,14 @@ set(HEADERS align.h
             string_exception.h
             tcpdevice.h
             uecp.h
-            usbdevice.h
             wxstream.h)
+
+if(CORE_SYSTEM_NAME STREQUAL linux OR CORE_SYSTEM_NAME STREQUAL windows OR CORE_SYSTEM_NAME STREQUAL osx)
+  list(APPEND SOURCES libusb_exception.cpp
+                      usbdevice.cpp)
+  list(APPEND HEADERS libusb_exception.h
+                      usbdevice.h)
+endif()
 
 if(WIN32)
   list(APPEND SOURCES win32_exception.cpp)

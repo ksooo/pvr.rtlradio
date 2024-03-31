@@ -29,12 +29,6 @@
 #include <assert.h>
 #include <cmath>
 
-#ifdef __ANDROID__
-#include "kodi/platform/android/System.h"
-
-#include <libusb.h>
-#endif
-
 #pragma warning(push, 4)
 
 // usbdevice::DEFAULT_DEVICE_INDEX (static)
@@ -54,12 +48,6 @@ usbdevice::usbdevice(uint32_t index)
   char manufacturer[256] = {'\0'}; // Manufacturer string
   char product[256] = {'\0'}; // Product string
   char serialnumber[256] = {'\0'}; // Serial number string
-
-#ifdef __ANDROID__
-  // NOTE: Before in original was LIBUSB_OPTION_ANDROID_JNIENV used, needs to investigate how.
-  kodi::platform::CInterfaceAndroidSystem system;
-  libusb_set_option(nullptr, LIBUSB_OPTION_NO_DEVICE_DISCOVERY, system.GetJNIEnv());
-#endif
 
   // Make sure that the specified index is going to correspond with an actual device
   uint32_t devicecount = rtlsdr_get_device_count();
