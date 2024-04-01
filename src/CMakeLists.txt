@@ -1,6 +1,4 @@
-set(SOURCES channeladd.cpp
-            channelsettings.cpp
-            dabmuxscanner.cpp
+set(SOURCES dabmuxscanner.cpp
             dabstream.cpp
             database.cpp
             filedevice.cpp
@@ -19,8 +17,6 @@ set(SOURCES channeladd.cpp
 set(HEADERS align.h
             dabmuxscanner.h
             dabstream.h
-            channeladd.h
-            channelsettings.h
             database.h
             filedevice.h
             fmstream.h
@@ -34,7 +30,6 @@ set(HEADERS align.h
             pvrstream.h
             pvrtypes.h
             rdsdecoder.h
-            renderingcontrol.h
             rtldevice.h
             scalar_condition.h
             signalmeter.h

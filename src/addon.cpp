@@ -21,8 +21,6 @@
 //---------------------------------------------------------------------------
 
 #include "addon.h"
-#include "channeladd.h"
-#include "channelsettings.h"
 #include "dabstream.h"
 #include "dbtypes.h"
 #include "filedevice.h"
@@ -33,6 +31,8 @@
 #include "wxstream.h"
 #include "exception_control/sqlite_exception.h"
 #include "exception_control/string_exception.h"
+#include "gui/channeladd.h"
+#include "gui/channelsettings.h"
 #include "utils/value_size_defines.h"
 
 #include <assert.h>

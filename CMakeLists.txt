@@ -48,6 +48,7 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/src)
 add_subdirectory(${PROJECT_SOURCE_DIR}/src/dsp_dab)
 add_subdirectory(${PROJECT_SOURCE_DIR}/src/dsp_fm)
 add_subdirectory(${PROJECT_SOURCE_DIR}/src/dsp_hd)
+add_subdirectory(${PROJECT_SOURCE_DIR}/src/gui)
 add_subdirectory(${PROJECT_SOURCE_DIR}/src/exception_control)
 add_subdirectory(${PROJECT_SOURCE_DIR}/src/utils)
 
@@ -55,6 +56,7 @@ list(APPEND DEPLIBS code_src
                     code_src_dsp_dab
                     code_src_dsp_fm
                     code_src_dsp_hd
+                    code_src_gui
                     code_src_utils
                     code_src_exception_control
                     $<$<BOOL:${WIN32}>:ws2_32>
