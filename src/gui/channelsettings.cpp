@@ -34,7 +34,7 @@
 #include <kodi/gui/controls/Label.h>
 #include <kodi/gui/dialogs/FileBrowser.h>
 
-#ifdef HAS_GLES
+#if !defined(TARGET_WINDOWS) && !defined(TARGET_ANDROID) && !defined(TARGET_DARWIN_OSX)
 #include <EGL/egl.h>
 #endif
 
