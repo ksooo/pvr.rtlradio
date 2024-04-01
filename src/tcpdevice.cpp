@@ -37,8 +37,8 @@
 #include <unistd.h>
 #endif
 #include "align.h"
-#include "socket_exception.h"
-#include "string_exception.h"
+#include "exception_control/socket_exception.h"
+#include "exception_control/string_exception.h"
 
 #include <cstring>
 

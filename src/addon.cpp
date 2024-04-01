@@ -28,11 +28,11 @@
 #include "filedevice.h"
 #include "fmstream.h"
 #include "hdstream.h"
-#include "sqlite_exception.h"
-#include "string_exception.h"
 #include "tcpdevice.h"
 #include "usbdevice.h"
 #include "wxstream.h"
+#include "exception_control/sqlite_exception.h"
+#include "exception_control/string_exception.h"
 #include "utils/value_size_defines.h"
 
 #include <assert.h>

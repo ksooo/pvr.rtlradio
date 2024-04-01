@@ -22,8 +22,8 @@
 
 #include "dabstream.h"
 
+#include "exception_control/string_exception.h"
 #include "utils/value_size_defines.h"
-#include "string_exception.h"
 
 #pragma warning(push, 4)
 

@@ -48,6 +48,7 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/src)
 add_subdirectory(${PROJECT_SOURCE_DIR}/src/dsp_dab)
 add_subdirectory(${PROJECT_SOURCE_DIR}/src/dsp_fm)
 add_subdirectory(${PROJECT_SOURCE_DIR}/src/dsp_hd)
+add_subdirectory(${PROJECT_SOURCE_DIR}/src/exception_control)
 add_subdirectory(${PROJECT_SOURCE_DIR}/src/utils)
 
 list(APPEND DEPLIBS code_src
@@ -55,6 +56,7 @@ list(APPEND DEPLIBS code_src
                     code_src_dsp_fm
                     code_src_dsp_hd
                     code_src_utils
+                    code_src_exception_control
                     $<$<BOOL:${WIN32}>:ws2_32>
                     $<$<BOOL:${WIN32}>:Shlwapi>)
 
@@ -65,5 +67,6 @@ build_addon(${CMAKE_PROJECT_NAME} PVRRTLRADIO DEPLIBS)
 
 target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE "VERSION_PRODUCTNAME_ANSI=\"${CMAKE_PROJECT_NAME}\"")
 target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE "VERSION_VERSION3_ANSI=\"${PVRRTLRADIO_VERSION}\"")
+target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/src)
 
 include(CPack)

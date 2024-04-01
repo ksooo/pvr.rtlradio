@@ -22,7 +22,7 @@
 
 #include "id3v2tag.h"
 
-#include "string_exception.h"
+#include "exception_control/string_exception.h"
 #include "utils/value_size_defines.h"
 
 #include <assert.h>
