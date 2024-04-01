@@ -28,12 +28,12 @@
 #include "filedevice.h"
 #include "fmstream.h"
 #include "hdstream.h"
-#include "stdafx.h"
 #include "sqlite_exception.h"
 #include "string_exception.h"
 #include "tcpdevice.h"
 #include "usbdevice.h"
 #include "wxstream.h"
+#include "utils/value_size_defines.h"
 
 #include <assert.h>
 #include <kodi/Filesystem.h>

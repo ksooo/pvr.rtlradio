@@ -12,7 +12,6 @@ set(SOURCES channeladd.cpp
             libusb_exception.cpp
             rdsdecoder.cpp
             signalmeter.cpp
-            stdafx.cpp
             sqlite_exception.cpp
             tcpdevice.cpp
             uecp.cpp
@@ -42,7 +41,6 @@ set(HEADERS align.h
             rtldevice.h
             scalar_condition.h
             signalmeter.h
-            stdafx.h
             socket_exception.h
             sqlite_exception.h
             string_exception.h

@@ -22,7 +22,7 @@
 
 #include "libusb_exception.h"
 
-#include "stdafx.h"
+#include "utils/value_size_defines.h"
 
 #pragma warning(disable : 4200)
 #include <libusb.h>

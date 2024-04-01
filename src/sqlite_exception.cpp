@@ -22,7 +22,7 @@
 
 #include "sqlite_exception.h"
 
-#include "stdafx.h"
+#include "utils/value_size_defines.h"
 
 #pragma warning(push, 4)
 

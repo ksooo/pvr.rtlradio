@@ -23,8 +23,8 @@
 #include "usbdevice.h"
 
 #include "libusb_exception.h"
-#include "stdafx.h"
 #include "string_exception.h"
+#include "utils/value_size_defines.h"
 
 #include <assert.h>
 #include <cmath>

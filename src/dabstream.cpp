@@ -22,7 +22,7 @@
 
 #include "dabstream.h"
 
-#include "stdafx.h"
+#include "utils/value_size_defines.h"
 #include "string_exception.h"
 
 #pragma warning(push, 4)

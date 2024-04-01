@@ -22,7 +22,7 @@
 
 #include "dabmuxscanner.h"
 
-#include "stdafx.h"
+#include "utils/value_size_defines.h"
 
 #include <algorithm>
 #include <assert.h>

@@ -24,8 +24,8 @@
 
 #include "dabmuxscanner.h"
 #include "hdmuxscanner.h"
-#include "stdafx.h"
 #include "string_exception.h"
+#include "utils/value_size_defines.h"
 
 #include <assert.h>
 #include <cmath>

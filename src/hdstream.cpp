@@ -24,8 +24,8 @@
 
 #include "align.h"
 #include "id3v2tag.h"
-#include "stdafx.h"
 #include "string_exception.h"
+#include "utils/value_size_defines.h"
 
 #include <algorithm>
 #include <chrono>
