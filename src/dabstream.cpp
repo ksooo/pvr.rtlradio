@@ -92,7 +92,8 @@ dabstream::dabstream(std::unique_ptr<rtldevice> device,
   RadioControllerInterface& controllerinterface = *static_cast<RadioControllerInterface*>(this);
   InputInterface& inputinterface = *static_cast<InputInterface*>(this);
   RadioReceiverOptions options = {};
-  options.disableCoarseCorrector = true;
+  options.disableCoarseCorrector = !dabprops.coarse_corrector;
+  options.freqsyncMethod = static_cast<FreqsyncMethod>(dabprops.coarse_corrector_type);
   m_receiver = make_aligned<RadioReceiver>(controllerinterface, inputinterface, options, 1);
 
   // Create the worker thread

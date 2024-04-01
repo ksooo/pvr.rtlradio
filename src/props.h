@@ -53,6 +53,8 @@ struct dabprops
 {
 
   float outputgain; // Output gain in Decibels
+  bool coarse_corrector; // Flage for coarse corrector (for receivers with >1kHz error)
+  int coarse_corrector_type; // Coarse corrector frequency sync method
 };
 
 // fmprops

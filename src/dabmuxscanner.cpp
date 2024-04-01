@@ -26,6 +26,7 @@
 
 #include <algorithm>
 #include <assert.h>
+#include <kodi/General.h>
 #include <stdexcept>
 
 #pragma warning(push, 4)
@@ -69,7 +70,8 @@ dabmuxscanner::dabmuxscanner(uint32_t samplerate, callback const& callback)
   RadioControllerInterface& controllerinterface = *static_cast<RadioControllerInterface*>(this);
   InputInterface& inputinterface = *static_cast<InputInterface*>(this);
   RadioReceiverOptions options = {};
-  options.disableCoarseCorrector = true;
+  options.disableCoarseCorrector = !kodi::addon::GetSettingBoolean("dabradio_coarse_corrector", true);
+  options.freqsyncMethod = kodi::addon::GetSettingEnum<FreqsyncMethod>("dabradio_coarse_corrector_type", FreqsyncMethod::CorrelatePRS);
   m_receiver = make_aligned<RadioReceiver>(controllerinterface, inputinterface, options, 1);
   m_receiver->restart(false);
 }

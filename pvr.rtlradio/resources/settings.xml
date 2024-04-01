@@ -265,6 +265,44 @@
           </control>
         </setting>
 
+        <setting id="dabradio_coarse_corrector" type="boolean" label="30104" help="30204">
+          <dependencies>
+            <dependency type="enable">
+              <or>
+                <condition setting="region_regioncode" operator="is">0</condition>
+                <condition setting="region_regioncode" operator="is">3</condition>
+              </or>
+              <dependency type="enable" setting="dabradio_enable">true</dependency>
+            </dependency>
+          </dependencies>
+          <level>0</level>
+          <default>true</default>
+          <control type="toggle"/>
+        </setting>
+
+        <setting id="dabradio_coarse_corrector_type" type="integer" label="30113" help="30203">
+          <dependencies>
+            <dependency type="enable">
+              <or>
+                <condition setting="region_regioncode" operator="is">0</condition>
+                <condition setting="region_regioncode" operator="is">3</condition>
+              </or>
+              <dependency type="enable" setting="dabradio_enable">true</dependency>
+              <dependency type="enable" setting="dabradio_coarse_corrector">true</dependency>
+            </dependency>
+          </dependencies>
+          <level>0</level>
+          <default>0</default>
+          <constraints>
+            <options>
+              <option label="30223">0</option>  <!--Get middle-->
+              <option label="30224">1</option>  <!--Correlate PRS-->
+              <option label="30225">2</option>  <!--Pattern of zeros-->
+            </options>
+          </constraints>
+          <control type="spinner" format="integer"/>
+        </setting>
+
       </group>
     </category>
 
