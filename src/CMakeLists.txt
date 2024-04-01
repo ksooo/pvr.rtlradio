@@ -1,5 +1,4 @@
-set(SOURCES anglepch.cpp
-            channeladd.cpp
+set(SOURCES channeladd.cpp
             channelsettings.cpp
             dabmuxscanner.cpp
             dabstream.cpp
@@ -21,7 +20,6 @@ set(SOURCES anglepch.cpp
             wxstream.cpp)
 
 set(HEADERS align.h
-            anglepch.h
             dabmuxscanner.h
             dabstream.h
             channeladd.h
