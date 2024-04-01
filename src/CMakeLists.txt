@@ -14,8 +14,7 @@ set(SOURCES dabmuxscanner.cpp
             usbdevice.cpp
             wxstream.cpp)
 
-set(HEADERS align.h
-            dabmuxscanner.h
+set(HEADERS dabmuxscanner.h
             dabstream.h
             database.h
             filedevice.h
@@ -31,7 +30,6 @@ set(HEADERS align.h
             pvrtypes.h
             rdsdecoder.h
             rtldevice.h
-            scalar_condition.h
             signalmeter.h
             tcpdevice.h
             uecp.h

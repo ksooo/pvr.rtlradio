@@ -30,7 +30,7 @@
 #include "pvrstream.h"
 #include "rdsdecoder.h"
 #include "rtldevice.h"
-#include "scalar_condition.h"
+#include "utils/scalar_condition.h"
 
 #include <atomic>
 #include <condition_variable>
