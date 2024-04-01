@@ -24,8 +24,8 @@
 #define __DABSTREAM_H_
 #pragma once
 
-#include "dabdsp/radio-receiver.h"
-#include "dabdsp/ringbuffer.h"
+#include "dsp_dab/radio-receiver.h"
+#include "dsp_dab/ringbuffer.h"
 #include "props.h"
 #include "pvrstream.h"
 #include "rtldevice.h"

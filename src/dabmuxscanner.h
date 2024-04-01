@@ -24,8 +24,8 @@
 #define __DABMUXSCANNER_H_
 #pragma once
 
-#include "dabdsp/radio-receiver.h"
-#include "dabdsp/ringbuffer.h"
+#include "dsp_dab/radio-receiver.h"
+#include "dsp_dab/ringbuffer.h"
 #include "muxscanner.h"
 
 #include <atomic>

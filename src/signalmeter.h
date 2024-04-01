@@ -24,8 +24,8 @@
 #define __SIGNALMETER_H_
 #pragma once
 
-#include "fmdsp/fastfir.h"
-#include "fmdsp/fft.h"
+#include "dsp_fm/fastfir.h"
+#include "dsp_fm/fft.h"
 #include "props.h"
 
 #include <functional>

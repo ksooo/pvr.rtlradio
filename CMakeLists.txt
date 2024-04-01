@@ -45,15 +45,15 @@ list(APPEND DEPLIBS ${FDK_AAC_LIBRARIES}
                     ${SQLITE3_LIBRARY})
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/src)
-add_subdirectory(${PROJECT_SOURCE_DIR}/src/dabdsp)
-add_subdirectory(${PROJECT_SOURCE_DIR}/src/fmdsp)
-add_subdirectory(${PROJECT_SOURCE_DIR}/src/hddsp)
+add_subdirectory(${PROJECT_SOURCE_DIR}/src/dsp_dab)
+add_subdirectory(${PROJECT_SOURCE_DIR}/src/dsp_fm)
+add_subdirectory(${PROJECT_SOURCE_DIR}/src/dsp_hd)
 add_subdirectory(${PROJECT_SOURCE_DIR}/src/utils)
 
 list(APPEND DEPLIBS code_src
-                    code_src_dabdsp
-                    code_src_fmdsp
-                    code_src_hddsp
+                    code_src_dsp_dab
+                    code_src_dsp_fm
+                    code_src_dsp_hd
                     code_src_utils
                     $<$<BOOL:${WIN32}>:ws2_32>
                     $<$<BOOL:${WIN32}>:Shlwapi>)

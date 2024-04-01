@@ -24,7 +24,7 @@
 #define __RDSDECODER_H_
 #pragma once
 
-#include "fmdsp/demodulator.h"
+#include "dsp_fm/demodulator.h"
 #include "uecp.h"
 
 #include <array>

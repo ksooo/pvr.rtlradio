@@ -65,4 +65,4 @@ set(HEADERS MathHelper.h
             uep-protection.h
             viterbi.h)
 
-add_library(code_src_dabdsp OBJECT ${SOURCES} ${HEADERS})
+add_library(code_src_dsp_dab OBJECT ${SOURCES} ${HEADERS})

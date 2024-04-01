@@ -24,8 +24,8 @@
 #define __WXSTREAM_H_
 #pragma once
 
-#include "fmdsp/demodulator.h"
-#include "fmdsp/fractresampler.h"
+#include "dsp_fm/demodulator.h"
+#include "dsp_fm/fractresampler.h"
 #include "props.h"
 #include "pvrstream.h"
 #include "rtldevice.h"

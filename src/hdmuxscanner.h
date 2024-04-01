@@ -24,7 +24,7 @@
 #define __HDMUXSCANNER_H_
 #pragma once
 
-#include "hddsp/nrsc5.h"
+#include "dsp_hd/nrsc5.h"
 #include "muxscanner.h"
 #include "props.h"
 
