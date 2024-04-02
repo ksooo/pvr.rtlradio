@@ -1,6 +1,5 @@
 #pragma once
 
-#include <pthread.h>
 #include <rtl-sdr.h>
 #include <stdio.h>
 
