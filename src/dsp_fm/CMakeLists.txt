@@ -21,4 +21,4 @@ set(HEADERS datatypes.h
             rbdsconstants.h
             wfmdemod.h)
 
-add_library(code_src_fmdsp OBJECT ${SOURCES} ${HEADERS})
+add_library(code_src_dsp_fm OBJECT ${SOURCES} ${HEADERS})

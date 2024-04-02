@@ -22,7 +22,7 @@
 
 #include "filedevice.h"
 
-#include "string_exception.h"
+#include "exception_control/string_exception.h"
 
 #include <assert.h>
 #include <chrono>

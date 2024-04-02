@@ -24,11 +24,11 @@
 #define __HDSTREAM_H_
 #pragma once
 
-#include "hddsp/nrsc5.h"
+#include "dsp_hd/nrsc5.h"
 #include "props.h"
 #include "pvrstream.h"
 #include "rtldevice.h"
-#include "scalar_condition.h"
+#include "utils/scalar_condition.h"
 
 #include <atomic>
 #include <condition_variable>

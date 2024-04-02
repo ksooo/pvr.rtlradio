@@ -159,6 +159,16 @@ struct settings
   // Specifies the output gain for the DAB DSP
   float dabradio_output_gain;
 
+  // dabradio_coarse_corrector
+  //
+  // Coarse corrector (for receivers with >1kHz error)
+  bool dabradio_coarse_corrector;
+
+  // dabradio_coarse_corrector_type
+  //
+  // Coarse corrector frequency sync method
+  int dabradio_coarse_corrector_type;
+
   // wxradio_enable
   //
   // Enables the WX DSP

@@ -20,57 +20,65 @@
 // SOFTWARE.
 //---------------------------------------------------------------------------
 
-#include "libusb_exception.h"
+#include "sqlite_exception.h"
 
-#include "stdafx.h"
-
-#pragma warning(disable : 4200)
-#include <libusb.h>
+#include "utils/value_size_defines.h"
 
 #pragma warning(push, 4)
 
 //-----------------------------------------------------------------------------
-// libusb_exception Constructor
+// sqlite_exception Constructor
 //
 // Arguments:
 //
 //	code		- SQLite error code
-//	message		- Message to associate with the exception
 
-libusb_exception::libusb_exception(int code)
+sqlite_exception::sqlite_exception(int code)
 {
-  char what[512] = {'\0'}; // Formatted exception string
-
-  snprintf(what, std::extent<decltype(what)>::value, "%s (%d) : %s", libusb_error_name(code), code,
-           libusb_strerror(static_cast<libusb_error>(code)));
-
-  m_what.assign(what);
+  char* what = sqlite3_mprintf("%s (%d)", sqlite3_errstr(code), code);
+  m_what.assign((what) ? what : "sqlite_exception(code)");
+  sqlite3_free(reinterpret_cast<void*>(what));
 }
 
 //-----------------------------------------------------------------------------
-// libusb_exception Copy Constructor
+// sqlite_exception Constructor
+//
+// Arguments:
+//
+//	code		- SQLite error code
+//	message		- Additional message to associate with the exception
 
-libusb_exception::libusb_exception(libusb_exception const& rhs) : m_what(rhs.m_what)
+sqlite_exception::sqlite_exception(int code, char const* message)
+{
+  char* what = sqlite3_mprintf("%s (%d)", (message) ? message : sqlite3_errstr(code), code);
+  m_what.assign((what) ? what : "sqlite_exception(code, message)");
+  sqlite3_free(reinterpret_cast<void*>(what));
+}
+
+//-----------------------------------------------------------------------------
+// sqlite_exception Copy Constructor
+
+sqlite_exception::sqlite_exception(sqlite_exception const& rhs) : m_what(rhs.m_what)
 {
 }
 
 //-----------------------------------------------------------------------------
-// libusb_exception Move Constructor
+// sqlite_exception Move Constructor
 
-libusb_exception::libusb_exception(libusb_exception&& rhs) : m_what(std::move(rhs.m_what))
+sqlite_exception::sqlite_exception(sqlite_exception&& rhs) : m_what(std::move(rhs.m_what))
 {
 }
 
 //-----------------------------------------------------------------------------
-// libusb_exception char const* conversion operator
+// sqlite_exception char const* conversion operator
 
-libusb_exception::operator char const*() const
+sqlite_exception::operator char const*() const
 {
   return m_what.c_str();
 }
 
 //-----------------------------------------------------------------------------
-// libusb_exception::what
+// sqlite_exception::what
 //
 // Gets a pointer to the exception message text
 //
@@ -78,7 +86,7 @@ libusb_exception::operator char const*() const
 //
 //	NONE
 
-char const* libusb_exception::what(void) const noexcept
+char const* sqlite_exception::what(void) const noexcept
 {
   return m_what.c_str();
 }

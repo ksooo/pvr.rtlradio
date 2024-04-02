@@ -173,18 +173,44 @@
       <group id="1" label="-1">
 
         <setting id="hdradio_enable" type="boolean" label="30114" help="30514">
+          <dependencies>
+            <dependency type="enable">
+              <or>
+                <condition setting="region_regioncode" operator="is">0</condition>
+                <condition setting="region_regioncode" operator="is">2</condition>
+              </or>
+            </dependency>
+          </dependencies>
           <level>0</level>
           <default>false</default>
           <control type="toggle"/>
         </setting>
 
         <setting id="hdradio_prepend_channel_numbers" type="boolean" label="30117" help="30517">
+          <dependencies>
+            <dependency type="enable">
+              <or>
+                <condition setting="region_regioncode" operator="is">0</condition>
+                <condition setting="region_regioncode" operator="is">2</condition>
+              </or>
+            </dependency>
+             <dependency type="enable" setting="hdradio_enable">true</dependency>
+          </dependencies>
           <level>0</level>
           <default>false</default>
           <control type="toggle"/>
         </setting>
 
         <setting id="hdradio_output_gain" type="number" label="30109" help="30509">
+          <dependencies>
+            <dependency type="enable">
+              <or>
+                <condition setting="region_regioncode" operator="is">0</condition>
+                <condition setting="region_regioncode" operator="is">2</condition>
+              </or>
+            </dependency>
+            <dependency type="enable" setting="hdradio_enable">true</dependency>
+          </dependencies>
           <level>0</level>
           <default>-3.0</default>
           <constraints>
@@ -192,9 +218,6 @@
             <step>0.5</step>
             <maximum>0.0</maximum>
           </constraints>
-          <dependencies>
-            <dependency type="enable" setting="hdradio_enable">true</dependency>
-          </dependencies>
           <control type="slider" format="number">
             <formatlabel>14054</formatlabel>
           </control>
@@ -207,12 +230,29 @@
       <group id="1" label="-1">
 
         <setting id="dabradio_enable" type="boolean" label="30115" help="30515">
+          <dependencies>
+            <dependency type="enable">
+              <or>
+                <condition setting="region_regioncode" operator="is">0</condition>
+                <condition setting="region_regioncode" operator="is">3</condition>
+              </or>
+            </dependency>
+          </dependencies>
           <level>0</level>
           <default>false</default>
           <control type="toggle"/>
         </setting>
 
         <setting id="dabradio_output_gain" type="number" label="30109" help="30509">
+          <dependencies>
+            <dependency type="enable">
+              <or>
+                <condition setting="region_regioncode" operator="is">0</condition>
+                <condition setting="region_regioncode" operator="is">3</condition>
+              </or>
+            </dependency>
+            <dependency type="enable" setting="dabradio_enable">true</dependency>
+          </dependencies>
           <level>0</level>
           <default>-3.0</default>
           <constraints>
@@ -220,12 +260,47 @@
             <step>0.5</step>
             <maximum>0.0</maximum>
           </constraints>
-          <dependencies>
-            <dependency type="enable" setting="dabradio_enable">true</dependency>
-          </dependencies>
           <control type="slider" format="number">
             <formatlabel>14054</formatlabel>
           </control>
+        </setting>
+
+        <setting id="dabradio_coarse_corrector" type="boolean" label="30104" help="30204">
+          <dependencies>
+            <dependency type="enable">
+              <or>
+                <condition setting="region_regioncode" operator="is">0</condition>
+                <condition setting="region_regioncode" operator="is">3</condition>
+              </or>
+              <dependency type="enable" setting="dabradio_enable">true</dependency>
+            </dependency>
+          </dependencies>
+          <level>0</level>
+          <default>true</default>
+          <control type="toggle"/>
+        </setting>
+
+        <setting id="dabradio_coarse_corrector_type" type="integer" label="30113" help="30203">
+          <dependencies>
+            <dependency type="enable">
+              <or>
+                <condition setting="region_regioncode" operator="is">0</condition>
+                <condition setting="region_regioncode" operator="is">3</condition>
+              </or>
+              <dependency type="enable" setting="dabradio_enable">true</dependency>
+              <dependency type="enable" setting="dabradio_coarse_corrector">true</dependency>
+            </dependency>
+          </dependencies>
+          <level>0</level>
+          <default>0</default>
+          <constraints>
+            <options>
+              <option label="30223">0</option>  <!--Get middle-->
+              <option label="30224">1</option>  <!--Correlate PRS-->
+              <option label="30225">2</option>  <!--Pattern of zeros-->
+            </options>
+          </constraints>
+          <control type="spinner" format="integer"/>
         </setting>
 
       </group>
@@ -235,12 +310,29 @@
       <group id="1" label="-1">
 
         <setting id="wxradio_enable" type="boolean" label="30116" help="30516">
+          <dependencies>
+            <dependency type="enable">
+              <or>
+                <condition setting="region_regioncode" operator="is">0</condition>
+                <condition setting="region_regioncode" operator="is">2</condition>
+              </or>
+            </dependency>
+          </dependencies>
           <level>0</level>
           <default>false</default>
           <control type="toggle"/>
         </setting>
 
         <setting id="wxradio_sample_rate" type="integer" label="30110" help="30510">
+          <dependencies>
+            <dependency type="enable">
+              <or>
+                <condition setting="region_regioncode" operator="is">0</condition>
+                <condition setting="region_regioncode" operator="is">2</condition>
+              </or>
+            </dependency>
+            <dependency type="enable" setting="wxradio_enable">true</dependency>
+          </dependencies>
           <level>0</level>
           <default>1600000</default>
           <constraints>
@@ -255,13 +347,19 @@
               <option label="30214">2400000</option>
             </options>
           </constraints>
-          <dependencies>
-            <dependency type="enable" setting="wxradio_enable">true</dependency>
-          </dependencies>
           <control type="spinner" format="integer"/>
         </setting>
 
         <setting id="wxradio_output_samplerate" type="integer" label="30105" help="30505">
+          <dependencies>
+            <dependency type="enable">
+              <or>
+                <condition setting="region_regioncode" operator="is">0</condition>
+                <condition setting="region_regioncode" operator="is">2</condition>
+              </or>
+            </dependency>
+            <dependency type="enable" setting="wxradio_enable">true</dependency>
+          </dependencies>
           <level>0</level>
           <default>48000</default>
           <constraints>
@@ -270,13 +368,19 @@
               <option label="30206">48000</option>
             </options>
           </constraints>
-          <dependencies>
-            <dependency type="enable" setting="wxradio_enable">true</dependency>
-          </dependencies>
           <control type="spinner" format="integer"/>
         </setting>
 
         <setting id="wxradio_output_gain" type="number" label="30109" help="30509">
+          <dependencies>
+            <dependency type="enable">
+              <or>
+                <condition setting="region_regioncode" operator="is">0</condition>
+                <condition setting="region_regioncode" operator="is">2</condition>
+              </or>
+            </dependency>
+            <dependency type="enable" setting="wxradio_enable">true</dependency>
+          </dependencies>
           <level>0</level>
           <default>-3.0</default>
           <constraints>
@@ -284,9 +388,6 @@
             <step>0.5</step>
             <maximum>0.0</maximum>
           </constraints>
-          <dependencies>
-            <dependency type="enable" setting="wxradio_enable">true</dependency>
-          </dependencies>
           <control type="slider" format="number">
             <formatlabel>14054</formatlabel>
           </control>

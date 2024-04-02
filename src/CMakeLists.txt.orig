@@ -1,4 +1,6 @@
-set(SOURCES dabmuxscanner.cpp
+set(SOURCES channeladd.cpp
+            channelsettings.cpp
+            dabmuxscanner.cpp
             dabstream.cpp
             database.cpp
             filedevice.cpp
@@ -14,8 +16,11 @@ set(SOURCES dabmuxscanner.cpp
             usbdevice.cpp
             wxstream.cpp)
 
-set(HEADERS dabmuxscanner.h
+set(HEADERS align.h
+            dabmuxscanner.h
             dabstream.h
+            channeladd.h
+            channelsettings.h
             database.h
             filedevice.h
             fmstream.h
@@ -29,7 +34,9 @@ set(HEADERS dabmuxscanner.h
             pvrstream.h
             pvrtypes.h
             rdsdecoder.h
+            renderingcontrol.h
             rtldevice.h
+            scalar_condition.h
             signalmeter.h
             tcpdevice.h
             uecp.h
@@ -38,4 +45,4 @@ set(HEADERS dabmuxscanner.h
 
 add_library(code_src OBJECT ${SOURCES} ${HEADERS})
 target_link_libraries(code_src ${DEPLIBS})
-target_include_directories(code_src PRIVATE ${PROJECT_SOURCE_DIR}/src)
+

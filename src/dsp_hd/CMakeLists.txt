@@ -33,4 +33,4 @@ set(HEADERS acquire.h
             sync.h
             unicode.h)
 
-add_library(code_src_hddsp OBJECT ${SOURCES} ${HEADERS})
+add_library(code_src_dsp_hd OBJECT ${SOURCES} ${HEADERS})

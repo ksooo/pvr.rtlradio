@@ -25,6 +25,7 @@
 #pragma once
 
 #include <functional>
+#include <cstdint>
 #include <vector>
 
 #pragma warning(push, 4)

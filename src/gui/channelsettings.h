@@ -28,8 +28,8 @@
 #include "props.h"
 #include "renderingcontrol.h"
 #include "rtldevice.h"
-#include "scalar_condition.h"
 #include "signalmeter.h"
+#include "utils/scalar_condition.h"
 
 #include <atomic>
 #include <glm/glm.hpp>

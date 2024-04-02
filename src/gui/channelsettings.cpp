@@ -24,8 +24,8 @@
 
 #include "dabmuxscanner.h"
 #include "hdmuxscanner.h"
-#include "stdafx.h"
-#include "string_exception.h"
+#include "exception_control/string_exception.h"
+#include "utils/value_size_defines.h"
 
 #include <assert.h>
 #include <cmath>
@@ -34,7 +34,7 @@
 #include <kodi/gui/controls/Label.h>
 #include <kodi/gui/dialogs/FileBrowser.h>
 
-#ifdef HAS_GLES
+#if !defined(TARGET_WINDOWS) && !defined(TARGET_ANDROID) && !defined(TARGET_DARWIN_OSX)
 #include <EGL/egl.h>
 #endif
 

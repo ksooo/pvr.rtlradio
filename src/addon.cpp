@@ -21,19 +21,19 @@
 //---------------------------------------------------------------------------
 
 #include "addon.h"
-#include "channeladd.h"
-#include "channelsettings.h"
 #include "dabstream.h"
 #include "dbtypes.h"
 #include "filedevice.h"
 #include "fmstream.h"
 #include "hdstream.h"
-#include "stdafx.h"
-#include "sqlite_exception.h"
-#include "string_exception.h"
 #include "tcpdevice.h"
 #include "usbdevice.h"
 #include "wxstream.h"
+#include "exception_control/sqlite_exception.h"
+#include "exception_control/string_exception.h"
+#include "gui/channeladd.h"
+#include "gui/channelsettings.h"
+#include "utils/value_size_defines.h"
 
 #include <assert.h>
 #include <kodi/Filesystem.h>
@@ -1182,6 +1182,8 @@ ADDON_STATUS addon::Create(void)
       // Load the DAB settings
       m_settings.dabradio_enable = kodi::addon::GetSettingBoolean("dabradio_enable", false);
       m_settings.dabradio_output_gain = kodi::addon::GetSettingFloat("dabradio_output_gain", -3.0f);
+      m_settings.dabradio_coarse_corrector = kodi::addon::GetSettingBoolean("dabradio_coarse_corrector", true);
+      m_settings.dabradio_coarse_corrector_type = kodi::addon::GetSettingInt("dabradio_coarse_corrector_type", 1);
 
       // Load the Weather Radio settings
       m_settings.wxradio_enable = kodi::addon::GetSettingBoolean("wxradio_enable", false);
@@ -1196,6 +1198,10 @@ ADDON_STATUS addon::Create(void)
                ": m_settings.dabradio_enable                   = ", m_settings.dabradio_enable);
       log_info(__func__, ": m_settings.dabradio_output_gain              = ",
                m_settings.dabradio_output_gain);
+      log_info(__func__, ": m_settings.dabradio_coarse_corrector         = ",
+               m_settings.dabradio_coarse_corrector);
+      log_info(__func__, ": m_settings.dabradio_coarse_corrector_type    = ",
+               m_settings.dabradio_coarse_corrector_type);
       log_info(__func__, ": m_settings.device_connection                 = ",
                device_connection_to_string(m_settings.device_connection));
       log_info(__func__, ": m_settings.device_connection_tcp_host        = ",
@@ -1624,6 +1630,34 @@ ADDON_STATUS addon::SetSetting(std::string const& settingName,
 
       m_settings.dabradio_output_gain = fvalue;
       log_info(__func__, ": setting dabradio_output_gain changed to ", fvalue, "dB");
+    }
+  }
+
+  // dabradio_coarse_corrector
+  //
+  else if (settingName == "dabradio_coarse_corrector")
+  {
+
+    bool bvalue = settingValue.GetBoolean();
+    if (bvalue != m_settings.dabradio_coarse_corrector)
+    {
+
+      m_settings.dabradio_coarse_corrector = bvalue;
+      log_info(__func__, ": setting dabradio_coarse_corrector changed to ", bvalue);
+    }
+  }
+
+  // dabradio_coarse_corrector_type
+  //
+  else if (settingName == "dabradio_coarse_corrector_type")
+  {
+
+    int nvalue = settingValue.GetInt();
+    if (nvalue != m_settings.dabradio_coarse_corrector_type)
+    {
+
+      m_settings.dabradio_coarse_corrector_type = nvalue;
+      log_info(__func__, ": setting dabradio_coarse_corrector_type changed to ", nvalue);
     }
   }
 
@@ -2753,12 +2787,16 @@ bool addon::OpenLiveStream(kodi::addon::PVRChannel const& channel)
       // Set up the DAB digital signal processor properties
       struct dabprops dabprops = {};
       dabprops.outputgain = settings.dabradio_output_gain;
+      dabprops.coarse_corrector = settings.dabradio_coarse_corrector;
+      dabprops.coarse_corrector_type = settings.dabradio_coarse_corrector_type;
 
       // Log information about the stream for diagnostic purposes
       log_info(__func__, ": Creating dabstream for channel \"", channelprops.name, "\"");
       log_info(__func__, ": subchannel = ", channelid.subchannel());
       log_info(__func__, ": tunerprops.freqcorrection = ", tunerprops.freqcorrection, " PPM");
       log_info(__func__, ": dabrops.outputgain = ", dabprops.outputgain, " dB");
+      log_info(__func__, ": dabrops.coarse_corrector = ", dabprops.coarse_corrector);
+      log_info(__func__, ": dabrops.coarse_corrector_type = ", dabprops.coarse_corrector_type);
       log_info(__func__, ": channelprops.frequency = ", channelprops.frequency, " Hz");
       log_info(__func__, ": channelprops.autogain = ", (channelprops.autogain) ? "true" : "false");
       log_info(__func__, ": channelprops.manualgain = ", channelprops.manualgain / 10, " dB");

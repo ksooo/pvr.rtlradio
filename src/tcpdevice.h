@@ -25,7 +25,7 @@
 #pragma once
 
 #include "rtldevice.h"
-#include "scalar_condition.h"
+#include "utils/scalar_condition.h"
 
 #include <memory>
 #include <rtl-sdr.h>

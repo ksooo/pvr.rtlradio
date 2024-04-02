@@ -6,13 +6,12 @@ set(SOURCES fft.cpp
             dab-constants.cpp
             dab_decoder.cpp
             dabplus_decoder.cpp
-            decode_rs_char.c
             decoder_adapter.cpp
             eep-protection.cpp
+            fec.c
             fib-processor.cpp
             fic-handler.cpp
             freq-interleaver.cpp
-            init_rs_char.c
             mot_manager.cpp
             msc-handler.cpp
             ofdm-decoder.cpp
@@ -31,7 +30,6 @@ set(SOURCES fft.cpp
 set(HEADERS MathHelper.h
             Xtan2.h
             channels.h
-            char.h
             charsets.h
             dab-audio.h
             dab-constants.h
@@ -39,17 +37,14 @@ set(HEADERS MathHelper.h
             dab-virtual.h
             dab_decoder.h
             dabplus_decoder.h
-            decode_rs.h
             decoder_adapter.h
             eep-protection.h
-            encode_rs.h
             energy_dispersal.h
             fec.h
             fft.h
             fib-processor.h
             fic-handler.h
             freq-interleaver.h
-            init_rs.h
             mot_manager.h
             msc-handler.h
             ofdm-decoder.h
@@ -64,11 +59,10 @@ set(HEADERS MathHelper.h
             radio-receiver-options.h
             radio-receiver.h
             ringbuffer.h
-            rs-common.h
             subchannel_sink.h
             tii-decoder.h
             tools.h
             uep-protection.h
             viterbi.h)
 
-add_library(code_src_dabdsp OBJECT ${SOURCES} ${HEADERS})
+add_library(code_src_dsp_dab OBJECT ${SOURCES} ${HEADERS})

@@ -32,6 +32,7 @@
 
 #include <cstddef>
 #include "ofdm-processor.h"
+#include "MathHelper.h"
 #include "profiling.h"
 #include <iostream>
 #include <iso646.h>
@@ -410,7 +411,7 @@ SyncOnPhase:
             int correction = processPRS(ofdmBuffer.data(), rro.freqsyncMethod);
             if (correction != 100) {
                 coarseCorrector += correction * params.carrierDiff;
-                if (abs (coarseCorrector) > (35 * 1000 * 1000))		// MB: Was KHz(35)
+                if (abs (coarseCorrector) > kHzValue(35))
                     coarseCorrector = 0;
             }
         }

@@ -22,7 +22,7 @@
 
 #include "channeladd.h"
 
-#include "stdafx.h"
+#include "utils/value_size_defines.h"
 
 #include <assert.h>
 #include <kodi/General.h>

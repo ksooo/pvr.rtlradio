@@ -24,6 +24,7 @@
 #define __SOCKET_EXCEPTION_H_
 #pragma once
 
+#include <cstring>
 #include <exception>
 #include <sstream>
 #include <string>

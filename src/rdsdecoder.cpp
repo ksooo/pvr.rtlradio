@@ -22,8 +22,8 @@
 
 #include "rdsdecoder.h"
 
-#include "fmdsp/rbdsconstants.h"
-#include "stdafx.h"
+#include "dsp_fm/rbdsconstants.h"
+#include "utils/value_size_defines.h"
 
 #include <cstring>
 
