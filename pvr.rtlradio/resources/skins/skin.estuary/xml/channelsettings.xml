@@ -11,7 +11,7 @@
       <include content="DialogBackgroundCommons">
         <param name="width" value="1820" />
         <param name="height" value="720" />
-        <param name="header_label" value="Channel settings" />
+        <param name="header_label" value="$ADDON[pvr.rtlradio 30301]" />
         <param name="header_id" value="2" />
       </include>
       <!-- Channel Properties -->
@@ -28,15 +28,15 @@
           <height>60</height>
           <textoffsetx>26</textoffsetx>
           <font>font12</font>
-          <label>Channel properties</label>
+          <label>$ADDON[pvr.rtlradio 30323]</label>
           <aligny>center</aligny>
           <textcolor>button_focus</textcolor>
           <shadowcolor>black</shadowcolor>
         </control>
         <control type="grouplist" id="1100">
           <top>50</top>
-          <onup>205</onup>
-          <ondown>204</ondown>
+          <onup>207</onup>
+          <ondown>205</ondown>
           <onleft>4000</onleft>
           <onright>4000</onright>
           <itemgap>-25</itemgap>
@@ -44,26 +44,26 @@
             <description>Frequency</description>
             <width>700</width>
             <include>SettingsItemCommon</include>
-            <label>Frequency</label>
-            <enable>false</enable>
-            <disabledcolor>darkgray</disabledcolor>
-          </control>
-          <control type="edit" id="210">
-            <description>Channel modulation</description>
-            <width>700</width>
-            <include>SettingsItemCommon</include>
-            <label>Modulation</label>
+            <label>$ADDON[pvr.rtlradio 30324]</label>
             <enable>false</enable>
             <disabledcolor>darkgray</disabledcolor>
           </control>
           <control type="edit" id="201">
+            <description>Channel modulation</description>
+            <width>700</width>
+            <include>SettingsItemCommon</include>
+            <label>$ADDON[pvr.rtlradio 30325]</label>
+            <enable>false</enable>
+            <disabledcolor>darkgray</disabledcolor>
+          </control>
+          <control type="edit" id="202">
             <description>Channel name</description>
             <width>700</width>
             <include>SettingsItemCommon</include>
             <label>Name</label>
             <disabledcolor>darkgray</disabledcolor>
           </control>
-          <control type="button" id="202">
+          <control type="button" id="203">
             <description>Channel logo button</description>
             <width>700</width>
             <include>SettingsItemCommon</include>
@@ -71,7 +71,7 @@
             <disabledcolor>darkgray</disabledcolor>
           </control>
         </control>
-        <control type="image" id="203">
+        <control type="image" id="204">
           <left>600</left>
           <top>301</top>
           <description>Channel logo image</description>
@@ -87,37 +87,37 @@
           <height>60</height>
           <textoffsetx>26</textoffsetx>
           <font>font12</font>
-          <label>Tuner properties</label>
+          <label>$ADDON[pvr.rtlradio 30326]</label>
           <aligny>center</aligny>
           <textcolor>button_focus</textcolor>
           <shadowcolor>black</shadowcolor>
         </control>
         <control type="grouplist" id="1200">
           <top>400</top>
-          <onup>202</onup>
+          <onup>203</onup>
           <ondown>201</ondown>
           <onleft>4000</onleft>
           <onright>4000</onright>
           <itemgap>-25</itemgap>
-          <control type="radiobutton" id="204">
+          <control type="radiobutton" id="205">
             <description>Automatic gain</description>
             <width>700</width>
             <include>SettingsItemCommon</include>
-            <label>Automatic gain control</label>
+            <label>$ADDON[pvr.rtlradio 30327]</label>
           </control>
-          <control type="sliderex" id="205">
+          <control type="sliderex" id="206">
             <description>Manual gain</description>
             <width>700</width>
             <sliderwidth>200</sliderwidth>
             <include>SettingsItemCommon</include>
-            <label>Manual gain</label>
+            <label>$ADDON[pvr.rtlradio 30328]</label>
           </control>
-          <control type="sliderex" id="211">
+          <control type="sliderex" id="207">
             <description>Frequency correction</description>
             <width>700</width>
             <sliderwidth>200</sliderwidth>
             <include>SettingsItemCommon</include>
-            <label>Frequency correction</label>
+            <label>$ADDON[pvr.rtlradio 30329]</label>
           </control>
         </control>
       </control>
@@ -135,18 +135,18 @@
           <height>60</height>
           <textoffsetx>26</textoffsetx>
           <font>font12</font>
-          <label>Signal meter</label>
+          <label>$ADDON[pvr.rtlradio 30330]</label>
           <aligny>center</aligny>
           <textcolor>button_focus</textcolor>
           <shadowcolor>black</shadowcolor>
         </control>
-        <control type="renderaddon" id="206">
+        <control type="renderaddon" id="208">
           <left>20</left>
           <top>70</top>
           <width>692</width>
           <height>485</height>
         </control>
-        <control type="edit" id="207">
+        <control type="edit" id="209">
           <left>-14</left>
           <top>550</top>
           <texturefocus></texturefocus>
@@ -158,23 +158,23 @@
           <include>SettingsItemCommon</include>
           <disabledcolor>white</disabledcolor>
           <enable>false</enable>
-          <label>Gain:</label>
+          <label>$ADDON[pvr.rtlradio 30331]</label>
         </control>
-        <control type="edit" id="208">
-          <left>225</left>
+        <control type="edit" id="210">
+          <left>220</left>
           <top>550</top>
           <texturefocus></texturefocus>
           <texturenofocus></texturenofocus>
           <alttexturefocus></alttexturefocus>
           <alttexturenofocus></alttexturenofocus>
           <description>Signal Meter power</description>
-          <width>300</width>
+          <width>310</width>
           <include>SettingsItemCommon</include>
           <disabledcolor>white</disabledcolor>
           <enable>false</enable>
-          <label>Power:</label>
+          <label>$ADDON[pvr.rtlradio 30332]</label>
         </control>
-        <control type="edit" id="209">
+        <control type="edit" id="211">
           <left>485</left>
           <top>550</top>
           <texturefocus></texturefocus>
@@ -186,7 +186,7 @@
           <include>SettingsItemCommon</include>
           <disabledcolor>white</disabledcolor>
           <enable>false</enable>
-          <label>SNR:</label>
+          <label>$ADDON[pvr.rtlradio 30333]</label>
         </control>
       </control>
       <!-- Dialog Buttons -->
