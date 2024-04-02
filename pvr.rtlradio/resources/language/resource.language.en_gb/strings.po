@@ -235,11 +235,11 @@ msgid "Channel settings"
 msgstr ""
 
 msgctxt "#30302"
-msgid "Multiplex Settings"
+msgid "Multiplex settings"
 msgstr ""
 
 msgctxt "#30303"
-msgid "Ensemble Settings"
+msgid "Ensemble settings"
 msgstr ""
 
 msgctxt "#30304"
@@ -316,6 +316,70 @@ msgstr ""
 
 msgctxt "#30322"
 msgid "New ensemble"
+msgstr ""
+
+msgctxt "#30323"
+msgid "Channel properties"
+msgstr ""
+
+msgctxt "#30324"
+msgid "Frequency"
+msgstr ""
+
+msgctxt "#30325"
+msgid "Modulation"
+msgstr ""
+
+msgctxt "#30326"
+msgid "Tuner properties"
+msgstr ""
+
+msgctxt "#30327"
+msgid "Automatic gain control"
+msgstr ""
+
+msgctxt "#30328"
+msgid "Manual gain"
+msgstr ""
+
+msgctxt "#30329"
+msgid "Frequency correction"
+msgstr ""
+
+msgctxt "#30330"
+msgid "Signal meter"
+msgstr ""
+
+msgctxt "#30331"
+msgid "Gain:"
+msgstr ""
+
+msgctxt "#30332"
+msgid "Power:"
+msgstr ""
+
+msgctxt "#30333"
+msgid "SNR:"
+msgstr ""
+
+msgctxt "#30334"
+msgid "Auto"
+msgstr ""
+
+msgctxt "#30335"
+msgid "%.1f dB"
+msgstr ""
+
+msgctxt "#30336"
+msgid "%d dB"
+msgstr ""
+
+msgctxt "#30337"
+msgid "%.3f MHz"
+msgstr ""
+
+msgctxt "#30338"
+msgid "%.1f MHz"
 msgstr ""
 
 #

@@ -46,17 +46,17 @@ static const int CONTROL_LABEL_HEADERLABEL = 2;
 static const int CONTROL_BUTTON_OK = 100;
 static const int CONTROL_BUTTON_CANCEL = 101;
 static const int CONTROL_EDIT_FREQUENCY = 200;
-static const int CONTROL_EDIT_CHANNELNAME = 201;
-static const int CONTROL_BUTTON_CHANNELICON = 202;
-static const int CONTROL_IMAGE_CHANNELICON = 203;
-static const int CONTROL_RADIO_AUTOMATICGAIN = 204;
-static const int CONTROL_SLIDER_MANUALGAIN = 205;
-static const int CONTROL_RENDER_SIGNALMETER = 206;
-static const int CONTROL_EDIT_METERGAIN = 207;
-static const int CONTROL_EDIT_METERPOWER = 208;
-static const int CONTROL_EDIT_METERSNR = 209;
-static const int CONTROL_EDIT_MODULATION = 210;
-static const int CONTROL_SLIDER_CORRECTION = 211;
+static const int CONTROL_EDIT_MODULATION = 201;
+static const int CONTROL_EDIT_CHANNELNAME = 202;
+static const int CONTROL_BUTTON_CHANNELICON = 203;
+static const int CONTROL_IMAGE_CHANNELICON = 204;
+static const int CONTROL_RADIO_AUTOMATICGAIN = 205;
+static const int CONTROL_SLIDER_MANUALGAIN = 206;
+static const int CONTROL_SLIDER_CORRECTION = 207;
+static const int CONTROL_RENDER_SIGNALMETER = 208;
+static const int CONTROL_EDIT_METERGAIN = 209;
+static const int CONTROL_EDIT_METERPOWER = 210;
+static const int CONTROL_EDIT_METERSNR = 211;
 
 // channelsettings::FFT_BANDWIDTH
 //
@@ -974,22 +974,26 @@ void channelsettings::meter_status(struct signalmeter::signal_status const& stat
   if (!std::isnan(status.power))
   {
 
-    snprintf(strbuf, std::extent<decltype(strbuf)>::value, "%.1F dB", status.power);
+    snprintf(strbuf, std::extent<decltype(strbuf)>::value,
+             kodi::addon::GetLocalizedString(30335).c_str(), // %.1f dB
+             status.power);
     m_edit_signalpower->SetText(strbuf);
   }
   else
-    m_edit_signalpower->SetText("N/A");
+    m_edit_signalpower->SetText(kodi::addon::GetLocalizedString(10006)); // "N/A"
 
   // Signal-to-noise
   //
   if (!std::isnan(status.snr))
   {
 
-    snprintf(strbuf, std::extent<decltype(strbuf)>::value, "%d dB", static_cast<int>(status.snr));
+    snprintf(strbuf, std::extent<decltype(strbuf)>::value,
+             kodi::addon::GetLocalizedString(30336).c_str(), // %d dB
+             static_cast<int>(status.snr));
     m_edit_signalsnr->SetText(strbuf);
   }
   else
-    m_edit_signalsnr->SetText("N/A");
+    m_edit_signalsnr->SetText(kodi::addon::GetLocalizedString(10006)); // "N/A"
 }
 
 //---------------------------------------------------------------------------
@@ -1081,13 +1085,14 @@ void channelsettings::update_gain(void)
   {
 
     // Convert the gain value from tenths of a decibel into XX.X dB format
-    snprintf(strbuf, std::extent<decltype(strbuf)>::value, "%.1f dB",
+    snprintf(strbuf, std::extent<decltype(strbuf)>::value,
+             kodi::addon::GetLocalizedString(30335).c_str(), // %.1f dB
              m_channelprops.manualgain / 10.0);
     m_edit_signalgain->SetText(strbuf);
   }
 
   else
-    m_edit_signalgain->SetText("Auto");
+    m_edit_signalgain->SetText(kodi::addon::GetLocalizedString(30334)); // "Auto"
 }
 
 //---------------------------------------------------------------------------
@@ -1268,9 +1273,13 @@ bool channelsettings::OnInit(void)
     double frequency = (m_channelprops.frequency / static_cast<double>(100000)) / 10.0;
     if ((m_channelprops.modulation == modulation::dab) ||
         (m_channelprops.modulation == modulation::wx))
-      snprintf(freqstr, std::extent<decltype(freqstr)>::value, "%.3f MHz", frequency);
+      snprintf(freqstr, std::extent<decltype(freqstr)>::value,
+               kodi::addon::GetLocalizedString(30337).c_str(), // %.3f MHz
+               frequency);
     else
-      snprintf(freqstr, std::extent<decltype(freqstr)>::value, "%.1f MHz", frequency);
+      snprintf(freqstr, std::extent<decltype(freqstr)>::value,
+               kodi::addon::GetLocalizedString(30338).c_str(), //  %.1f MHz
+               frequency);
     m_edit_frequency->SetText(freqstr);
 
     // Set the channel name and logo/icon
@@ -1320,8 +1329,8 @@ bool channelsettings::OnInit(void)
     m_slider_correction->SetIntValue(m_channelprops.freqcorrection);
 
     // Set the default text for the signal indicators
-    m_edit_signalpower->SetText("N/A");
-    m_edit_signalsnr->SetText("N/A");
+    m_edit_signalpower->SetText(kodi::addon::GetLocalizedString(10006)); // "N/A"
+    m_edit_signalsnr->SetText(kodi::addon::GetLocalizedString(10006)); // "N/A"
 
     // Initialize the signal meter plot properties based on the size of the render control
     struct signalplotprops plotprops = {};
