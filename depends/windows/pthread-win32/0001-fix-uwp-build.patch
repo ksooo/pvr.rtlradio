@@ -1,0 +1,46 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -35,6 +35,9 @@
+ # Uncomment this if config.h defines RETAIN_WSALASTERROR
+ #set(XLIBS wsock32.lib)
+ 
++if(CMAKE_SYSTEM_NAME STREQUAL WindowsStore)
++  add_definitions(-DWINDOWS_UWP_BUILD)
++endif()
+ 
+ # Initial include path set. Look in the build directory first, where the
+ # generated config.h resides, before looking in the source directory.
+--- a/pthread_cancel.c
++++ b/pthread_cancel.c
+@@ -65,11 +65,12 @@
+ __ptw32_Registercancellation (PAPCFUNC unused1, HANDLE threadH, DWORD unused2)
+ {
+   CONTEXT context;
+-
++#ifndef WINDOWS_UWP_BUILD
+   context.ContextFlags = CONTEXT_CONTROL;
+   GetThreadContext (threadH, &context);
+    __PTW32_PROGCTR (context) = (DWORD_PTR) __ptw32_cancel_self;
+   SetThreadContext (threadH, &context);
++#endif
+   return 0;
+ }
+ 
+--- a/pthread_win32_attach_detach_np.c
++++ b/pthread_win32_attach_detach_np.c
+@@ -85,13 +85,13 @@ pthread_win32_process_attach_np ()
+     __ptw32_h_quserex = LoadLibrary(QuserExDLLPathBuf);
+   }
+ #else
+-#  if ! defined(WINCE)
++#ifndef WINDOWS_UWP_BUILD
+   if(GetSystemDirectory(QuserExDLLPathBuf, sizeof(QuserExDLLPathBuf)/sizeof(TCHAR)) &&
+       0 == _tcsncat_s(QuserExDLLPathBuf, _countof(QuserExDLLPathBuf), TEXT("\\QUSEREX.DLL"), 12))
+     {
+       __ptw32_h_quserex = LoadLibrary(QuserExDLLPathBuf);
+     }
+-#  endif
++#endif
+ #endif
+ 
+   if (__ptw32_h_quserex != NULL)
