@@ -3,15 +3,25 @@ project(pvr.rtlradio)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
 
+option(DISTRIBUTION_BUILD "Linux distribution build (without use of depends folder)" OFF)
+
+if(CORE_SYSTEM_NAME STREQUAL windowsstore)
+  set(USB_DEVICE_SUPPORT False)
+else()
+  set(USB_DEVICE_SUPPORT True)
+endif()
+
 find_package(Kodi REQUIRED)
 find_package(FFTW REQUIRED)
 find_package(FDK_AAC REQUIRED)
 find_package(glm REQUIRED)
-find_package(libusb-1.0 REQUIRED)
 find_package(MPG123 REQUIRED)
 find_package(RapidJSON 1.1.0 REQUIRED)
-find_package(rtlsdr REQUIRED)
 find_package(SQLite3 REQUIRED)
+if(USB_DEVICE_SUPPORT)
+  find_package(libusb-1.0 REQUIRED)
+  find_package(rtlsdr REQUIRED)
+endif()
 
 if(NOT WIN32 AND (APP_RENDER_SYSTEM STREQUAL "gl" OR NOT APP_RENDER_SYSTEM))
   find_package(OpenGl REQUIRED)
@@ -31,18 +41,26 @@ include_directories(${KODI_INCLUDE_DIR}/.. # Hack way with "/..", need bigger Ko
                     ${FFTW_INCLUDE_DIRS}
                     ${FDK_AAC_INCLUDE_DIRS}
                     ${GLM_INCLUDE_DIR}
-                    ${LIBUSB_1_INCLUDE_DIRS}
                     ${MPG123_INCLUDE_DIR}
                     ${RAPIDJSON_INCLUDE_DIRS}
-                    ${rtlsdr_INCLUDE_DIRS}
                     ${SQLITE3_INCLUDE_DIR})
 
 list(APPEND DEPLIBS ${FDK_AAC_LIBRARIES}
                     ${FFTW_LONGDOUBLE_LIB}
-                    ${LIBUSB_1_LIBRARIES}
                     ${MPG123_LIBRARIES}
-                    ${RTLSDR_LIBRARIES}
                     ${SQLITE3_LIBRARY})
+
+if(USB_DEVICE_SUPPORT)
+  if(NOT DISTRIBUTION_BUILD)
+    list(APPEND DEPLIBS ${LIBUSB_1_LIBRARIES})
+  endif()
+
+  include_directories(${LIBUSB_1_INCLUDE_DIRS}
+                      ${rtlsdr_INCLUDE_DIRS})
+  list(APPEND DEPLIBS ${RTLSDR_LIBRARIES})
+
+  add_definitions(-DUSB_DEVICE_SUPPORT)
+endif()
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/src)
 add_subdirectory(${PROJECT_SOURCE_DIR}/src/dsp_dab)

@@ -110,7 +110,7 @@ std::string win32_exception::format_message(DWORD result)
   // Attempt to format the message from the current module resources
   DWORD cchformatted = FormatMessageA(
       FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-      nullptr, result, GetThreadUILanguage(), reinterpret_cast<LPSTR>(&formatted), 0, nullptr);
+      nullptr, result, 0, reinterpret_cast<LPSTR>(&formatted), 0, nullptr);
   if (cchformatted == 0)
   {
 

@@ -53,7 +53,6 @@ float crealf(float _Complex __z);
 // MacOS
 #elif defined(__APPLE__)
 
-#define HAVE_PTHREAD_SETNAME_NP
 #define HAVE_STRNDUP
 #define HAVE_CMPLXF
 #define HAVE_COMPLEX_I
@@ -62,7 +61,6 @@ float crealf(float _Complex __z);
 // Linux
 #else
 
-#define HAVE_PTHREAD_SETNAME_NP
 #define HAVE_STRNDUP
 #define HAVE_CMPLXF
 #define HAVE_COMPLEX_I

@@ -11,7 +11,6 @@ set(SOURCES dabmuxscanner.cpp
             signalmeter.cpp
             tcpdevice.cpp
             uecp.cpp
-            usbdevice.cpp
             wxstream.cpp)
 
 set(HEADERS dabmuxscanner.h
@@ -33,8 +32,12 @@ set(HEADERS dabmuxscanner.h
             signalmeter.h
             tcpdevice.h
             uecp.h
-            usbdevice.h
             wxstream.h)
+
+if(USB_DEVICE_SUPPORT)
+  list(APPEND SOURCES usbdevice.cpp)
+  list(APPEND HEADERS usbdevice.h)
+endif()
 
 add_library(code_src OBJECT ${SOURCES} ${HEADERS})
 target_link_libraries(code_src ${DEPLIBS})
