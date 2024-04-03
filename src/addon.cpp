@@ -1153,10 +1153,15 @@ ADDON_STATUS addon::Create(void)
       }
 
       // Load the device settings
+#ifdef USB_DEVICE_SUPPORT
       m_settings.device_connection =
           kodi::addon::GetSettingEnum("device_connection", device_connection::usb);
       m_settings.device_connection_usb_index =
           kodi::addon::GetSettingInt("device_connection_usb_index", 0);
+#else
+      m_settings.device_connection = device_connection::rtltcp;
+      m_settings.device_connection_usb_index = 0;
+#endif
       m_settings.device_connection_tcp_host =
           kodi::addon::GetSettingString("device_connection_tcp_host");
       m_settings.device_connection_tcp_port =
@@ -1398,6 +1403,7 @@ ADDON_STATUS addon::SetSetting(std::string const& settingName,
   // For comparison purposes
   struct settings previous = m_settings;
 
+#ifdef USB_DEVICE_SUPPORT
   // device_connection
   //
   if (settingName == "device_connection")
@@ -1427,6 +1433,7 @@ ADDON_STATUS addon::SetSetting(std::string const& settingName,
                m_settings.device_connection_usb_index);
     }
   }
+#endif
 
   // device_connection_tcp_host
   //
