@@ -205,12 +205,14 @@
         <setting id="hdradio_prepend_channel_numbers" type="boolean" label="30117" help="30517">
           <dependencies>
             <dependency type="enable">
-              <or>
-                <condition setting="region_regioncode" operator="is">0</condition>
-                <condition setting="region_regioncode" operator="is">2</condition>
-              </or>
+              <and>
+                <or>
+                  <condition setting="region_regioncode" operator="is">0</condition>
+                  <condition setting="region_regioncode" operator="is">2</condition>
+                </or>
+                <condition setting="hdradio_enable" operator="is">true</condition>
+              </and>
             </dependency>
-             <dependency type="enable" setting="hdradio_enable">true</dependency>
           </dependencies>
           <level>0</level>
           <default>false</default>
@@ -220,12 +222,14 @@
         <setting id="hdradio_output_gain" type="number" label="30109" help="30509">
           <dependencies>
             <dependency type="enable">
-              <or>
-                <condition setting="region_regioncode" operator="is">0</condition>
-                <condition setting="region_regioncode" operator="is">2</condition>
-              </or>
+              <and>
+                <or>
+                  <condition setting="region_regioncode" operator="is">0</condition>
+                  <condition setting="region_regioncode" operator="is">2</condition>
+                </or>
+                <condition setting="hdradio_enable" operator="is">true</condition>
+              </and>
             </dependency>
-            <dependency type="enable" setting="hdradio_enable">true</dependency>
           </dependencies>
           <level>0</level>
           <default>-3.0</default>
@@ -284,11 +288,13 @@
         <setting id="dabradio_coarse_corrector" type="boolean" label="30104" help="30204">
           <dependencies>
             <dependency type="enable">
-              <or>
-                <condition setting="region_regioncode" operator="is">0</condition>
-                <condition setting="region_regioncode" operator="is">3</condition>
-              </or>
-              <dependency type="enable" setting="dabradio_enable">true</dependency>
+              <and>
+                <or>
+                  <condition setting="region_regioncode" operator="is">0</condition>
+                  <condition setting="region_regioncode" operator="is">3</condition>
+                </or>
+                <condition setting="dabradio_enable" operator="is">true</condition>
+              </and>
             </dependency>
           </dependencies>
           <level>0</level>
@@ -299,12 +305,14 @@
         <setting id="dabradio_coarse_corrector_type" type="integer" label="30113" help="30203">
           <dependencies>
             <dependency type="enable">
-              <or>
-                <condition setting="region_regioncode" operator="is">0</condition>
-                <condition setting="region_regioncode" operator="is">3</condition>
-              </or>
-              <dependency type="enable" setting="dabradio_enable">true</dependency>
-              <dependency type="enable" setting="dabradio_coarse_corrector">true</dependency>
+              <and>
+                <or>
+                  <condition setting="region_regioncode" operator="is">0</condition>
+                  <condition setting="region_regioncode" operator="is">3</condition>
+                </or>
+                <condition setting="dabradio_enable" operator="is">true</condition>
+                <condition setting="dabradio_coarse_corrector" operator="is">true</condition>
+              </and>
             </dependency>
           </dependencies>
           <level>0</level>
@@ -342,12 +350,14 @@
         <setting id="wxradio_sample_rate" type="integer" label="30110" help="30510">
           <dependencies>
             <dependency type="enable">
-              <or>
-                <condition setting="region_regioncode" operator="is">0</condition>
-                <condition setting="region_regioncode" operator="is">2</condition>
-              </or>
+              <and>
+                <or>
+                  <condition setting="region_regioncode" operator="is">0</condition>
+                  <condition setting="region_regioncode" operator="is">2</condition>
+                </or>
+                <condition setting="wxradio_enable" operator="is">true</condition>
+              </and>
             </dependency>
-            <dependency type="enable" setting="wxradio_enable">true</dependency>
           </dependencies>
           <level>0</level>
           <default>1600000</default>
@@ -369,12 +379,14 @@
         <setting id="wxradio_output_samplerate" type="integer" label="30105" help="30505">
           <dependencies>
             <dependency type="enable">
-              <or>
-                <condition setting="region_regioncode" operator="is">0</condition>
-                <condition setting="region_regioncode" operator="is">2</condition>
-              </or>
+              <and>
+                <or>
+                  <condition setting="region_regioncode" operator="is">0</condition>
+                  <condition setting="region_regioncode" operator="is">2</condition>
+                </or>
+                <condition setting="wxradio_enable" operator="is">true</condition>
+              </and>
             </dependency>
-            <dependency type="enable" setting="wxradio_enable">true</dependency>
           </dependencies>
           <level>0</level>
           <default>48000</default>
@@ -390,12 +402,14 @@
         <setting id="wxradio_output_gain" type="number" label="30109" help="30509">
           <dependencies>
             <dependency type="enable">
-              <or>
-                <condition setting="region_regioncode" operator="is">0</condition>
-                <condition setting="region_regioncode" operator="is">2</condition>
-              </or>
+              <and>
+                <or>
+                  <condition setting="region_regioncode" operator="is">0</condition>
+                  <condition setting="region_regioncode" operator="is">2</condition>
+                </or>
+                <condition setting="wxradio_enable" operator="is">true</condition>
+              </and>
             </dependency>
-            <dependency type="enable" setting="wxradio_enable">true</dependency>
           </dependencies>
           <level>0</level>
           <default>-3.0</default>
