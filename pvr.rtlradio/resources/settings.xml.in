@@ -41,7 +41,7 @@
 
         <setting id="device_connection_tcp_host" type="string" label="30102" help="30502">
           <level>0</level>
-          <default/>
+          <default>127.0.0.1</default>
           <constraints>
             <allowempty>true</allowempty>
           </constraints>
