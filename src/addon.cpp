@@ -27,7 +27,9 @@
 #include "fmstream.h"
 #include "hdstream.h"
 #include "tcpdevice.h"
+#ifdef USB_DEVICE_SUPPORT
 #include "usbdevice.h"
+#endif
 #include "wxstream.h"
 #include "exception_control/sqlite_exception.h"
 #include "exception_control/string_exception.h"
@@ -48,7 +50,10 @@
 #include <vector>
 
 #ifdef WIN32
-#include <Windows.h>
+#include <windows.h>
+#ifdef TARGET_WINDOWS_STORE
+#include <ws2tcpip.h>
+#endif
 
 #ifdef CreateDirectory
 #undef CreateDirectory
@@ -549,9 +554,11 @@ std::unique_ptr<rtldevice> addon::create_device(struct settings const& settings)
     }
   }
 
+#ifdef USB_DEVICE_SUPPORT
   // USB device
   if (settings.device_connection == device_connection::usb)
     return usbdevice::create(settings.device_connection_usb_index);
+#endif
 
   // Network device
   if (settings.device_connection == device_connection::rtltcp)

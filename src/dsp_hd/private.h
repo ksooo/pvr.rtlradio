@@ -1,6 +1,5 @@
 #pragma once
 
-#include <rtl-sdr.h>
 #include <stdio.h>
 
 #include "nrsc5.h"

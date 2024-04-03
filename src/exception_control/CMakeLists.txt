@@ -1,10 +1,13 @@
-set(SOURCES libusb_exception.cpp
-            sqlite_exception.cpp)
+set(SOURCES sqlite_exception.cpp)
 
-set(HEADERS libusb_exception.h
-            socket_exception.h
+set(HEADERS socket_exception.h
             sqlite_exception.h
             string_exception.h)
+
+if(USB_DEVICE_SUPPORT)
+  list(APPEND SOURCES libusb_exception.cpp)
+  list(APPEND HEADERS libusb_exception.h)
+endif()
 
 if(WIN32)
   list(APPEND SOURCES win32_exception.cpp)

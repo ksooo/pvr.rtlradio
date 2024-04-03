@@ -28,9 +28,26 @@
 #include "utils/scalar_condition.h"
 
 #include <memory>
-#include <rtl-sdr.h>
 #include <string>
 #include <vector>
+
+#ifdef USB_DEVICE_SUPPORT
+#include <rtl-sdr.h>
+#else
+
+// Workaround with with copy from "rtl-sdr.h" to become usable over TCP without
+// rtl-sdr lib.
+enum rtlsdr_tuner {
+  RTLSDR_TUNER_UNKNOWN = 0,
+  RTLSDR_TUNER_E4000,
+  RTLSDR_TUNER_FC0012,
+  RTLSDR_TUNER_FC0013,
+  RTLSDR_TUNER_FC2580,
+  RTLSDR_TUNER_R820T,
+  RTLSDR_TUNER_R828D
+};
+
+#endif // USB_DEVICE_SUPPORT
 
 #pragma warning(push, 4)
 
