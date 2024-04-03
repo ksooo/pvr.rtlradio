@@ -3,6 +3,8 @@ project(pvr.rtlradio)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
 
+option(DISTRIBUTION_BUILD "Linux distribution build (without use of depends folder)" OFF)
+
 if(CORE_SYSTEM_NAME STREQUAL windowsstore)
   set(USB_DEVICE_SUPPORT False)
 else()
@@ -49,11 +51,13 @@ list(APPEND DEPLIBS ${FDK_AAC_LIBRARIES}
                     ${SQLITE3_LIBRARY})
 
 if(USB_DEVICE_SUPPORT)
+  if(NOT DISTRIBUTION_BUILD)
+    list(APPEND DEPLIBS ${LIBUSB_1_LIBRARIES})
+  endif()
+
   include_directories(${LIBUSB_1_INCLUDE_DIRS}
                       ${rtlsdr_INCLUDE_DIRS})
-
-  list(APPEND DEPLIBS ${LIBUSB_1_LIBRARIES}
-                      ${RTLSDR_LIBRARIES})
+  list(APPEND DEPLIBS ${RTLSDR_LIBRARIES})
 
   add_definitions(-DUSB_DEVICE_SUPPORT)
 endif()
