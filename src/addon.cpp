@@ -2069,7 +2069,13 @@ PVR_ERROR addon::GetCapabilities(kodi::addon::PVRCapabilities& capabilities)
 
 PVR_ERROR addon::GetChannelGroupsAmount(int& amount)
 {
-  amount = 4; // "FM Radio", "HD Radio", "DAB", "Weather Radio"
+  // Create a copy of the current addon settings structure
+  struct settings settings = copy_settings();
+
+  amount = 1; // FM Radio is always enabled
+  amount += settings.hdradio_enable; // HD Radio
+  amount += settings.dabradio_enable; // DAB
+  amount += settings.wxradio_enable; // Weather Radio
 
   return PVR_ERROR::PVR_ERROR_NO_ERROR;
 }
@@ -2101,17 +2107,17 @@ PVR_ERROR addon::GetChannelGroupMembers(kodi::addon::PVRChannelGroup const& grou
     enumerator = std::bind(enumerate_fmradio_channels, std::placeholders::_1,
                            settings.fmradio_prepend_channel_numbers, std::placeholders::_2);
 
-  else if ((group.GetGroupName() == kodi::addon::GetLocalizedString(30409)) &&
-           (settings.hdradio_enable))
+  else if (settings.hdradio_enable &&
+           (group.GetGroupName() == kodi::addon::GetLocalizedString(30409)))
     enumerator = std::bind(enumerate_hdradio_channels, std::placeholders::_1,
                            settings.hdradio_prepend_channel_numbers, std::placeholders::_2);
 
-  else if ((group.GetGroupName() == kodi::addon::GetLocalizedString(30411)) &&
-           (settings.dabradio_enable))
+  else if (settings.dabradio_enable &&
+           (group.GetGroupName() == kodi::addon::GetLocalizedString(30411)))
     enumerator = enumerate_dabradio_channels;
 
-  else if ((group.GetGroupName() == kodi::addon::GetLocalizedString(30410)) &&
-           (settings.wxradio_enable))
+  else if (settings.wxradio_enable &&
+           (group.GetGroupName() == kodi::addon::GetLocalizedString(30410)))
     enumerator = enumerate_wxradio_channels;
 
   // If no enumerator was selected, there isn't any work to do here
@@ -2160,30 +2166,41 @@ PVR_ERROR addon::GetChannelGroupMembers(kodi::addon::PVRChannelGroup const& grou
 
 PVR_ERROR addon::GetChannelGroups(bool radio, kodi::addon::PVRChannelGroupsResultSet& results)
 {
-  kodi::addon::PVRChannelGroup fmradio; // FM Radio
-  kodi::addon::PVRChannelGroup hdradio; // HD Radio
-  kodi::addon::PVRChannelGroup dabradio; // DAB
-  kodi::addon::PVRChannelGroup wxradio; // Weather Radio
-
   // The PVR only supports radio channel groups
   if (!radio)
     return PVR_ERROR::PVR_ERROR_NO_ERROR;
 
+  // Create a copy of the current addon settings structure
+  struct settings settings = copy_settings();
+
+  kodi::addon::PVRChannelGroup fmradio; // FM Radio
   fmradio.SetGroupName(kodi::addon::GetLocalizedString(30408));
   fmradio.SetIsRadio(true);
   results.Add(fmradio);
 
-  hdradio.SetGroupName(kodi::addon::GetLocalizedString(30409));
-  hdradio.SetIsRadio(true);
-  results.Add(hdradio);
+  if (settings.hdradio_enable)
+  {
+    kodi::addon::PVRChannelGroup hdradio; // HD Radio
+    hdradio.SetGroupName(kodi::addon::GetLocalizedString(30409));
+    hdradio.SetIsRadio(true);
+    results.Add(hdradio);
+  }
 
-  dabradio.SetGroupName(kodi::addon::GetLocalizedString(30411));
-  dabradio.SetIsRadio(true);
-  results.Add(dabradio);
+  if (settings.dabradio_enable)
+  {
+    kodi::addon::PVRChannelGroup dabradio; // DAB
+    dabradio.SetGroupName(kodi::addon::GetLocalizedString(30411));
+    dabradio.SetIsRadio(true);
+    results.Add(dabradio);
+  }
 
-  wxradio.SetGroupName(kodi::addon::GetLocalizedString(30410));
-  wxradio.SetIsRadio(true);
-  results.Add(wxradio);
+  if (settings.wxradio_enable)
+  {
+    kodi::addon::PVRChannelGroup wxradio; // Weather Radio
+    wxradio.SetGroupName(kodi::addon::GetLocalizedString(30410));
+    wxradio.SetIsRadio(true);
+    results.Add(wxradio);
+  }
 
   return PVR_ERROR::PVR_ERROR_NO_ERROR;
 }
