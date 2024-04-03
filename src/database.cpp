@@ -504,7 +504,7 @@ void enumerate_dabradio_channels(sqlite3* instance, enumerate_channels_callback 
 
   // frequency | channelnumber | subchannelnumber | name | logourl
   auto sql = "select channel.frequency as frequency, namedchannel.number as channelnumber, "
-             "ifnull(subchannel.number, 0) as subchannelnumber, "
+             "ifnull(subchannel.number, -1) as subchannelnumber, "
              "ifnull(subchannel.name, channel.name) as name, ifnull(subchannel.logourl, "
              "channel.logourl) as logourl "
              "from channel inner join namedchannel on channel.frequency = namedchannel.frequency "
@@ -523,18 +523,18 @@ void enumerate_dabradio_channels(sqlite3* instance, enumerate_channels_callback 
     // Execute the query and iterate over all returned rows
     while (sqlite3_step(statement) == SQLITE_ROW)
     {
-
-      struct channel item = {};
-      channelid channelid(sqlite3_column_int(statement, 0), sqlite3_column_int(statement, 2),
-                          modulation::dab);
-
-      item.id = channelid.id();
-      item.channel = sqlite3_column_int(statement, 1);
-      item.subchannel = sqlite3_column_int(statement, 2);
-      item.name = reinterpret_cast<char const*>(sqlite3_column_text(statement, 3));
-      item.logourl = reinterpret_cast<char const*>(sqlite3_column_text(statement, 4));
-
-      callback(item); // Invoke caller-supplied callback
+      const int subchannel{sqlite3_column_int(statement, 2)};
+      if (subchannel >= 0) // skip the ensemble itself, only enumerate subchannels
+      {
+        struct channel item = {};
+        channelid channelid(sqlite3_column_int(statement, 0), subchannel, modulation::dab);
+        item.id = channelid.id();
+        item.channel = sqlite3_column_int(statement, 1);
+        item.subchannel = subchannel;
+        item.name = reinterpret_cast<char const*>(sqlite3_column_text(statement, 3));
+        item.logourl = reinterpret_cast<char const*>(sqlite3_column_text(statement, 4));
+        callback(item); // Invoke caller-supplied callback
+      }
     }
 
     sqlite3_finalize(statement); // Finalize the SQLite statement
