@@ -205,7 +205,18 @@ static inline _Fcomplex _FCdivcr(_Fcomplex lhs, float rhs)
 #endif
 
 #ifdef _MSC_VER
+#ifndef _M_ARM
 #define PARITY(x) ((__popcnt16(x) & 0x1) == 0x1)
+#else
+static inline unsigned popcount16(unsigned u)
+{
+  u -= (u >> 1) & 0x5555U;
+  u = ((u >> 2) & 0x3333U) + (u & 0x3333U);
+  u = ((u >> 4) + u) & 0x0F0FU;
+  return (u * 0x0101U) >> 8;
+}
+#define PARITY(x) ((popcount16(x) & 0x1) == 0x1)
+#endif
 #else
 #define PARITY(x) __builtin_parity(x)
 #endif
