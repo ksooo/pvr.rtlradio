@@ -19,6 +19,16 @@
  * Author: Tom Tsou <tom.tsou@ettus.com>
  */
 
+// Hack fix about build with SSE use.
+// Currently it always generate within Linux by use on call function e.g. like this
+// "error: inlining failed in call to ‘always_inline’ ‘_mm_minpos_epu16’: target specific option mismatch".
+// This fix prevent the use about if something has set in defines.
+//
+#if defined(HAVE_SSE3) && defined(TARGET_LINUX)
+#warning Undefined HAVE_SSE3 to workaround compile problems
+#undef HAVE_SSE3
+#endif
+
 #include "config.h"
 
 #include <stdlib.h>
