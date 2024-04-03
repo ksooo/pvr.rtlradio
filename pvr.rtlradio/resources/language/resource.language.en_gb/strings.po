@@ -382,6 +382,10 @@ msgctxt "#30338"
 msgid "%.1f MHz"
 msgstr ""
 
+msgctxt "#30339"
+msgid "Add channels..."
+msgstr ""
+
 #
 # 304XX - PVR Client implementation
 #

@@ -1018,6 +1018,9 @@ void channelsettings::mux_data(struct muxscanner::multiplex const& muxdata)
     m_channelprops.name = m_muxdata.name;
     m_edit_channelname->SetText(m_channelprops.name);
   }
+
+  if (!m_muxdata.subchannels.empty())
+    m_button_ok->SetEnabled(true);
 }
 
 //---------------------------------------------------------------------------
@@ -1266,7 +1269,17 @@ bool channelsettings::OnInit(void)
 
     // Change the text of the OK button to "Add" if we are in new channel mode
     if (m_isnew)
-      m_button_ok->SetLabel(kodi::addon::GetLocalizedString(15019));
+    {
+      if ((m_channelprops.modulation == modulation::hd) ||
+          (m_channelprops.modulation == modulation::dab) ||
+          (m_channelprops.modulation == modulation::wx))
+      {
+        m_button_ok->SetLabel(kodi::addon::GetLocalizedString(30339)); // Add channels...
+        m_button_ok->SetEnabled(false); // disable until we have at least one subchannel
+      }
+      else
+        m_button_ok->SetLabel(kodi::addon::GetLocalizedString(15019)); // Add
+    }
 
     // Set the channel frequency in XXX.X MHz (FM/HD) or XXX.XXX format (DAB/WX)
     char freqstr[128];
@@ -1278,7 +1291,7 @@ bool channelsettings::OnInit(void)
                frequency);
     else
       snprintf(freqstr, std::extent<decltype(freqstr)>::value,
-               kodi::addon::GetLocalizedString(30338).c_str(), //  %.1f MHz
+               kodi::addon::GetLocalizedString(30338).c_str(), // %.1f MHz
                frequency);
     m_edit_frequency->SetText(freqstr);
 
