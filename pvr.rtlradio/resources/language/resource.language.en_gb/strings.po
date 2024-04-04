@@ -57,11 +57,11 @@ msgid "Device index"
 msgstr ""
 
 msgctxt "#30102"
-msgid "rtl_tcp server address"
+msgid "Server address"
 msgstr ""
 
 msgctxt "#30103"
-msgid "rtl_tcp server port"
+msgid "Server port"
 msgstr ""
 
 msgctxt "#30104"
@@ -116,6 +116,14 @@ msgstr ""
 
 msgctxt "#30117"
 msgid "Prepend channel numbers to channel names"
+msgstr ""
+
+msgctxt "#30118"
+msgid "Connection settings"
+msgstr ""
+
+msgctxt "#30119"
+msgid "Device settings"
 msgstr ""
 
 #
