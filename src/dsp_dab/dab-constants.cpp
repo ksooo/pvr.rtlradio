@@ -135,22 +135,24 @@ string DabLabel::utf8_label() const
 
 string DabLabel::fig1_label_utf8() const
 {
-    return toUtf8StringUsingCharset(fig1_label.c_str(), charset);
+    return charsets::toUtf8(fig1_label.c_str(), charset);
 }
 
 string DabLabel::fig1_shortlabel_utf8() const
 {
     const string shortlabel = flag_to_shortlabel(fig1_label, fig1_flag);
-    return toUtf8StringUsingCharset(shortlabel.c_str(), charset);
+    return charsets::toUtf8(shortlabel.c_str(), charset);
 }
 
 void DabLabel::setCharset(uint8_t charset_id)
 {
-    charset = static_cast<CharacterSet>(charset_id);
+    charset = static_cast<charsets::CharacterSet>(charset_id);
 }
 
 string DabLabel::fig2_label() const
 {
+    using charsets::CharacterSet;
+
     vector<uint8_t> segments_cat;
     for (size_t i = 0; i < segment_count; i++) {
         if (segments.count(i) == 0) {
@@ -169,8 +171,7 @@ string DabLabel::fig2_label() const
         case CharacterSet::UnicodeUtf8:
             return string(segments_cat.begin(), segments_cat.end());
         case CharacterSet::UnicodeUcs2:
-            return toUtf8StringUsingCharset(
-                    segments_cat.data(), CharacterSet::UnicodeUcs2, segments_cat.size());
+            return charsets::toUtf8(segments_cat.data(), CharacterSet::UnicodeUcs2, segments_cat.size());
         case CharacterSet::Undefined:
             return "";
     }
