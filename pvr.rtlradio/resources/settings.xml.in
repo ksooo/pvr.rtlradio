@@ -19,8 +19,12 @@
           <control type="spinner" format="integer"/>
         </setting>
 
+      </group>
+		
+      <group id="2" label="30118">
+
         <!-- @SETTINGS_XML_IN_CONNECTION_TYPE_NOTE@ -->
-        <setting id="device_connection_usb_index" parent="device_connection" type="integer" label="30101" help="30501">
+        <setting id="device_connection_usb_index" type="integer" label="30101" help="30501">
           <level>0</level>
           <visible>@SETTINGS_XML_IN_CONNECTION_TYPE_VISIBLE@</visible>
           <default>0</default>
@@ -35,7 +39,7 @@
           <control type="spinner" format="integer"/>
         </setting>
 
-        <setting id="device_connection_tcp_host" parent="device_connection" type="string" label="30102" help="30502">
+        <setting id="device_connection_tcp_host" type="string" label="30102" help="30502">
           <level>0</level>
           <default/>
           <constraints>
@@ -51,7 +55,7 @@
           </control>
         </setting>
 
-        <setting id="device_connection_tcp_port" parent="device_connection" type="integer" label="30103" help="30503">
+        <setting id="device_connection_tcp_port" type="integer" label="30103" help="30503">
           <level>0</level>
           <default>1234</default>
           <constraints>
@@ -68,6 +72,10 @@
             <heading>30103</heading>
           </control>
         </setting>
+
+      </group>
+
+      <group id="3" label="30119">
 
         <setting id="device_frequency_correction" type="integer" label="30108" help="30508">
           <level>0</level>

@@ -1404,6 +1404,7 @@ ADDON_STATUS addon::SetSetting(std::string const& settingName,
   struct settings previous = m_settings;
 
 #ifdef USB_DEVICE_SUPPORT
+
   // device_connection
   //
   if (settingName == "device_connection")
@@ -1433,11 +1434,14 @@ ADDON_STATUS addon::SetSetting(std::string const& settingName,
                m_settings.device_connection_usb_index);
     }
   }
+
+  else
+
 #endif
 
   // device_connection_tcp_host
   //
-  else if (settingName == "device_connection_tcp_host")
+  if (settingName == "device_connection_tcp_host")
   {
 
     std::string strvalue = settingValue.GetString();
