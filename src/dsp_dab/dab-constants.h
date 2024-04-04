@@ -34,7 +34,7 @@
 #ifndef __DAB_CONSTANTS
 #define __DAB_CONSTANTS
 
-#include "charsets.h"
+#include "utils/charsets.h"
 #include <complex>
 #include <limits>
 #include <map>
@@ -137,7 +137,7 @@ public:
 struct DabLabel {
     // Label from FIG 1
     /* FIG 1 labels are usually in EBU Latin encoded */
-    CharacterSet charset = CharacterSet::EbuLatin;
+    charsets::CharacterSet charset = charsets::CharacterSet::EbuLatin;
     std::string fig1_label; // encoded according to charset
     uint16_t    fig1_flag = 0x0000; // describes the short label
 
@@ -153,7 +153,7 @@ struct DabLabel {
 
     std::map<int, std::vector<uint8_t> > segments;
     size_t segment_count = 0; // number if actual segments (not segment count as in spec)
-    CharacterSet extended_label_charset = CharacterSet::Undefined;
+    charsets::CharacterSet extended_label_charset = charsets::CharacterSet::Undefined;
     uint8_t toggle_flag = 0;
     bool fig2_rfu = false; // draftETSI TS 103 176 v2.2.1 gives this a new meaning
 

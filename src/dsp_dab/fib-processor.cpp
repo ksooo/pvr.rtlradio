@@ -30,7 +30,7 @@
 #include <iso646.h>
 
 #include "fib-processor.h"
-#include "charsets.h"
+#include "utils/charsets.h"
 #include "MathHelper.h"
 
 FIBProcessor::FIBProcessor(RadioControllerInterface& mr) :
@@ -917,6 +917,8 @@ static void handle_ext_label_data_field(const uint8_t *f, uint8_t len_bytes,
         uint8_t toggle_flag, uint8_t segment_index, uint8_t rfu,
         DabLabel& label)
 {
+    using charsets::CharacterSet;
+
     if (label.toggle_flag != toggle_flag) {
         label.segments.clear();
         label.extended_label_charset = CharacterSet::Undefined;

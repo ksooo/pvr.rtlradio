@@ -19,7 +19,7 @@ typedef struct {
 } decision_t;
 
 typedef union alignas(16) {
-	COMPUTETYPE t[NUMSTATES];
+    COMPUTETYPE t[NUMSTATES];
 } metric_t;
 
 /* State info for instance of Viterbi decoder
@@ -46,9 +46,9 @@ class Viterbi
 
     private:
         struct v    vp;
-		alignas(16) COMPUTETYPE Branchtab[NUMSTATES / 2 * RATE];
+        alignas(16) COMPUTETYPE Branchtab[NUMSTATES / 2 * RATE];
 
-		//  int parityb     (uint8_t);
+        //  int parityb     (uint8_t);
         int parity(int x);
         void partab_init (void);
         //  uint8_t Partab  [256];

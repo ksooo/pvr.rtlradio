@@ -83,58 +83,58 @@ enum class message_level_t { Information, Error };
 class RadioControllerInterface {
     public:
         /* Signal-to-Noise Ratio was calculated. snr is a value in dB. */
-		virtual void onSNR(float snr) {}
+        virtual void onSNR(float snr) {}
 
         /* The frequency corrector estimated a new correction. The frequency
          * correction consists of a coarse and a fine value, both having the
          * same units, measured in number of samples. */
-		virtual void onFrequencyCorrectorChange(int fine, int coarse) {}
+        virtual void onFrequencyCorrectorChange(int fine, int coarse) {}
 
         /* Indicate if receive signal synchronisation was acquired or lost. */
-		virtual void onSyncChange(bool isSync) {}
+        virtual void onSyncChange(bool isSync) {}
 
         /* Indicate if a signal is suspected on the currently tuned frequency.
          * This is useful to accelerate the scan. */
-		virtual void onSignalPresence(bool isSignal) {}
+        virtual void onSignalPresence(bool isSignal) {}
 
         /* A new service with service ID sId was detected. */
-		virtual void onServiceDetected(uint32_t sId) {}
+        virtual void onServiceDetected(uint32_t sId) {}
 
-		// MB: Added (fib-processor.cpp)
-		/* When a service label changes */
-		virtual void onSetServiceLabel(uint32_t sId, DabLabel& label) {}
+        // MB: Added (fib-processor.cpp)
+        /* When a service label changes */
+        virtual void onSetServiceLabel(uint32_t sId, DabLabel& label) {}
 
         /* When the ensemble changes */
-		virtual void onNewEnsemble(uint16_t eId) {}
+        virtual void onNewEnsemble(uint16_t eId) {}
 
         /* When the ensemble label changes */
-		virtual void onSetEnsembleLabel(DabLabel& label) {}
+        virtual void onSetEnsembleLabel(DabLabel& label) {}
 
-		virtual void onDateTimeUpdate(const dab_date_time_t& dateTime) {}
+        virtual void onDateTimeUpdate(const dab_date_time_t& dateTime) {}
 
         /* For every FIB, tell if the CRC check passed. fib points to a bit-vector with 256 bits of FIB data  */
-		virtual void onFIBDecodeSuccess(bool crcCheckOk, const uint8_t* fib) {}
+        virtual void onFIBDecodeSuccess(bool crcCheckOk, const uint8_t* fib) {}
 
         /* When a new channel impulse response vector was calculated */
-		virtual void onNewImpulseResponse(std::vector<float>&& data) {}
+        virtual void onNewImpulseResponse(std::vector<float>&& data) {}
 
         /* When new constellation points are available. data contains
          * (L-1) * K / OfdmDecoder::constellationDecimation points. */
-		virtual void onConstellationPoints(std::vector<DSPCOMPLEX>&& data) {}
+        virtual void onConstellationPoints(std::vector<DSPCOMPLEX>&& data) {}
 
         /* When a new null symbol vector was received.
          * Data contains the samples of the complete NULL symbol. */
-		virtual void onNewNullSymbol(std::vector<DSPCOMPLEX>&& data) {}
+        virtual void onNewNullSymbol(std::vector<DSPCOMPLEX>&& data) {}
 
         /* When TII information for a comb/pattern pair is available */
-		virtual void onTIIMeasurement(tii_measurement_t&& m) {}
+        virtual void onTIIMeasurement(tii_measurement_t&& m) {}
 
-		// MB: Removed, unused by welle.io backend
-        ///* When a information or warning message should be printed */
+        /* When a information or warning message should be printed */
+        // MB: Removed, unused by welle.io backend 
         //virtual void onMessage(message_level_t level, const std::string& text, const std::string& text2 = std::string()) = 0;
 
         /* The receiver has shutdown due to a failure in the input device */
-		virtual void onInputFailure(void) {}
+        virtual void onInputFailure(void) {}
 };
 
 /* A Programme Handler is associated to each tuned programme in the ensemble.
@@ -143,36 +143,36 @@ class ProgrammeHandlerInterface {
     public:
         /* Count the number of frame errors from the MP2, AAC or data
          * decoder.  */
-		virtual void onFrameErrors(int frameErrors) {}
+        virtual void onFrameErrors(int frameErrors) {}
 
         /* New audio data is available. The sampleRate and the
          * stereo indicator may change at any time.
          * mode is an information related to the audio encoding
          * used.  */
-		virtual void onNewAudio(std::vector<int16_t>&& audioData, int sampleRate, const std::string& mode) {}
+        virtual void onNewAudio(std::vector<int16_t>&& audioData, int sampleRate, const std::string& mode) {}
 
         /* (DAB+ only) Reed-Solomon decoding error indicator, and
          * number of corrected errors.
          * The function will also be called in the absence of errors,
          * with an count of 0. */
-		virtual void onRsErrors(bool uncorrectedErrors, int numCorrectedErrors) {}
+        virtual void onRsErrors(bool uncorrectedErrors, int numCorrectedErrors) {}
 
         /* (DAB+ only) Audio Decoder error */
-		virtual void onAacErrors(int aacErrors) {}
+        virtual void onAacErrors(int aacErrors) {}
 
         /* A new Dynamic Label was decoded.
          * label is utf-8 encoded. */
-		virtual void onNewDynamicLabel(const std::string& label) {}
+        virtual void onNewDynamicLabel(const std::string& label) {}
 
         /* A slide was decoded. data contains the raw bytes, and subtype
          * defines the data format:
          * 0x01 for JPEG, 0x03 for PNG */
-		virtual void onMOT(const mot_file_t& mot_file) {}
+        virtual void onMOT(const mot_file_t& mot_file) {}
 
         /* Called when the PAD decoder notices a mismatch between announced
          * and effective X-PAD length.
          */
-		virtual void onPADLengthError(size_t announced_xpad_len, size_t xpad_len) {}
+        virtual void onPADLengthError(size_t announced_xpad_len, size_t xpad_len) {}
 };
 
 enum class DeviceParam {
@@ -218,11 +218,11 @@ enum class DeviceParam {
 //
 class InputInterface {
 public:
-	virtual ~InputInterface() {}
-	virtual bool is_ok(void) = 0;
-	virtual bool restart(void) = 0;
-	virtual int32_t getSamples(DSPCOMPLEX* buffer, int32_t size) = 0;
-	virtual int32_t getSamplesToRead(void) = 0;
+    virtual ~InputInterface() {}
+    virtual bool is_ok(void) = 0;
+    virtual bool restart(void) = 0;
+    virtual int32_t getSamples(DSPCOMPLEX* buffer, int32_t size) = 0;
+    virtual int32_t getSamplesToRead(void) = 0;
 };
 
 #endif

@@ -156,7 +156,7 @@ bool MOTObject::ParseCheckHeader(MOT_FILE& target_file) {
 			if(data_len == 0)
 				return false;
 			//file.content_name = CharsetTools::ConvertTextToUTF8(&data[offset + 1], data_len - 1, data[offset] >> 4, true, &file.content_name_charset);
-            file.content_name = toUtf8StringUsingCharset ( (const char *)&data[offset + 1], (CharacterSet) (data[offset] >> 4), data_len - 1);
+            file.content_name = charsets::toUtf8( (const char *)&data[offset + 1], (charsets::CharacterSet) (data[offset] >> 4), data_len - 1);
 			new_content_name = file.content_name;
 //			fprintf(stderr, "ContentName: '%s'\n", file.content_name.c_str());
 			break;
