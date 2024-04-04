@@ -21,28 +21,28 @@
 // --- XPAD_CI -----------------------------------------------------------------
 const size_t XPAD_CI::lens[] = {4, 6, 8, 12, 16, 24, 32, 48};
 
-// --- PADDecoder -----------------------------------------------------------------
-void PADDecoder::Reset()
+// --- CPADDecoder -----------------------------------------------------------------
+void CPADDecoder::Reset()
 {
-  mot_app_type = -1;
+  m_MOTAppType = -1;
 
-  last_xpad_ci.Reset();
+  m_lastXPAD_CI.Reset();
 
-  dl_decoder.Reset();
-  dgli_decoder.Reset();
-  mot_decoder.Reset();
-  mot_manager.Reset();
+  m_dlDecoder.Reset();
+  m_DGLIDecoder.Reset();
+  m_MOTDecoder.Reset();
+  m_MOTManager.Reset();
 }
 
-void PADDecoder::Process(const uint8_t* xpad_data,
+void CPADDecoder::Process(const uint8_t* xpad_data,
                          size_t xpad_len,
                          bool exact_xpad_len,
                          const uint8_t* fpad_data)
 {
   // undo reversed byte order + trim long MP2 frames
-  size_t used_xpad_len = std::min(xpad_len, sizeof(xpad));
+  size_t used_xpad_len = std::min(xpad_len, sizeof(m_xpad));
   for (size_t i = 0; i < used_xpad_len; i++)
-    xpad[i] = xpad_data[xpad_len - 1 - i];
+    m_xpad[i] = xpad_data[xpad_len - 1 - i];
 
   xpad_cis_t xpad_cis;
   size_t xpad_cis_len = -1;
@@ -51,8 +51,8 @@ void PADDecoder::Process(const uint8_t* xpad_data,
   int xpad_ind = (fpad_data[0] & 0x30) >> 4;
   bool ci_flag = fpad_data[1] & 0x02;
 
-  XPAD_CI prev_xpad_ci = last_xpad_ci;
-  last_xpad_ci.Reset();
+  XPAD_CI prev_xpad_ci = m_lastXPAD_CI;
+  m_lastXPAD_CI.Reset();
 
   // build CI list
   if (fpad_type == 0b00)
@@ -66,7 +66,7 @@ void PADDecoder::Process(const uint8_t* xpad_data,
           if (xpad_len < 1)
             return;
 
-          int type = xpad[0] & 0x1F;
+          int type = m_xpad[0] & 0x1F;
 
           // skip end marker
           if (type != 0x00)
@@ -83,7 +83,7 @@ void PADDecoder::Process(const uint8_t* xpad_data,
             if (xpad_len < i + 1)
               return;
 
-            uint8_t ci_raw = xpad[i];
+            uint8_t ci_raw = m_xpad[i];
             xpad_cis_len++;
 
             // break on end marker
@@ -112,7 +112,7 @@ void PADDecoder::Process(const uint8_t* xpad_data,
     }
   }
 
-  //	fprintf(stderr, "PADDecoder: -----\n");
+  //	fprintf(stderr, "CPADDecoder: -----\n");
   if (xpad_cis.empty())
   {
     /* The CI list may be omitted if the (last) subfield of the X-PAD of the
@@ -122,8 +122,8 @@ void PADDecoder::Process(const uint8_t* xpad_data,
 		 * This non-compliant encoding can generously be addressed by still
 		 * keeping the necessary CI info.
 		 */
-    if (loose)
-      last_xpad_ci = prev_xpad_ci;
+    if (m_loose)
+      m_lastXPAD_CI = prev_xpad_ci;
     return;
   }
 
@@ -135,14 +135,14 @@ void PADDecoder::Process(const uint8_t* xpad_data,
   if (announced_xpad_len > xpad_len)
     return;
 
-  if (exact_xpad_len && !loose && announced_xpad_len < xpad_len)
+  if (exact_xpad_len && !m_loose && announced_xpad_len < xpad_len)
   {
     /* If the announced X-PAD len falls below the available one (which can
 		 * only happen with DAB+), a decoder shall discard the X-PAD (see §5.4.3
 		 * in ETSI TS 102 563).
 		 * This behaviour can be disabled in order to process the X-PAD anyhow.
 		 */
-    observer->PADLengthError(announced_xpad_len, xpad_len);
+    m_observer->PADLengthError(announced_xpad_len, xpad_len);
     return;
   }
 
@@ -152,43 +152,43 @@ void PADDecoder::Process(const uint8_t* xpad_data,
   for (const XPAD_CI& xpad_ci : xpad_cis)
   {
     // len only valid for the *immediate* next data group after the DGLI!
-    size_t dgli_len = dgli_decoder.GetDGLILen();
+    size_t m_dgliLength = m_DGLIDecoder.GetDGLILen();
 
     // handle Data Subfield
     switch (xpad_ci.type)
     {
       case 1: // Data Group Length Indicator
-        dgli_decoder.ProcessDataSubfield(ci_flag, xpad + xpad_offset, xpad_ci.len);
+        m_DGLIDecoder.ProcessDataSubfield(ci_flag, m_xpad + xpad_offset, xpad_ci.len);
 
         xpad_ci_type_continued = 1;
         break;
 
       case 2: // Dynamic Label segment (start)
       case 3: // Dynamic Label segment (continuation)
-        // if new label available, append it
-        if (dl_decoder.ProcessDataSubfield(xpad_ci.type == 2, xpad + xpad_offset, xpad_ci.len))
-          observer->PADChangeDynamicLabel(dl_decoder.GetLabel());
+        // if new m_label available, append it
+        if (m_dlDecoder.ProcessDataSubfield(xpad_ci.type == 2, m_xpad + xpad_offset, xpad_ci.len))
+          m_observer->PADChangeDynamicLabel(m_dlDecoder.GetLabel());
 
         xpad_ci_type_continued = 3;
         break;
 
       default:
         // MOT, X-PAD data group (start/continuation)
-        if (mot_app_type != -1 &&
-            (xpad_ci.type == mot_app_type || xpad_ci.type == mot_app_type + 1))
+        if (m_MOTAppType != -1 &&
+            (xpad_ci.type == m_MOTAppType || xpad_ci.type == m_MOTAppType + 1))
         {
-          bool start = xpad_ci.type == mot_app_type;
+          bool start = xpad_ci.type == m_MOTAppType;
 
           if (start)
-            mot_decoder.SetLen(dgli_len);
+            m_MOTDecoder.SetLen(m_dgliLength);
 
           // if new Data Group available, append it
-          if (mot_decoder.ProcessDataSubfield(start, xpad + xpad_offset, xpad_ci.len))
+          if (m_MOTDecoder.ProcessDataSubfield(start, m_xpad + xpad_offset, xpad_ci.len))
           {
             // if new slide available, show it
-            if (mot_manager.HandleMOTDataGroup(mot_decoder.GetMOTDataGroup()))
+            if (m_MOTManager.HandleMOTDataGroup(m_MOTDecoder.GetMOTDataGroup()))
             {
-              const MOT_FILE new_slide = mot_manager.GetFile();
+              const MOT_FILE new_slide = m_MOTManager.GetFile();
 
               // check file type
               bool show_slide = true;
@@ -204,40 +204,40 @@ void PADDecoder::Process(const uint8_t* xpad_data,
               }
 
               if (show_slide)
-                observer->PADChangeSlide(new_slide);
+                m_observer->PADChangeSlide(new_slide);
             }
           }
 
-          xpad_ci_type_continued = mot_app_type + 1;
+          xpad_ci_type_continued = m_MOTAppType + 1;
         }
 
         break;
     }
-    //		fprintf(stderr, "PADDecoder: Data Subfield: type: %2d, len: %2zu\n", it->type, it->len);
+    //		fprintf(stderr, "CPADDecoder: Data Subfield: type: %2d, len: %2zu\n", it->type, it->len);
 
     xpad_offset += xpad_ci.len;
   }
 
   // set last CI
-  last_xpad_ci.len = xpad_offset;
-  last_xpad_ci.type = xpad_ci_type_continued;
+  m_lastXPAD_CI.len = xpad_offset;
+  m_lastXPAD_CI.type = xpad_ci_type_continued;
 }
 
 
-// --- DataGroup -----------------------------------------------------------------
-DataGroup::DataGroup(size_t dg_size_max)
+// --- CDataGroup -----------------------------------------------------------------
+CDataGroup::CDataGroup(size_t dg_size_max)
 {
-  dg_raw.resize(dg_size_max);
+  m_dgRaw.resize(dg_size_max);
   Reset();
 }
 
-void DataGroup::Reset()
+void CDataGroup::Reset()
 {
-  dg_size = 0;
-  dg_size_needed = GetInitialNeededSize();
+  m_dgSize = 0;
+  m_dgSizeNeeded = GetInitialNeededSize();
 }
 
-bool DataGroup::ProcessDataSubfield(bool start, const uint8_t* data, size_t len)
+bool CDataGroup::ProcessDataSubfield(bool start, const uint8_t* data, size_t len)
 {
   if (start)
   {
@@ -246,96 +246,96 @@ bool DataGroup::ProcessDataSubfield(bool start, const uint8_t* data, size_t len)
   else
   {
     // ignore Data Group continuation without previous start
-    if (dg_size == 0)
+    if (m_dgSize == 0)
       return false;
   }
 
   // abort, if needed size already reached (except needed size not yet set)
-  if (dg_size >= dg_size_needed)
+  if (m_dgSize >= m_dgSizeNeeded)
     return false;
 
   // abort, if maximum size already reached
-  if (dg_size == dg_raw.size())
+  if (m_dgSize == m_dgRaw.size())
     return false;
 
   // append Data Subfield
-  size_t copy_len = dg_raw.size() - dg_size;
+  size_t copy_len = m_dgRaw.size() - m_dgSize;
   if (len < copy_len)
     copy_len = len;
-  memcpy(&dg_raw[dg_size], data, copy_len);
-  dg_size += copy_len;
+  memcpy(&m_dgRaw[m_dgSize], data, copy_len);
+  m_dgSize += copy_len;
 
   // abort, if needed size not yet reached
-  if (dg_size < dg_size_needed)
+  if (m_dgSize < m_dgSizeNeeded)
     return false;
 
   return DecodeDataGroup();
 }
 
-bool DataGroup::EnsureDataGroupSize(size_t desired_dg_size)
+bool CDataGroup::EnsureDataGroupSize(size_t desired_dg_size)
 {
-  dg_size_needed = desired_dg_size;
-  return dg_size >= dg_size_needed;
+  m_dgSizeNeeded = desired_dg_size;
+  return m_dgSize >= m_dgSizeNeeded;
 }
 
-bool DataGroup::CheckCRC(size_t len)
+bool CDataGroup::CheckCRC(size_t len)
 {
   // ensure needed size reached
-  if (dg_size < len + CalcCRC::CRCLen)
+  if (m_dgSize < len + CalcCRC::CRCLen)
     return false;
 
-  uint16_t crc_stored = dg_raw[len] << 8 | dg_raw[len + 1];
-  uint16_t crc_calced = CalcCRC::CalcCRC_CRC16_CCITT.Calc(&dg_raw[0], len);
+  uint16_t crc_stored = m_dgRaw[len] << 8 | m_dgRaw[len + 1];
+  uint16_t crc_calced = CalcCRC::CalcCRC_CRC16_CCITT.Calc(&m_dgRaw[0], len);
   return crc_stored == crc_calced;
 }
 
 
-// --- DGLIDecoder -----------------------------------------------------------------
-void DGLIDecoder::Reset()
+// --- CDGLIDecoder -----------------------------------------------------------------
+void CDGLIDecoder::Reset()
 {
-  DataGroup::Reset();
+  CDataGroup::Reset();
 
-  dgli_len = 0;
+  m_dgliLength = 0;
 }
 
-bool DGLIDecoder::DecodeDataGroup()
+bool CDGLIDecoder::DecodeDataGroup()
 {
   // abort on invalid CRC
   if (!CheckCRC(2))
   {
-    DataGroup::Reset();
+    CDataGroup::Reset();
     return false;
   }
 
-  dgli_len = (dg_raw[0] & 0x3F) << 8 | dg_raw[1];
+  m_dgliLength = (m_dgRaw[0] & 0x3F) << 8 | m_dgRaw[1];
 
-  DataGroup::Reset();
+  CDataGroup::Reset();
 
-  //	fprintf(stderr, "DGLIDecoder: dgli_len: %5zu\n", dgli_len);
+  //	fprintf(stderr, "CDGLIDecoder: m_dgliLength: %5zu\n", m_dgliLength);
 
   return true;
 }
 
-size_t DGLIDecoder::GetDGLILen()
+size_t CDGLIDecoder::GetDGLILen()
 {
-  size_t result = dgli_len;
-  dgli_len = 0;
+  size_t result = m_dgliLength;
+  m_dgliLength = 0;
   return result;
 }
 
 
-// --- DynamicLabelDecoder -----------------------------------------------------------------
-void DynamicLabelDecoder::Reset()
+// --- CDynamicLabelDecoder -----------------------------------------------------------------
+void CDynamicLabelDecoder::Reset()
 {
-  DataGroup::Reset();
+  CDataGroup::Reset();
 
-  dl_sr.Reset();
-  label.Reset();
+  m_dl_sr.Reset();
+  m_label.Reset();
 }
 
-bool DynamicLabelDecoder::DecodeDataGroup()
+bool CDynamicLabelDecoder::DecodeDataGroup()
 {
-  bool command = dg_raw[0] & 0x10;
+  bool command = m_dgRaw[0] & 0x10;
 
   size_t field_len = 0;
   bool cmd_remove_label = false;
@@ -343,20 +343,20 @@ bool DynamicLabelDecoder::DecodeDataGroup()
   // handle command/segment
   if (command)
   {
-    switch (dg_raw[0] & 0x0F)
+    switch (m_dgRaw[0] & 0x0F)
     {
       case 0x01: // remove label
         cmd_remove_label = true;
         break;
       default:
         // ignore command
-        DataGroup::Reset();
+        CDataGroup::Reset();
         return false;
     }
   }
   else
   {
-    field_len = (dg_raw[0] & 0x0F) + 1;
+    field_len = (m_dgRaw[0] & 0x0F) + 1;
   }
 
   size_t real_len = 2 + field_len;
@@ -367,33 +367,33 @@ bool DynamicLabelDecoder::DecodeDataGroup()
   // abort on invalid CRC
   if (!CheckCRC(real_len))
   {
-    DataGroup::Reset();
+    CDataGroup::Reset();
     return false;
   }
 
   // on Remove Label command, display empty label
   if (cmd_remove_label)
   {
-    label.Reset();
+    m_label.Reset();
     return true;
   }
 
   // create new segment
   DL_SEG dl_seg;
-  memcpy(dl_seg.prefix, &dg_raw[0], 2);
-  dl_seg.chars.insert(dl_seg.chars.begin(), dg_raw.begin() + 2, dg_raw.begin() + 2 + field_len);
+  memcpy(dl_seg.prefix, &m_dgRaw[0], 2);
+  dl_seg.chars.insert(dl_seg.chars.begin(), m_dgRaw.begin() + 2, m_dgRaw.begin() + 2 + field_len);
 
-  DataGroup::Reset();
+  CDataGroup::Reset();
 
-  //	fprintf(stderr, "DynamicLabelDecoder: segnum %d, toggle: %s, chars_len: %2d%s\n", dl_seg.SegNum(), dl_seg.Toggle() ? "Y" : "N", dl_seg.chars.size(), dl_seg.Last() ? " [LAST]" : "");
+  //	fprintf(stderr, "CDynamicLabelDecoder: segnum %d, toggle: %s, chars_len: %2d%s\n", dl_seg.SegNum(), dl_seg.Toggle() ? "Y" : "N", dl_seg.chars.size(), dl_seg.Last() ? " [LAST]" : "");
 
   // try to add segment
-  if (!dl_sr.AddSegment(dl_seg))
+  if (!m_dl_sr.AddSegment(dl_seg))
     return false;
 
-  // append new label
-  label.raw = dl_sr.label_raw;
-  label.charset = dl_sr.dl_segs[0].prefix[1] >> 4;
+  // append new m_label
+  m_label.raw = m_dl_sr.label_raw;
+  m_label.charset = m_dl_sr.dl_segs[0].prefix[1] >> 4;
   return true;
 }
 
@@ -422,7 +422,7 @@ bool DL_SEG_REASSEMBLER::AddSegment(DL_SEG& dl_seg)
   // add segment
   dl_segs[dl_seg.SegNum()] = dl_seg;
 
-  // check for complete label
+  // check for complete m_label
   return CheckForCompleteLabel();
 }
 
@@ -447,50 +447,50 @@ bool DL_SEG_REASSEMBLER::CheckForCompleteLabel()
       return false;
   }
 
-  // append complete label
+  // append complete m_label
   label_raw.clear();
   for (int i = 0; i < segs; i++)
     label_raw.insert(label_raw.end(), dl_segs[i].chars.begin(), dl_segs[i].chars.end());
 
-  //	std::string label((const char*) &label_raw[0], label_raw.size());
-  //	fprintf(stderr, "DL_SEG_REASSEMBLER: new label: '%s'\n", label.c_str());
+  //	std::string m_label((const char*) &label_raw[0], label_raw.size());
+  //	fprintf(stderr, "DL_SEG_REASSEMBLER: new m_label: '%s'\n", m_label.c_str());
   return true;
 }
 
 
-// --- MOTDecoder -----------------------------------------------------------------
-void MOTDecoder::Reset()
+// --- CMOTDecoder -----------------------------------------------------------------
+void CMOTDecoder::Reset()
 {
-  DataGroup::Reset();
+  CDataGroup::Reset();
 
-  mot_len = 0;
+  m_motLength = 0;
 }
 
-bool MOTDecoder::DecodeDataGroup()
+bool CMOTDecoder::DecodeDataGroup()
 {
   // ignore too short lens
-  if (mot_len < CalcCRC::CRCLen)
+  if (m_motLength < CalcCRC::CRCLen)
     return false;
 
   // only DGs with CRC are supported here!
 
   // abort on invalid CRC
-  if (!CheckCRC(mot_len - CalcCRC::CRCLen))
+  if (!CheckCRC(m_motLength - CalcCRC::CRCLen))
   {
-    DataGroup::Reset();
+    CDataGroup::Reset();
     return false;
   }
 
-  DataGroup::Reset();
+  CDataGroup::Reset();
 
-  //	fprintf(stderr, "MOTDecoder: mot_len: %5zu\n", mot_len);
+  //	fprintf(stderr, "CMOTDecoder: m_motLength: %5zu\n", m_motLength);
 
   return true;
 }
 
-std::vector<uint8_t> MOTDecoder::GetMOTDataGroup()
+std::vector<uint8_t> CMOTDecoder::GetMOTDataGroup()
 {
-  std::vector<uint8_t> result(mot_len);
-  memcpy(&result[0], &dg_raw[0], mot_len);
+  std::vector<uint8_t> result(m_motLength);
+  memcpy(&result[0], &m_dgRaw[0], m_motLength);
   return result;
 }

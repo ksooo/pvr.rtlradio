@@ -38,7 +38,7 @@
 #include "dab_decoder.h"
 #include "dabplus_decoder.h"
 
-class DecoderAdapter: public DabProcessor, public SubchannelSinkObserver, public PADDecoderObserver
+class DecoderAdapter: public DabProcessor, public SubchannelSinkObserver, public IPADDecoderObserver
 {
     public:
         DecoderAdapter(ProgrammeHandlerInterface& mr,
@@ -57,7 +57,7 @@ class DecoderAdapter: public DabProcessor, public SubchannelSinkObserver, public
         virtual void ACCFrameError(const unsigned char /* error*/);
         virtual void FECInfo(int /*total_corr_count*/, bool /*uncorr_errors*/);
 
-        // PADDecoderObserver impl
+        // IPADDecoderObserver impl
         virtual void PADChangeDynamicLabel(const DL_STATE& dl);
         virtual void PADChangeSlide(const MOT_FILE& slide);
         virtual void PADLengthError(size_t announced_xpad_len, size_t xpad_len);
@@ -67,7 +67,7 @@ class DecoderAdapter: public DabProcessor, public SubchannelSinkObserver, public
         int frameErrorCounter = 0;
         ProgrammeHandlerInterface& myInterface;
         std::unique_ptr<SubchannelSink> decoder;
-        PADDecoder padDecoder;
+        CPADDecoder padDecoder;
 
         struct FILEDeleter{ void operator()(FILE* fd){ if (fd) fclose(fd); }};
         std::unique_ptr<FILE, FILEDeleter> dumpFile;

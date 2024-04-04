@@ -16,8 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PAD_DECODER_H_
-#define PAD_DECODER_H_
+#pragma once
 
 #include "mot_manager.h"
 #include "tools.h"
@@ -43,48 +42,8 @@ struct DL_SEG
   int SegNum() const { return First() ? 0 : ((prefix[1] & 0x70) >> 4); }
 };
 
-
-// --- DataGroup -----------------------------------------------------------------
-class DataGroup
-{
-public:
-  DataGroup(size_t dg_size_max);
-  virtual ~DataGroup() {}
-
-  bool ProcessDataSubfield(bool start, const uint8_t* data, size_t len);
-
-protected:
-  std::vector<uint8_t> dg_raw;
-  size_t dg_size;
-  size_t dg_size_needed;
-
-  virtual size_t GetInitialNeededSize() { return 0; }
-  virtual bool DecodeDataGroup() = 0;
-  bool EnsureDataGroupSize(size_t desired_dg_size);
-  bool CheckCRC(size_t len);
-  void Reset();
-};
-
-
-// --- DGLIDecoder -----------------------------------------------------------------
-class DGLIDecoder : public DataGroup
-{
-public:
-  DGLIDecoder() : DataGroup(2 + CalcCRC::CRCLen) { Reset(); }
-
-  void Reset();
-
-  size_t GetDGLILen();
-
-private:
-  size_t dgli_len;
-
-  size_t GetInitialNeededSize() { return 2 + CalcCRC::CRCLen; } // DG len + CRC
-  bool DecodeDataGroup();
-};
-
-
 typedef std::map<int, DL_SEG> dl_segs_t;
+
 
 // --- DL_SEG_REASSEMBLER -----------------------------------------------------------------
 struct DL_SEG_REASSEMBLER
@@ -110,45 +69,6 @@ struct DL_STATE
     raw.clear();
     charset = -1;
   }
-};
-
-
-// --- DynamicLabelDecoder -----------------------------------------------------------------
-class DynamicLabelDecoder : public DataGroup
-{
-public:
-  DynamicLabelDecoder() : DataGroup(2 + 16 + CalcCRC::CRCLen) { Reset(); }
-
-  void Reset();
-
-  DL_STATE GetLabel() { return label; }
-
-private:
-  DL_SEG_REASSEMBLER dl_sr;
-  DL_STATE label;
-
-  size_t GetInitialNeededSize() { return 2 + CalcCRC::CRCLen; } // at least prefix + CRC
-  bool DecodeDataGroup();
-};
-
-
-// --- MOTDecoder -----------------------------------------------------------------
-class MOTDecoder : public DataGroup
-{
-public:
-  MOTDecoder() : DataGroup(16384) { Reset(); } // = 2^14
-
-  void Reset();
-
-  void SetLen(size_t mot_len) { this->mot_len = mot_len; }
-
-  std::vector<uint8_t> GetMOTDataGroup();
-
-private:
-  size_t mot_len;
-
-  size_t GetInitialNeededSize() { return mot_len; } // MOT len + CRC (or zero!)
-  bool DecodeDataGroup();
 };
 
 
@@ -178,29 +98,108 @@ struct XPAD_CI
 typedef std::list<XPAD_CI> xpad_cis_t;
 
 
-// --- PADDecoderObserver -----------------------------------------------------------------
-class PADDecoderObserver
+// --- CDataGroup -----------------------------------------------------------------
+class CDataGroup
 {
 public:
-  virtual ~PADDecoderObserver() {}
+  CDataGroup(size_t dg_size_max);
+  virtual ~CDataGroup() = default;
 
-  virtual void PADChangeDynamicLabel(const DL_STATE& /*dl*/) {}
-  virtual void PADChangeSlide(const MOT_FILE& /*slide*/) {}
+  bool ProcessDataSubfield(bool start, const uint8_t* data, size_t len);
 
-  virtual void PADLengthError(size_t /*announced_xpad_len*/, size_t /*xpad_len*/) {}
+protected:
+  std::vector<uint8_t> m_dgRaw;
+  size_t m_dgSize;
+  size_t m_dgSizeNeeded;
+
+  virtual size_t GetInitialNeededSize() { return 0; }
+  virtual bool DecodeDataGroup() = 0;
+  bool EnsureDataGroupSize(size_t desired_dg_size);
+  bool CheckCRC(size_t len);
+  void Reset();
 };
 
 
-// --- PADDecoder -----------------------------------------------------------------
-class PADDecoder
+// --- CDGLIDecoder -----------------------------------------------------------------
+class CDGLIDecoder : public CDataGroup
 {
 public:
-  PADDecoder(PADDecoderObserver* observer, bool loose)
-    : observer(observer), loose(loose), mot_app_type(-1)
+  CDGLIDecoder() : CDataGroup(2 + CalcCRC::CRCLen) { Reset(); }
+
+  void Reset();
+
+  size_t GetDGLILen();
+
+private:
+  size_t m_dgliLength;
+
+  size_t GetInitialNeededSize() override { return 2 + CalcCRC::CRCLen; } // DG len + CRC
+  bool DecodeDataGroup() override;
+};
+
+
+// --- CDynamicLabelDecoder -----------------------------------------------------------------
+class CDynamicLabelDecoder : public CDataGroup
+{
+public:
+  CDynamicLabelDecoder() : CDataGroup(2 + 16 + CalcCRC::CRCLen) { Reset(); }
+
+  void Reset();
+
+  DL_STATE GetLabel() { return m_label; }
+
+private:
+  DL_SEG_REASSEMBLER m_dl_sr;
+  DL_STATE m_label;
+
+  size_t GetInitialNeededSize() override  { return 2 + CalcCRC::CRCLen; } // at least prefix + CRC
+  bool DecodeDataGroup() override;
+};
+
+
+// --- CMOTDecoder -----------------------------------------------------------------
+class CMOTDecoder : public CDataGroup
+{
+public:
+  CMOTDecoder() : CDataGroup(16384) { Reset(); } // = 2^14
+
+  void Reset();
+
+  void SetLen(size_t mot_len) { m_motLength = mot_len; }
+
+  std::vector<uint8_t> GetMOTDataGroup();
+
+private:
+  size_t m_motLength;
+
+  size_t GetInitialNeededSize() override { return m_motLength; } // MOT len + CRC (or zero!)
+  bool DecodeDataGroup() override;
+};
+
+
+// --- IPADDecoderObserver -----------------------------------------------------------------
+class IPADDecoderObserver
+{
+public:
+  virtual ~IPADDecoderObserver() = default;
+
+  virtual void PADChangeDynamicLabel(const DL_STATE& dl) = 0;
+  virtual void PADChangeSlide(const MOT_FILE& slide) = 0;
+
+  virtual void PADLengthError(size_t announced_xpad_len, size_t xpad_len) = 0;
+};
+
+
+// --- CPADDecoder -----------------------------------------------------------------
+class CPADDecoder
+{
+public:
+  CPADDecoder(IPADDecoderObserver* observer, bool loose)
+    : m_observer(observer), m_loose(loose), m_MOTAppType(-1)
   {
   }
 
-  void SetMOTAppType(int mot_app_type) { this->mot_app_type = mot_app_type; }
+  void SetMOTAppType(int type) { m_MOTAppType = type; }
   void Process(const uint8_t* xpad_data,
                size_t xpad_len,
                bool exact_xpad_len,
@@ -208,17 +207,15 @@ public:
   void Reset();
 
 private:
-  PADDecoderObserver* observer;
-  bool loose;
-  std::atomic<int> mot_app_type;
+  IPADDecoderObserver* m_observer;
+  bool m_loose;
+  std::atomic<int> m_MOTAppType;
 
-  uint8_t xpad[196]; // longest possible X-PAD
-  XPAD_CI last_xpad_ci;
+  uint8_t m_xpad[196]; // longest possible X-PAD
+  XPAD_CI m_lastXPAD_CI;
 
-  DynamicLabelDecoder dl_decoder;
-  DGLIDecoder dgli_decoder;
-  MOTDecoder mot_decoder;
-  MOTManager mot_manager;
+  CDynamicLabelDecoder m_dlDecoder;
+  CDGLIDecoder m_DGLIDecoder;
+  CMOTDecoder m_MOTDecoder;
+  MOTManager m_MOTManager;
 };
-
-#endif /* PAD_DECODER_H_ */
