@@ -106,102 +106,102 @@ int main(){
 
 static std::string ucs2_to_utf8(void const* buffer, size_t num_bytes)
 {
-	size_t index = 0;
-	size_t utf8index = 0;
-	bool big_endian = false;
+    size_t index = 0;
+    size_t utf8index = 0;
+    bool big_endian = false;
 
-	assert(buffer);
-	assert((num_bytes % 2) == 0);
+    assert(buffer);
+    assert((num_bytes % 2) == 0);
 
-	// NULL-terminated UCS-2 string, figure out the byte length
-	if(num_bytes == 0) {
+    // NULL-terminated UCS-2 string, figure out the byte length
+    if(num_bytes == 0) {
 
-		char16_t const* ptr = reinterpret_cast<char16_t const*>(buffer);
-		while(*ptr) { num_bytes += 2; ptr++; }
-	}
+        char16_t const* ptr = reinterpret_cast<char16_t const*>(buffer);
+        while(*ptr) { num_bytes += 2; ptr++; }
+    }
 
-	std::unique_ptr<char[]> utf8(new char[(num_bytes / 2) * 3 + 1]);
-	uint8_t const* buf = reinterpret_cast<uint8_t const*>(buffer);
+    std::unique_ptr<char[]> utf8(new char[(num_bytes / 2) * 3 + 1]);
+    uint8_t const* buf = reinterpret_cast<uint8_t const*>(buffer);
 
-	if(num_bytes >= 2)
-	{
-		if((buf[0] == 0xfe) && (buf[1] == 0xff))
-		{
-			big_endian = true;
-			index += 2;
-		}
-		else if((buf[0] == 0xff) && (buf[1] == 0xfe))
-		{
-			big_endian = false;
-			index += 2;
-		}
-	}
+    if(num_bytes >= 2)
+    {
+        if((buf[0] == 0xfe) && (buf[1] == 0xff))
+        {
+            big_endian = true;
+            index += 2;
+        }
+        else if((buf[0] == 0xff) && (buf[1] == 0xfe))
+        {
+            big_endian = false;
+            index += 2;
+        }
+    }
 
-	for(; index < num_bytes; index += 2) {
+    for(; index < num_bytes; index += 2) {
 
-		char16_t ch;
+        char16_t ch;
 
-		if(big_endian)
-			ch = (buf[index] << 8) | buf[index + 1];
-		else
-			ch = buf[index] | (buf[index + 1] << 8);
+        if(big_endian)
+            ch = (buf[index] << 8) | buf[index + 1];
+        else
+            ch = buf[index] | (buf[index + 1] << 8);
 
-		if(ch < 0x80)
-		{
-			utf8[utf8index++] = ch;
-		}
-		else if(ch < 0x800)
-		{
-			utf8[utf8index++] = 0xc0 | (ch >> 6);
-			utf8[utf8index++] = 0x80 | (ch & 0x3f);
-		}
-		else
-		{
-			utf8[utf8index++] = 0xe0 | (ch >> 12);
-			utf8[utf8index++] = 0x80 | ((ch >> 6) & 0x3f);
-			utf8[utf8index++] = 0x80 | (ch & 0x3f);
-		}
-	}
+        if(ch < 0x80)
+        {
+            utf8[utf8index++] = ch;
+        }
+        else if(ch < 0x800)
+        {
+            utf8[utf8index++] = 0xc0 | (ch >> 6);
+            utf8[utf8index++] = 0x80 | (ch & 0x3f);
+        }
+        else
+        {
+            utf8[utf8index++] = 0xe0 | (ch >> 12);
+            utf8[utf8index++] = 0x80 | ((ch >> 6) & 0x3f);
+            utf8[utf8index++] = 0x80 | (ch & 0x3f);
+        }
+    }
 
-	utf8[utf8index] = 0;
+    utf8[utf8index] = 0;
 
-	return std::string(utf8.get());
+    return std::string(utf8.get());
 }
 
 static std::string ebulatin_to_utf8(void const* buffer, size_t num_bytes)
 {
-	assert(buffer);
+    assert(buffer);
 
-	std::u16string ucs2;
-	uint8_t const* ptr = reinterpret_cast<uint8_t const*>(buffer);
+    std::u16string ucs2;
+    uint8_t const* ptr = reinterpret_cast<uint8_t const*>(buffer);
 
-	// NULL-terminated, determine the byte count
-	if(num_bytes == 0) {
+    // NULL-terminated, determine the byte count
+    if(num_bytes == 0) {
 
-		while(*ptr) { num_bytes++; ptr++; }
-	}
+        while(*ptr) { num_bytes++; ptr++; }
+    }
 
-	// Use the lookup table to convert EBU Latin into UCS-2
-	for(size_t index = 0; index < num_bytes; index++) 
-		ucs2 += ebuLatinToUcs2[reinterpret_cast<uint8_t const*>(buffer)[index]];
+    // Use the lookup table to convert EBU Latin into UCS-2
+    for(size_t index = 0; index < num_bytes; index++) 
+        ucs2 += ebuLatinToUcs2[reinterpret_cast<uint8_t const*>(buffer)[index]];
 
-	// Convert the UCS-2 into UTF-8
-	return ucs2_to_utf8(ucs2.c_str(), 0);
+    // Convert the UCS-2 into UTF-8
+    return ucs2_to_utf8(ucs2.c_str(), 0);
 }
 
 static std::string utf8_to_utf8(void const* buffer, size_t num_bytes)
 {
-	assert(buffer);
-	return (num_bytes == 0) ? std::string(reinterpret_cast<char const*>(buffer)) :
-		std::string(reinterpret_cast<char const*>(buffer), num_bytes);
+    assert(buffer);
+    return (num_bytes == 0) ? std::string(reinterpret_cast<char const*>(buffer)) :
+        std::string(reinterpret_cast<char const*>(buffer), num_bytes);
 }
 
 std::string toUtf8StringUsingCharset(const void* buffer, CharacterSet charset, size_t num_bytes)
 {
-	if(buffer == nullptr) throw std::logic_error("Cannot convert charset of empty buffer");
+    if(buffer == nullptr) throw std::logic_error("Cannot convert charset of empty buffer");
 
-	if(charset == CharacterSet::UnicodeUcs2) return ucs2_to_utf8(buffer, num_bytes);
-	else if(charset == CharacterSet::UnicodeUtf8) return utf8_to_utf8(buffer, num_bytes);
-	else return ebulatin_to_utf8(buffer, num_bytes);
+    if(charset == CharacterSet::UnicodeUcs2) return ucs2_to_utf8(buffer, num_bytes);
+    else if(charset == CharacterSet::UnicodeUtf8) return utf8_to_utf8(buffer, num_bytes);
+    else return ebulatin_to_utf8(buffer, num_bytes);
 }
 
