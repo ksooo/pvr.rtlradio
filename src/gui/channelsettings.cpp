@@ -34,7 +34,7 @@
 #include <kodi/gui/controls/Label.h>
 #include <kodi/gui/dialogs/FileBrowser.h>
 
-#if !defined(TARGET_WINDOWS) && !defined(TARGET_ANDROID) && !defined(TARGET_DARWIN_OSX)
+#if !defined(TARGET_WINDOWS) && !defined(TARGET_ANDROID) && !defined(TARGET_DARWIN)
 #include <EGL/egl.h>
 #endif
 
@@ -84,6 +84,8 @@ static bool is_platform_opengles(void)
   return true;
 #elif defined(TARGET_DARWIN_OSX)
   return false;
+#elif defined(TARGET_DARWIN_EMBEDDED)
+  return true;
 #else
   return (eglQueryAPI() == EGL_OPENGL_ES_API);
 #endif
