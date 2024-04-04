@@ -1,1 +1,1 @@
-!windowsstore
+!windowsstore !android !darwin_embedded

@@ -5,9 +5,11 @@
     <category id="device" label="30000">
       <group id="1" label="-1">
 
+        <!-- @SETTINGS_XML_IN_CONNECTION_TYPE_NOTE@ -->
         <setting id="device_connection" type="integer" label="30100" help="30500">
           <level>0</level>
-          <default>0</default>
+          <visible>@SETTINGS_XML_IN_CONNECTION_TYPE_VISIBLE@</visible>
+          <default>@SETTINGS_XML_IN_CONNECTION_TYPE_DEFAULT@</default>
           <constraints>
             <options>
               <option label="30200">0</option>
@@ -17,8 +19,14 @@
           <control type="spinner" format="integer"/>
         </setting>
 
-        <setting id="device_connection_usb_index" parent="device_connection" type="integer" label="30101" help="30501">
+      </group>
+		
+      <group id="2" label="30118">
+
+        <!-- @SETTINGS_XML_IN_CONNECTION_TYPE_NOTE@ -->
+        <setting id="device_connection_usb_index" type="integer" label="30101" help="30501">
           <level>0</level>
+          <visible>@SETTINGS_XML_IN_CONNECTION_TYPE_VISIBLE@</visible>
           <default>0</default>
           <constraints>
             <minimum>0</minimum>
@@ -31,21 +39,23 @@
           <control type="spinner" format="integer"/>
         </setting>
 
-        <setting id="device_connection_tcp_host" parent="device_connection" type="string" label="30102" help="30502">
+        <setting id="device_connection_tcp_host" type="string" label="30102" help="30502">
           <level>0</level>
-          <default/>
+          <default>127.0.0.1</default>
           <constraints>
             <allowempty>true</allowempty>
           </constraints>
+          @SETTINGS_XML_IN_NO_USB_BEGIN@
           <dependencies>
             <dependency type="visible" setting="device_connection" operator="is">1</dependency>
           </dependencies>
+          @SETTINGS_XML_IN_NO_USB_END@
           <control type="edit" format="ip">
             <heading>30102</heading>
           </control>
         </setting>
 
-        <setting id="device_connection_tcp_port" parent="device_connection" type="integer" label="30103" help="30503">
+        <setting id="device_connection_tcp_port" type="integer" label="30103" help="30503">
           <level>0</level>
           <default>1234</default>
           <constraints>
@@ -53,13 +63,19 @@
             <minimum>0</minimum>
             <maximum>65535</maximum>
           </constraints>
+          @SETTINGS_XML_IN_NO_USB_BEGIN@
           <dependencies>
             <dependency type="visible" setting="device_connection" operator="is">1</dependency>
           </dependencies>
+          @SETTINGS_XML_IN_NO_USB_END@
           <control type="edit" format="integer">
             <heading>30103</heading>
           </control>
         </setting>
+
+      </group>
+
+      <group id="3" label="30119">
 
         <setting id="device_frequency_correction" type="integer" label="30108" help="30508">
           <level>0</level>
@@ -189,12 +205,14 @@
         <setting id="hdradio_prepend_channel_numbers" type="boolean" label="30117" help="30517">
           <dependencies>
             <dependency type="enable">
-              <or>
-                <condition setting="region_regioncode" operator="is">0</condition>
-                <condition setting="region_regioncode" operator="is">2</condition>
-              </or>
+              <and>
+                <or>
+                  <condition setting="region_regioncode" operator="is">0</condition>
+                  <condition setting="region_regioncode" operator="is">2</condition>
+                </or>
+                <condition setting="hdradio_enable" operator="is">true</condition>
+              </and>
             </dependency>
-             <dependency type="enable" setting="hdradio_enable">true</dependency>
           </dependencies>
           <level>0</level>
           <default>false</default>
@@ -204,12 +222,14 @@
         <setting id="hdradio_output_gain" type="number" label="30109" help="30509">
           <dependencies>
             <dependency type="enable">
-              <or>
-                <condition setting="region_regioncode" operator="is">0</condition>
-                <condition setting="region_regioncode" operator="is">2</condition>
-              </or>
+              <and>
+                <or>
+                  <condition setting="region_regioncode" operator="is">0</condition>
+                  <condition setting="region_regioncode" operator="is">2</condition>
+                </or>
+                <condition setting="hdradio_enable" operator="is">true</condition>
+              </and>
             </dependency>
-            <dependency type="enable" setting="hdradio_enable">true</dependency>
           </dependencies>
           <level>0</level>
           <default>-3.0</default>
@@ -268,11 +288,13 @@
         <setting id="dabradio_coarse_corrector" type="boolean" label="30104" help="30204">
           <dependencies>
             <dependency type="enable">
-              <or>
-                <condition setting="region_regioncode" operator="is">0</condition>
-                <condition setting="region_regioncode" operator="is">3</condition>
-              </or>
-              <dependency type="enable" setting="dabradio_enable">true</dependency>
+              <and>
+                <or>
+                  <condition setting="region_regioncode" operator="is">0</condition>
+                  <condition setting="region_regioncode" operator="is">3</condition>
+                </or>
+                <condition setting="dabradio_enable" operator="is">true</condition>
+              </and>
             </dependency>
           </dependencies>
           <level>0</level>
@@ -283,12 +305,14 @@
         <setting id="dabradio_coarse_corrector_type" type="integer" label="30113" help="30203">
           <dependencies>
             <dependency type="enable">
-              <or>
-                <condition setting="region_regioncode" operator="is">0</condition>
-                <condition setting="region_regioncode" operator="is">3</condition>
-              </or>
-              <dependency type="enable" setting="dabradio_enable">true</dependency>
-              <dependency type="enable" setting="dabradio_coarse_corrector">true</dependency>
+              <and>
+                <or>
+                  <condition setting="region_regioncode" operator="is">0</condition>
+                  <condition setting="region_regioncode" operator="is">3</condition>
+                </or>
+                <condition setting="dabradio_enable" operator="is">true</condition>
+                <condition setting="dabradio_coarse_corrector" operator="is">true</condition>
+              </and>
             </dependency>
           </dependencies>
           <level>0</level>
@@ -326,12 +350,14 @@
         <setting id="wxradio_sample_rate" type="integer" label="30110" help="30510">
           <dependencies>
             <dependency type="enable">
-              <or>
-                <condition setting="region_regioncode" operator="is">0</condition>
-                <condition setting="region_regioncode" operator="is">2</condition>
-              </or>
+              <and>
+                <or>
+                  <condition setting="region_regioncode" operator="is">0</condition>
+                  <condition setting="region_regioncode" operator="is">2</condition>
+                </or>
+                <condition setting="wxradio_enable" operator="is">true</condition>
+              </and>
             </dependency>
-            <dependency type="enable" setting="wxradio_enable">true</dependency>
           </dependencies>
           <level>0</level>
           <default>1600000</default>
@@ -353,12 +379,14 @@
         <setting id="wxradio_output_samplerate" type="integer" label="30105" help="30505">
           <dependencies>
             <dependency type="enable">
-              <or>
-                <condition setting="region_regioncode" operator="is">0</condition>
-                <condition setting="region_regioncode" operator="is">2</condition>
-              </or>
+              <and>
+                <or>
+                  <condition setting="region_regioncode" operator="is">0</condition>
+                  <condition setting="region_regioncode" operator="is">2</condition>
+                </or>
+                <condition setting="wxradio_enable" operator="is">true</condition>
+              </and>
             </dependency>
-            <dependency type="enable" setting="wxradio_enable">true</dependency>
           </dependencies>
           <level>0</level>
           <default>48000</default>
@@ -374,12 +402,14 @@
         <setting id="wxradio_output_gain" type="number" label="30109" help="30509">
           <dependencies>
             <dependency type="enable">
-              <or>
-                <condition setting="region_regioncode" operator="is">0</condition>
-                <condition setting="region_regioncode" operator="is">2</condition>
-              </or>
+              <and>
+                <or>
+                  <condition setting="region_regioncode" operator="is">0</condition>
+                  <condition setting="region_regioncode" operator="is">2</condition>
+                </or>
+                <condition setting="wxradio_enable" operator="is">true</condition>
+              </and>
             </dependency>
-            <dependency type="enable" setting="wxradio_enable">true</dependency>
           </dependencies>
           <level>0</level>
           <default>-3.0</default>
