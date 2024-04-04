@@ -1,7 +1,6 @@
 set(SOURCES fft.cpp
             Xtan2.cpp
             channels.cpp
-            charsets.cpp
             dab-audio.cpp
             dab-constants.cpp
             dab_decoder.cpp
@@ -30,7 +29,6 @@ set(SOURCES fft.cpp
 set(HEADERS MathHelper.h
             Xtan2.h
             channels.h
-            charsets.h
             dab-audio.h
             dab-constants.h
             dab-processor.h
@@ -66,3 +64,4 @@ set(HEADERS MathHelper.h
             viterbi.h)
 
 add_library(code_src_dsp_dab OBJECT ${SOURCES} ${HEADERS})
+target_include_directories(code_src_dsp_dab PRIVATE ${PROJECT_SOURCE_DIR}/src)

@@ -30,7 +30,7 @@
 #include <iso646.h>
 
 #include "fib-processor.h"
-#include "charsets.h"
+#include "utils/charsets.h"
 #include "MathHelper.h"
 
 FIBProcessor::FIBProcessor(RadioControllerInterface& mr) :

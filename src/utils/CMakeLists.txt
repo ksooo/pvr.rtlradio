@@ -1,6 +1,8 @@
-set(SOURCES complex.cpp)
+set(SOURCES charsets.cpp
+            complex.cpp)
 
 set(HEADERS align.h
+            charsets.h
             scalar_condition.h
             value_size_defines.h)
 
