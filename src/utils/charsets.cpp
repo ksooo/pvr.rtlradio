@@ -81,12 +81,11 @@ static std::string ucs2_to_utf8(void const* buffer, size_t num_bytes)
   // NULL-terminated UCS-2 string, figure out the byte length
   if (num_bytes == 0)
   {
-
     char16_t const* ptr = reinterpret_cast<char16_t const*>(buffer);
     while (*ptr)
     {
       num_bytes += 2;
-      ptr++;
+      ++ptr;
     }
   }
 
@@ -150,8 +149,8 @@ static std::string ebulatin_to_utf8(void const* buffer, size_t num_bytes)
   {
     while (*ptr)
     {
-      num_bytes++;
-      ptr++;
+      ++num_bytes;
+      ++ptr;
     }
   }
 
@@ -180,12 +179,16 @@ std::string toUtf8(const void* buffer, CharacterSet charset, size_t num_bytes)
   if (buffer == nullptr)
     throw std::logic_error("Cannot convert charset of empty buffer");
 
-  if (charset == CharacterSet::UnicodeUcs2)
-    return ucs2_to_utf8(buffer, num_bytes);
-  else if (charset == CharacterSet::UnicodeUtf8)
-    return utf8_to_utf8(buffer, num_bytes);
-  else
-    return ebulatin_to_utf8(buffer, num_bytes);
+  switch (charset)
+  {
+    case CharacterSet::UnicodeUcs2:
+      return ucs2_to_utf8(buffer, num_bytes);
+    case CharacterSet::UnicodeUtf8:
+      return utf8_to_utf8(buffer, num_bytes);
+    case CharacterSet::EbuLatin:
+    default:
+      return ebulatin_to_utf8(buffer, num_bytes);
+  }
 }
 
 } // namespace charsets
