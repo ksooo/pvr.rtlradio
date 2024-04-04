@@ -142,12 +142,14 @@ void DecoderAdapter::FECInfo(int total_corr_count, bool uncorr_errors)
 
 void DecoderAdapter::PADChangeDynamicLabel(const DL_STATE &dl)
 {
+    using charsets::CharacterSet;
+
     if (dl.raw.empty()) {
         myInterface.onNewDynamicLabel("");
     }
     else {
         myInterface.onNewDynamicLabel(
-                toUtf8StringUsingCharset(
+                charsets::toUtf8(
                     dl.raw.data(),
                     (CharacterSet)dl.charset,
                     dl.raw.size()));
