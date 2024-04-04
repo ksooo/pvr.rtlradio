@@ -4,7 +4,9 @@ project(pvr.rtlradio)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
 
 option(DISTRIBUTION_BUILD "Linux distribution build (without use of depends folder)" OFF)
-if(CORE_SYSTEM_NAME STREQUAL windowsstore)
+if(CORE_SYSTEM_NAME STREQUAL windowsstore OR
+   CORE_SYSTEM_NAME STREQUAL darwin_embedded OR
+   CORE_SYSTEM_NAME STREQUAL android)
   set(USB_DEVICE_SUPPORT False)
 else()
   option(USB_DEVICE_SUPPORT "Build add-on with USB device support, if set to \"OFF\" RTL-SDR can only be accessed via network" ON)
