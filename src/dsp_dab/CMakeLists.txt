@@ -16,6 +16,10 @@ set(SOURCES fft.cpp
             ofdm-decoder.cpp
             ofdm-processor.cpp
             pad_decoder.cpp
+            pad_decoder_datagroup.cpp
+            pad_decoder_dgli.cpp
+            pad_decoder_dynamiclabelsegment.cpp
+            pad_decoder_mot.cpp
             phasereference.cpp
             phasetable.cpp
             profiling.cpp
@@ -48,6 +52,10 @@ set(HEADERS MathHelper.h
             ofdm-decoder.h
             ofdm-processor.h
             pad_decoder.h
+            pad_decoder_datagroup.h
+            pad_decoder_dgli.h
+            pad_decoder_dynamiclabelsegment.h
+            pad_decoder_mot.h
             phasereference.h
             phasetable.h
             profiling.h
