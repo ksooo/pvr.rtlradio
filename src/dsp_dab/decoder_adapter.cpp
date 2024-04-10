@@ -49,7 +49,7 @@ DecoderAdapter::DecoderAdapter(ProgrammeHandlerInterface &mr, int16_t bitRate, A
     }
 
     // MOT, start of X-PAD data group, see EN 301 234
-    padDecoder.SetMOTAppType(12);
+    padDecoder.SetMOTAppType(X_PADAppType_MOT_StartOfX);
 }
 
 void DecoderAdapter::addtoFrame(uint8_t *v)

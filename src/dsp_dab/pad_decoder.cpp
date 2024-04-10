@@ -24,7 +24,7 @@ const size_t XPAD_CI::lens[] = {4, 6, 8, 12, 16, 24, 32, 48};
 // --- CPADDecoder -----------------------------------------------------------------
 void CPADDecoder::Reset()
 {
-  m_MOTAppType = -1;
+  m_MOTAppType = X_PADAppType_NotSet;
 
   m_lastXPAD_CI.Reset();
 
@@ -32,6 +32,11 @@ void CPADDecoder::Reset()
   m_DGLIDecoder.Reset();
   m_MOTDecoder.Reset();
   m_MOTManager.Reset();
+}
+
+void CPADDecoder::SetMOTAppType(X_PADApplicationType type)
+{
+  m_MOTAppType = type;
 }
 
 void CPADDecoder::Process(const uint8_t* xpad_data,
@@ -47,62 +52,68 @@ void CPADDecoder::Process(const uint8_t* xpad_data,
   xpad_cis_t xpad_cis;
   size_t xpad_cis_len = -1;
 
-  int fpad_type = fpad_data[0] >> 6;
-  int xpad_ind = (fpad_data[0] & 0x30) >> 4;
-  bool ci_flag = fpad_data[1] & 0x02;
+  const auto fpad_type = static_cast<F_PADType>(fpad_data[0] >> 6);
+  const auto xpad_ind = static_cast<X_PADInd>((fpad_data[0] & 0x30) >> 4);
+  const auto byte_l_indicator = static_cast<ByteLIndicator>(fpad_data[0] & 0xF);
+  const auto ci_flag = static_cast<ContentsIndicatorFlag>((fpad_data[1] & 0x02) >> 1);
 
   XPAD_CI prev_xpad_ci = m_lastXPAD_CI;
   m_lastXPAD_CI.Reset();
 
   // build CI list
-  if (fpad_type == 0b00)
+  if (fpad_type == F_PADType::Type0)
   {
-    if (ci_flag)
+    if (ci_flag == ContentsIndicatorFlag::ContentsIndicatorsPresent)
     {
       switch (xpad_ind)
       {
-        case 0b01:
-        { // short X-PAD
+        // short X-PAD
+        case X_PADInd::shortData:
+        {
           if (xpad_len < 1)
             return;
 
-          int type = m_xpad[0] & 0x1F;
+          const X_PADApplicationType type = static_cast<X_PADApplicationType>(m_xpad[0] & 0x1F);
 
           // skip end marker
-          if (type != 0x00)
+          if (type != X_PADAppType_EndMarker)
           {
             xpad_cis_len = 1;
             xpad_cis.emplace_back(3, type);
           }
           break;
         }
-        case 0b10: // variable size X-PAD
+
+        // variable size X-PAD
+        case X_PADInd::variableSizeData:
+        {
           xpad_cis_len = 0;
           for (size_t i = 0; i < 4; i++)
           {
             if (xpad_len < i + 1)
               return;
 
-            uint8_t ci_raw = m_xpad[i];
+            const uint8_t ci_raw = m_xpad[i];
             xpad_cis_len++;
 
             // break on end marker
-            if ((ci_raw & 0x1F) == 0x00)
+            if ((ci_raw & 0x1F) == X_PADAppType_EndMarker)
               break;
 
             xpad_cis.emplace_back(ci_raw);
           }
           break;
+        }
       }
     }
     else
     {
       switch (xpad_ind)
       {
-        case 0b01: // short X-PAD
-        case 0b10: // variable size X-PAD
+        case X_PADInd::shortData:
+        case X_PADInd::variableSizeData:
           // if there is a previous CI, append it
-          if (prev_xpad_ci.type != -1)
+          if (prev_xpad_ci.type != X_PADAppType_NotSet)
           {
             xpad_cis_len = 0;
             xpad_cis.push_back(prev_xpad_ci);
@@ -148,7 +159,7 @@ void CPADDecoder::Process(const uint8_t* xpad_data,
 
   // process CIs
   size_t xpad_offset = xpad_cis_len;
-  int xpad_ci_type_continued = -1;
+  X_PADApplicationType xpad_ci_type_continued = X_PADAppType_NotSet;
   for (const XPAD_CI& xpad_ci : xpad_cis)
   {
     // len only valid for the *immediate* next data group after the DGLI!
@@ -157,27 +168,38 @@ void CPADDecoder::Process(const uint8_t* xpad_data,
     // handle Data Subfield
     switch (xpad_ci.type)
     {
-      case 1: // Data Group Length Indicator
-        m_DGLIDecoder.ProcessDataSubfield(ci_flag, m_xpad + xpad_offset, xpad_ci.len);
+      case X_PADAppType_DataGroupLengthIndicator: // Data Group Length Indicator
+      {
+        const bool start = ci_flag == ContentsIndicatorFlag::ContentsIndicatorsPresent;
+        m_DGLIDecoder.ProcessDataSubfield(start, m_xpad + xpad_offset, xpad_ci.len);
 
-        xpad_ci_type_continued = 1;
+        xpad_ci_type_continued = X_PADAppType_DataGroupLengthIndicator;
         break;
+      }
 
-      case 2: // Dynamic Label segment (start)
-      case 3: // Dynamic Label segment (continuation)
+      case X_PADAppType_DynamicLabelSegment_StartOfX:
+      case X_PADAppType_DynamicLabelSegment_ContinuationOfX:
+      {
+        const bool start = xpad_ci.type == X_PADAppType_DynamicLabelSegment_StartOfX;
+
         // if new m_label available, append it
-        if (m_dlDecoder.ProcessDataSubfield(xpad_ci.type == 2, m_xpad + xpad_offset, xpad_ci.len))
+        if (m_dlDecoder.ProcessDataSubfield(start, m_xpad + xpad_offset, xpad_ci.len))
           m_observer->PADChangeDynamicLabel(m_dlDecoder.GetLabel());
 
-        xpad_ci_type_continued = 3;
+        xpad_ci_type_continued = X_PADAppType_DynamicLabelSegment_ContinuationOfX;
         break;
+      }
 
-      default:
+      case X_PADAppType_MOT_StartOfX:
+      case X_PADAppType_MOT_ContinuationOfX:
+      case X_PADAppType_MOT_StartOfCAMessages:
+      case X_PADAppType_MOT_ContinuationOfCAMessages:
+      {
         // MOT, X-PAD data group (start/continuation)
-        if (m_MOTAppType != -1 &&
+        if (m_MOTAppType != X_PADAppType_NotSet &&
             (xpad_ci.type == m_MOTAppType || xpad_ci.type == m_MOTAppType + 1))
         {
-          bool start = xpad_ci.type == m_MOTAppType;
+          const bool start = xpad_ci.type == m_MOTAppType;
 
           if (start)
             m_MOTDecoder.SetLen(m_dgliLength);
@@ -208,9 +230,13 @@ void CPADDecoder::Process(const uint8_t* xpad_data,
             }
           }
 
-          xpad_ci_type_continued = m_MOTAppType + 1;
+          xpad_ci_type_continued = static_cast<X_PADApplicationType>(m_MOTAppType + 1);
         }
 
+        break;
+      }
+
+      default:
         break;
     }
     //		fprintf(stderr, "CPADDecoder: Data Subfield: type: %2d, len: %2zu\n", it->type, it->len);
