@@ -140,21 +140,70 @@ void DecoderAdapter::FECInfo(int total_corr_count, bool uncorr_errors)
     myInterface.onRsErrors(uncorr_errors, total_corr_count);
 }
 
-void DecoderAdapter::PADChangeDynamicLabel(const CDynamicLabel &dl)
+void DecoderAdapter::PADChangeDynamicLabel(const CDynamicLabel& dl)
 {
-    using charsets::CharacterSet;
+  using charsets::CharacterSet;
 
-    if (dl.raw.empty()) {
-        myInterface.onNewDynamicLabel("");
+  std::vector<std::pair<std::string, std::string>> id3TagData;
+
+#if 1
+  fprintf(stderr, "_____________________________________________________\n");
+  fprintf(stderr, "Dynamic Label: %s\n", dl.m_dynamicLabel.c_str());
+  if (!dl.m_playItems.empty())
+  {
+    fprintf(stderr, "Playback:\n");
+    for (const auto& item : dl.m_playItems)
+    {
+      id3TagData.emplace_back(CDynamicLabel::DLPlusContentTypes[item.first].id3v2, item.second);
+      fprintf(stderr, " - %s: '%s'\n", CDynamicLabel::DLPlusContentTypes[item.first].name, item.second.c_str());
     }
-    else {
-        myInterface.onNewDynamicLabel(
-                charsets::toUtf8(
-                    dl.raw.data(),
-                    (CharacterSet)dl.charset,
-                    dl.raw.size()));
+  }
+
+  if (!dl.m_infoItems.empty())
+  {
+    fprintf(stderr, "Infos:\n");
+    for (const auto& item : dl.m_infoItems)
+    {
+      fprintf(stderr, " - %s: '%s'\n", CDynamicLabel::DLPlusContentTypes[item.first].name, item.second.c_str());
     }
+  }
+
+  if (!dl.m_programmeItems.empty())
+  {
+    fprintf(stderr, "Programm:\n");
+    for (const auto& item : dl.m_programmeItems)
+    {
+      fprintf(stderr, " - %s: '%s'\n", CDynamicLabel::DLPlusContentTypes[item.first].name, item.second.c_str());
+    }
+  }
+
+  if (!dl.m_interactivityItems.empty())
+  {
+    fprintf(stderr, "Interactivity:\n");
+    for (const auto& item : dl.m_interactivityItems)
+    {
+      fprintf(stderr, " - %s: '%s'\n", CDynamicLabel::DLPlusContentTypes[item.first].name, item.second.c_str());
+    }
+  }
+
+  if (!dl.m_descriptorItems.empty())
+  {
+    fprintf(stderr, "Descriptor:\n");
+    for (const auto& item : dl.m_descriptorItems)
+    {
+      fprintf(stderr, " - %s: '%s'\n", CDynamicLabel::DLPlusContentTypes[item.first].name, item.second.c_str());
+    }
+  }
+#endif
+
+  if (dl.raw.empty()) {
+    myInterface.onNewDynamicLabel("", id3TagData);
+  }
+  else {
+    myInterface.onNewDynamicLabel(dl.m_dynamicLabel, id3TagData);
+  }
 }
+
 
 void DecoderAdapter::PADChangeSlide(const MOT_FILE &slide)
 {

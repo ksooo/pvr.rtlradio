@@ -26,6 +26,7 @@
 
 #include "dsp_dab/radio-receiver.h"
 #include "dsp_dab/ringbuffer.h"
+#include "id3v2tag.h"
 #include "props.h"
 #include "pvrstream.h"
 #include "rtldevice.h"
@@ -271,7 +272,7 @@ private:
   // onNewDynamicLabel
   //
   // Invoked when a new dynamic label has been decoded
-  void onNewDynamicLabel(const std::string& label) override;
+  void onNewDynamicLabel(const std::string& label, const std::vector<std::pair<std::string, std::string>>& idTagData) override;
 
   // onMOT
   //
@@ -317,6 +318,8 @@ private:
   std::unique_ptr<rtldevice> m_device; // RTL-SDR device instance
   aligned_ptr<RadioReceiver> m_receiver; // RadioReceiver instance
   RingBuffer<uint8_t> m_ringbuffer; // I/Q sample ring buffer
+
+  std::unique_ptr<id3v2tag> m_tag;
 
   // STREAM CONTROL
   //

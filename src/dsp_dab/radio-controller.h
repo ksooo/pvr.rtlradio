@@ -162,7 +162,7 @@ class ProgrammeHandlerInterface {
 
         /* A new Dynamic Label was decoded.
          * label is utf-8 encoded. */
-        virtual void onNewDynamicLabel(const std::string& label) {}
+        virtual void onNewDynamicLabel(const std::string& label, const std::vector<std::pair<std::string, std::string>>& idTagData) {}
 
         /* A slide was decoded. data contains the raw bytes, and subtype
          * defines the data format:

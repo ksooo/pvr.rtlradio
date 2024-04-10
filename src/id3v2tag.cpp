@@ -153,6 +153,15 @@ void id3v2tag::add_text_frame(id3v2_frameid_t frameid, char const* text, bool ap
   m_frames.emplace_back(std::move(frame));
 }
 
+void id3v2tag::AddTextData(char const* id, char const* text)
+{
+  if (id != nullptr & strlen(id) == 4 && text != nullptr)
+  {
+    id3v2_frameid_t frameid{id[0], id[1], id[2], id[3]};
+    add_text_frame(frameid, text, false);
+  }
+}
+
 //---------------------------------------------------------------------------
 // id3v2tag::album
 //

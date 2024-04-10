@@ -44,6 +44,8 @@ public:
   //-----------------------------------------------------------------------
   // Member Functions
 
+  void AddTextData(char const* id, char const* text);
+
   // album
   //
   // Sets the album (TALB) frame

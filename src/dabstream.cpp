@@ -25,6 +25,8 @@
 #include "exception_control/string_exception.h"
 #include "utils/value_size_defines.h"
 
+#define KODI_HAS_ID3
+
 #pragma warning(push, 4)
 
 // dabstream::DEFAULT_AUDIO_RATE
@@ -55,7 +57,7 @@ int const dabstream::STREAM_ID_AUDIOBASE = 1;
 // dabstream::STREAM_ID_ID3TAG
 //
 // Stream identifier for the ID3v2 tag output stream
-int const dabstream::STREAM_ID_ID3TAG = 0;
+int const dabstream::STREAM_ID_ID3TAG = 2;
 
 //---------------------------------------------------------------------------
 // dabstream Constructor (private)
@@ -95,6 +97,8 @@ dabstream::dabstream(std::unique_ptr<rtldevice> device,
   options.disableCoarseCorrector = !dabprops.coarse_corrector;
   options.freqsyncMethod = static_cast<FreqsyncMethod>(dabprops.coarse_corrector_type);
   m_receiver = make_aligned<RadioReceiver>(controllerinterface, inputinterface, options, 1);
+
+  m_tag = id3v2tag::create();
 
   // Create the worker thread
   scalar_condition<bool> started{false};
@@ -301,6 +305,15 @@ void dabstream::enumproperties(std::function<void(struct streamprops const& prop
   audio.samplerate = m_audiorate.load();
   audio.bitspersample = 16;
   callback(audio);
+
+#ifdef KODI_HAS_ID3
+  // ID3 TAG STREAM
+  //
+  streamprops id3 = {};
+  id3.codec = "id3";
+  id3.pid = STREAM_ID_ID3TAG;
+  callback(id3);
+#endif
 }
 
 //---------------------------------------------------------------------------
@@ -689,9 +702,41 @@ void dabstream::onNewAudio(std::vector<int16_t>&& audioData,
 //
 //	label		- The new dynamic label (UTF-8)
 
-void dabstream::onNewDynamicLabel(std::string const& /*label*/)
+void dabstream::onNewDynamicLabel(std::string const& label, const std::vector<std::pair<std::string, std::string>>& id3Tag)
 {
-  // TODO
+  size_t tagsize = 0; // Length of the ID3 tag
+  std::unique_ptr<uint8_t[]> tagdata; // ID3 tag data
+
+  for (const auto entry : id3Tag)
+    m_tag->AddTextData(entry.first.c_str(), entry.second.c_str());
+
+  if (m_tag->size() == 0)
+  {
+    m_tag->artist("");
+    m_tag->title("");
+  }
+
+  if (1)
+  {
+    tagsize = m_tag->size();
+    tagdata = std::unique_ptr<uint8_t[]>(new uint8_t[tagsize]);
+    if (!m_tag->write(&tagdata[0], tagsize))
+      tagsize = 0;
+  }
+
+  // If the ID3 tag data was generated, queue it as a demux packet
+  if (tagdata && (tagsize > 0))
+  {
+    std::unique_lock<std::mutex> lock(m_queuelock);
+
+    std::unique_ptr<demux_packet_t> packet = std::make_unique<demux_packet_t>();
+    packet->streamid = STREAM_ID_ID3TAG;
+    packet->size = static_cast<int>(tagsize);
+    packet->data = std::move(tagdata);
+
+    m_queue.emplace(std::move(packet));
+    m_queuecv.notify_all();
+  }
 }
 
 //---------------------------------------------------------------------------

@@ -78,5 +78,6 @@ bool CDataGroup::CheckCRC(size_t len)
 
   uint16_t crc_stored = m_dgRaw[len] << 8 | m_dgRaw[len + 1];
   uint16_t crc_calced = CalcCRC::CalcCRC_CRC16_CCITT.Calc(&m_dgRaw[0], len);
+  //fprintf(stderr, "-----------------> %i %i %X %X - %i\n", m_dgSize, len, crc_stored, crc_calced, crc_stored == crc_calced);
   return crc_stored == crc_calced;
 }
