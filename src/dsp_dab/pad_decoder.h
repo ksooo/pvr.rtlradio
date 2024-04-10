@@ -65,7 +65,7 @@ class IPADDecoderObserver
 public:
   virtual ~IPADDecoderObserver() = default;
 
-  virtual void PADChangeDynamicLabel(const DL_STATE& dl) = 0;
+  virtual void PADChangeDynamicLabel(const CDynamicLabel& dl) = 0;
   virtual void PADChangeSlide(const MOT_FILE& slide) = 0;
 
   virtual void PADLengthError(size_t announced_xpad_len, size_t xpad_len) = 0;

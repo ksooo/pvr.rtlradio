@@ -140,7 +140,7 @@ void DecoderAdapter::FECInfo(int total_corr_count, bool uncorr_errors)
     myInterface.onRsErrors(uncorr_errors, total_corr_count);
 }
 
-void DecoderAdapter::PADChangeDynamicLabel(const DL_STATE &dl)
+void DecoderAdapter::PADChangeDynamicLabel(const CDynamicLabel &dl)
 {
     using charsets::CharacterSet;
 

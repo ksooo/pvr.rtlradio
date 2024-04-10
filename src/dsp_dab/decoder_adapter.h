@@ -58,7 +58,7 @@ class DecoderAdapter: public DabProcessor, public SubchannelSinkObserver, public
         virtual void FECInfo(int /*total_corr_count*/, bool /*uncorr_errors*/);
 
         // IPADDecoderObserver impl
-        virtual void PADChangeDynamicLabel(const DL_STATE& dl);
+        virtual void PADChangeDynamicLabel(const CDynamicLabel& dl);
         virtual void PADChangeSlide(const MOT_FILE& slide);
         virtual void PADLengthError(size_t announced_xpad_len, size_t xpad_len);
 

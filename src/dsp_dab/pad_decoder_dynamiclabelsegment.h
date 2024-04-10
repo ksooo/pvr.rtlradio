@@ -19,10 +19,11 @@
 
 #include <memory>
 
-// --- DL_STATE -----------------------------------------------------------------
-struct DL_STATE
+// --- CDynamicLabel -----------------------------------------------------------------
+class CDynamicLabel
 {
-  DL_STATE() = default;
+public:
+  CDynamicLabel() = default;
 
   void Reset()
   {
@@ -45,12 +46,12 @@ public:
 
   void Reset();
 
-  DL_STATE GetLabel() { return m_label; }
+  CDynamicLabel GetLabel() { return m_label; }
 
 private:
   size_t GetInitialNeededSize() override;
   bool DecodeDataGroup() override;
 
   std::unique_ptr<DL_SEG_REASSEMBLER> m_dl_sr;
-  DL_STATE m_label;
+  CDynamicLabel m_label;
 };
