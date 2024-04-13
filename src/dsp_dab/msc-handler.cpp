@@ -24,8 +24,7 @@
 #include <algorithm>
 #include "dab-constants.h"
 #include "msc-handler.h"
-#include "dab-virtual.h"
-#include "dab-audio.h"
+#include "dsp_dab/decoders/audio/dab_audio.h"
 
 //  Interface program for processing the MSC.
 //  Merely a dispatcher for the selected service

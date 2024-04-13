@@ -24,6 +24,7 @@
 
 #include "exception_control/string_exception.h"
 #include "utils/value_size_defines.h"
+#include "dsp_dab/decoders/data/mot/mot_file.h"
 
 #define KODI_HAS_ID3
 
@@ -702,7 +703,7 @@ void dabstream::onNewAudio(std::vector<int16_t>&& audioData,
 //
 //	label		- The new dynamic label (UTF-8)
 
-void dabstream::onNewDynamicLabel(std::string const& label, const std::vector<std::pair<std::string, std::string>>& id3Tag)
+void dabstream::onNewDynamicLabel(const std::vector<std::pair<std::string, std::string>>& id3Tag)
 {
   size_t tagsize = 0; // Length of the ID3 tag
   std::unique_ptr<uint8_t[]> tagdata; // ID3 tag data
@@ -748,10 +749,67 @@ void dabstream::onNewDynamicLabel(std::string const& label, const std::vector<st
 //
 //	mot_file		- The new slide data
 
-void dabstream::onMOT(mot_file_t const& /*mot_file*/)
+void dabstream::onMOT(mot_file_t const& mot_file)
 {
-  // Content sub type 0x01 = JPEG
-  // Content sub type 0x03 = PNG
+  if (mot_file.content_main_type == MOTContentMainType::Image)
+  {
+    std::string mimetype;
+    switch (mot_file.content_full_type)
+    {
+    case MOTContentType::ImageGIF:
+      mimetype = "image/gif";
+      break;
+    case MOTContentType::ImageJFIF:
+      mimetype = "image/jpeg";
+      break;
+    case MOTContentType::ImageBMP:
+      mimetype = "image/bmp";
+      break;
+    case MOTContentType::ImagePNG:
+      mimetype = "image/png";
+      break;
+    default:
+      return;
+    }
+
+    uint8_t type;
+    if (mot_file.category == 5)
+      type = 0x01;
+    else
+      type = 0x03;
+
+    m_tag->coverart(type, mimetype.c_str(), &mot_file.data[0], mot_file.data.size());
+  }
+  else
+  {
+    fprintf(stderr, "dabstream::onMOT: Unsupported MOT content main type used: 0x%X (full type 0x%X)\n", mot_file.content_main_type, mot_file.content_full_type);
+  }
+
+
+  size_t tagsize = 0; // Length of the ID3 tag
+  std::unique_ptr<uint8_t[]> tagdata; // ID3 tag data
+
+  if (1)
+  {
+    tagsize = m_tag->size();
+    tagdata = std::unique_ptr<uint8_t[]>(new uint8_t[tagsize]);
+    if (!m_tag->write(&tagdata[0], tagsize))
+      tagsize = 0;
+  }
+
+  // If the ID3 tag data was generated, queue it as a demux packet
+  if (tagdata && (tagsize > 0))
+  {
+    std::unique_lock<std::mutex> lock(m_queuelock);
+
+    std::unique_ptr<demux_packet_t> packet = std::make_unique<demux_packet_t>();
+    packet->streamid = STREAM_ID_ID3TAG;
+    packet->size = static_cast<int>(tagsize);
+    packet->data = std::move(tagdata);
+
+    m_queue.emplace(std::move(packet));
+    m_queuecv.notify_all();
+  }
 
   //
   // TODO: I need a sample that contains a MOT frame

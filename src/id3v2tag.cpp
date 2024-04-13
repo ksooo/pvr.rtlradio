@@ -130,7 +130,7 @@ id3v2tag::~id3v2tag()
 
 void id3v2tag::add_text_frame(id3v2_frameid_t frameid, char const* text, bool append)
 {
-  assert(frameid[0] == 'T');
+  assert(frameid[0] == 'T' || frameid[0] == 'O');
 
   if (!append)
     remove_frames(frameid);
@@ -155,7 +155,7 @@ void id3v2tag::add_text_frame(id3v2_frameid_t frameid, char const* text, bool ap
 
 void id3v2tag::AddTextData(char const* id, char const* text)
 {
-  if (id != nullptr & strlen(id) == 4 && text != nullptr)
+  if (id != nullptr && strlen(id) == 4 && text != nullptr)
   {
     id3v2_frameid_t frameid{id[0], id[1], id[2], id[3]};
     add_text_frame(frameid, text, false);
@@ -253,7 +253,7 @@ void id3v2tag::comment(char const* comment)
 //	data			- Pointer to the cover art image data
 //	length			- Length of the cover art image data
 
-void id3v2tag::coverart(char const* mimetype, uint8_t const* data, size_t length)
+void id3v2tag::coverart(uint8_t type, char const* mimetype, uint8_t const* data, size_t length)
 {
   id3v2_frameid_t frameid{'A', 'P', 'I', 'C'};
 
@@ -261,13 +261,14 @@ void id3v2tag::coverart(char const* mimetype, uint8_t const* data, size_t length
   frame_vector_t::iterator it = m_frames.begin();
   while (it != m_frames.end())
   {
-
     if ((strncasecmp(it->id, frameid, sizeof(id3v2_frameid_t)) == 0) &&
-        (it->data[strlen(reinterpret_cast<char const*>(&it->data[1])) + 1] == 0x03))
+      (it->data[strlen(reinterpret_cast<char const*>(&it->data[1])) + 2] == type))
       it = m_frames.erase(it);
     else
       it++;
   }
+
+  
 
   if ((data == nullptr) || (length == 0))
     return;
@@ -285,7 +286,7 @@ void id3v2tag::coverart(char const* mimetype, uint8_t const* data, size_t length
   frame.data[0] = 0x00; // ISO-8859-1
   memcpy(&frame.data[1], mimetype, mimetypelen); // MIME type
   frame.data[1 + mimetypelen] = 0x00; // NULL terminator
-  frame.data[2 + mimetypelen] = 0x03; // Picture type
+  frame.data[2 + mimetypelen] = type; // Picture type
   frame.data[3 + mimetypelen] = 0x00; // Description (NULL)
   memcpy(&frame.data[4 + mimetypelen], data, length); // Image data
 

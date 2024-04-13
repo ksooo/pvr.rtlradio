@@ -80,6 +80,12 @@ endif()
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/src)
 add_subdirectory(${PROJECT_SOURCE_DIR}/src/dsp_dab)
+add_subdirectory(${PROJECT_SOURCE_DIR}/src/dsp_dab/decoders)
+add_subdirectory(${PROJECT_SOURCE_DIR}/src/dsp_dab/decoders/audio)
+add_subdirectory(${PROJECT_SOURCE_DIR}/src/dsp_dab/decoders/audio/aac)
+add_subdirectory(${PROJECT_SOURCE_DIR}/src/dsp_dab/decoders/audio/mp2)
+add_subdirectory(${PROJECT_SOURCE_DIR}/src/dsp_dab/decoders/data/pad)
+add_subdirectory(${PROJECT_SOURCE_DIR}/src/dsp_dab/decoders/data/mot)
 add_subdirectory(${PROJECT_SOURCE_DIR}/src/dsp_fm)
 add_subdirectory(${PROJECT_SOURCE_DIR}/src/dsp_hd)
 add_subdirectory(${PROJECT_SOURCE_DIR}/src/gui)
@@ -88,6 +94,12 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/src/utils)
 
 list(APPEND DEPLIBS code_src
                     code_src_dsp_dab
+                    code_src_dsp_dab_decoders
+                    code_src_dsp_dab_decoders_audio
+                    code_src_dsp_dab_decoders_audio_aac
+                    code_src_dsp_dab_decoders_audio_mp2
+                    code_src_dsp_dab_decoders_data_mot
+                    code_src_dsp_dab_decoders_data_pad
                     code_src_dsp_fm
                     code_src_dsp_hd
                     code_src_gui

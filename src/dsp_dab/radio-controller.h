@@ -33,6 +33,8 @@
 #ifndef RADIOCONTROLLER_H
 #define RADIOCONTROLLER_H
 
+#include "decoders/data/mot/mot_file.h"
+
 #include <cstddef>
 #include <vector>
 #include <string>
@@ -64,7 +66,9 @@ struct tii_measurement_t {
 
 struct mot_file_t {
     std::vector<uint8_t> data;
-    int content_sub_type;
+
+    MOTContentMainType content_main_type;
+    MOTContentType content_full_type;
 
     std::string content_name;
     std::string click_through_url;
@@ -162,7 +166,7 @@ class ProgrammeHandlerInterface {
 
         /* A new Dynamic Label was decoded.
          * label is utf-8 encoded. */
-        virtual void onNewDynamicLabel(const std::string& label, const std::vector<std::pair<std::string, std::string>>& idTagData) {}
+        virtual void onNewDynamicLabel(const std::vector<std::pair<std::string, std::string>>& idTagData) {}
 
         /* A slide was decoded. data contains the raw bytes, and subtype
          * defines the data format:

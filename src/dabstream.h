@@ -272,7 +272,7 @@ private:
   // onNewDynamicLabel
   //
   // Invoked when a new dynamic label has been decoded
-  void onNewDynamicLabel(const std::string& label, const std::vector<std::pair<std::string, std::string>>& idTagData) override;
+  void onNewDynamicLabel(const std::vector<std::pair<std::string, std::string>>& idTagData) override;
 
   // onMOT
   //
