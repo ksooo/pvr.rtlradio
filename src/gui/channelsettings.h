@@ -50,6 +50,8 @@
 
 #pragma warning(push, 4)
 
+class CAutoGainControl;
+
 using namespace kodi::gui::controls;
 
 //---------------------------------------------------------------------------
@@ -294,6 +296,10 @@ private:
   std::exception_ptr m_worker_exception; // Exception on worker thread
   scalar_condition<bool> m_stop{false}; // Condition to stop data transfer
   std::atomic<bool> m_stopped{false}; // Data transfer stopped flag
+
+  // AGC
+  //
+  std::unique_ptr<CAutoGainControl> m_agc;
 
   // CONTROLS
   //

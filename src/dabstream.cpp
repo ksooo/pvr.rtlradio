@@ -22,6 +22,7 @@
 
 #include "dabstream.h"
 
+#include "autogaincontrol.h"
 #include "exception_control/string_exception.h"
 #include "utils/value_size_defines.h"
 #include "dsp_dab/decoders/data/mot/mot_file.h"
@@ -87,9 +88,15 @@ dabstream::dabstream(std::unique_ptr<rtldevice> device,
   m_device->set_center_frequency(channelprops.frequency);
 
   // Adjust the device gain as specified by the channel properties
-  m_device->set_automatic_gain_control(channelprops.autogain);
-  if (channelprops.autogain == false)
+  if (channelprops.autogain)
+  {
+    m_agc = std::make_unique<CAutoGainControl>(*m_device);
+  }
+  else
+  {
+    m_device->set_automatic_gain_control(false);
     m_device->set_gain(channelprops.manualgain);
+  }
 
   // Construct and initialize the demodulator instance
   RadioControllerInterface& controllerinterface = *static_cast<RadioControllerInterface*>(this);
@@ -150,6 +157,7 @@ void dabstream::close(void)
     m_receiver->stop(); // Stop receiver
   m_receiver.reset(); // Reset receiver instance
 
+  m_agc.reset();
   m_device.reset(); // Release RTL-SDR device
 }
 
@@ -522,6 +530,9 @@ void dabstream::worker(scalar_condition<bool>& started)
         }
       }
     }
+
+    if (m_agc)
+      m_agc->Update(buffer, count);
   };
 
   // Begin streaming from the device via the receiver and inform the caller that the thread is running

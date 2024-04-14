@@ -22,6 +22,7 @@
 
 #include "hdstream.h"
 
+#include "autogaincontrol.h"
 #include "id3v2tag.h"
 #include "exception_control/string_exception.h"
 #include "utils/align.h"
@@ -83,9 +84,15 @@ hdstream::hdstream(std::unique_ptr<rtldevice> device,
   m_device->set_center_frequency(channelprops.frequency);
 
   // Adjust the device gain as specified by the channel properties
-  m_device->set_automatic_gain_control(channelprops.autogain);
-  if (channelprops.autogain == false)
+  if (channelprops.autogain)
+  {
+    m_agc = std::make_unique<CAutoGainControl>(*m_device);
+  }
+  else
+  {
+    m_device->set_automatic_gain_control(false);
     m_device->set_gain(channelprops.manualgain);
+  }
 
   // Initialize the HD Radio demodulator
   nrsc5_open_pipe(&m_nrsc5);
@@ -140,6 +147,7 @@ void hdstream::close(void)
   nrsc5_close(m_nrsc5); // Close NRSC5
   m_nrsc5 = nullptr; // Reset NRSC5 API handle
 
+  m_agc.reset();
   m_device.reset(); // Release RTL-SDR device
 }
 
@@ -642,6 +650,9 @@ void hdstream::worker(scalar_condition<bool>& started)
   {
     // Pipe the samples into NRSC5, it will invoke the necessary callback(s)
     nrsc5_pipe_samples_cu8(m_nrsc5, const_cast<uint8_t*>(buffer), static_cast<unsigned int>(count));
+
+    if (m_agc)
+      m_agc->Update(buffer, count);
   };
 
   // Begin streaming from the device and inform the caller that the thread is running
