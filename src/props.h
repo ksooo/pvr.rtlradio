@@ -85,7 +85,7 @@ struct hdprops
 // Defines the modulation of a channel
 enum class modulation
 {
-
+  none = -1,
   fm = 0, // Wideband FM radio
   hd = 1, // Hybrid Digital radio
   dab = 2, // Digital Audio Broadcast radio

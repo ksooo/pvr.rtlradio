@@ -36,6 +36,8 @@
 
 #pragma warning(push, 4)
 
+class CChannelScan;
+
 //---------------------------------------------------------------------------
 // Class addon
 //
@@ -246,6 +248,10 @@ private:
   bool channeladd_hd(struct settings const& settings, struct channelprops& channelprops) const;
   bool channeladd_wx(struct settings const& settings, struct channelprops& channelprops) const;
 
+  // Channel Scan Helpers
+  //
+  bool channelscan_dab(struct settings const& settings);
+
   // Device Helpers
   //
   std::unique_ptr<rtldevice> create_device(struct settings const& settings) const;
@@ -298,6 +304,8 @@ private:
   mutable std::mutex m_pvrstream_lock; // Synchronization object
   struct settings m_settings; // Custom addon settings
   mutable std::recursive_mutex m_settings_lock; // Synchronization object
+
+  std::unique_ptr<CChannelScan> m_channelscan; // channel scanner
 };
 
 //-----------------------------------------------------------------------------

@@ -97,6 +97,8 @@ private:
     SetEnsembleLabel, // The ensemble label has been detected
     SetServiceLabel, // A service label has been detected
     Sync, // Synchronization has been achieved
+    SignalPresent, // Signal is present on the currently tuned frequency
+    SignalTimeout, // Signal is not present on the currently tuned frequency
   };
 
   // event_t
@@ -164,6 +166,11 @@ private:
   //
   // Invoked when signal synchronization was acquired or lost
   void onSyncChange(bool isSync) override;
+
+  // onSignalPresence
+  //
+  // Invoked when a signal is suspected on the currently tuned frequency.
+  void onSignalPresence(bool isSignal) override;
 
   //-----------------------------------------------------------------------
   // Member Variables

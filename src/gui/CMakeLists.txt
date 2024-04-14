@@ -1,7 +1,9 @@
 set(SOURCES channeladd.cpp
+            channelscan.cpp
             channelsettings.cpp)
 
 set(HEADERS channeladd.h
+            channelscan.h
             channelsettings.h
             renderingcontrol.h)
 

@@ -34,6 +34,7 @@
 #include "exception_control/sqlite_exception.h"
 #include "exception_control/string_exception.h"
 #include "gui/channeladd.h"
+#include "gui/channelscan.h"
 #include "gui/channelsettings.h"
 #include "utils/value_size_defines.h"
 
@@ -490,6 +491,63 @@ bool addon::channeladd_wx(struct settings const& settings, struct channelprops& 
 
     return true;
   }
+
+  return false;
+}
+
+//---------------------------------------------------------------------------
+// addon::channelscan_dab (private)
+//
+// Performs the channel scan operation for DAB
+//
+// Arguments:
+//
+//  settings    - Current addon settings
+
+bool addon::channelscan_dab(struct settings const& settings)
+{
+  // Pull a database handle out of the connection pool
+  connectionpool::handle dbhandle(m_connpool);
+
+  // Enumerate the ensembles available for the specified modulation (DAB)
+  std::vector<struct channelprops> ensembleprops;
+  enumerate_namedchannels(dbhandle, modulation::dab,
+                          [&](struct namedchannel const& item) -> void
+                          {
+                            if ((item.frequency > 0) && (item.name != nullptr))
+                            {
+                              struct channelprops props = {};
+                              props.name = item.name;
+                              props.frequency = item.frequency;
+                              props.modulation = modulation::dab;
+                              props.autogain = true;
+
+                              // If the ensemble already exists in the database, get the previously
+                              // set properties and subchannels
+                              if (channel_exists(dbhandle, props))
+                              {
+                                std::vector<struct subchannelprops> subchannelprops;
+                                get_channel_properties(dbhandle, props.frequency, props.modulation,
+                                                       props, subchannelprops);
+                              }
+                              ensembleprops.emplace_back(props);
+                            }
+                          });
+
+  if (ensembleprops.size() == 0)
+    throw string_exception("No DAB ensembles were enumerated from the database");
+
+  // Set up the tuner device properties
+  struct tunerprops tunerprops = {};
+  tunerprops.freqcorrection = settings.device_frequency_correction;
+
+  //! @todo check whether another scan is running
+
+  m_channelscan =
+      CChannelScan::Create(create_device(settings), tunerprops, ensembleprops /*, subchannelprops*/);
+
+  if (m_channelscan)
+    return m_channelscan->Start();
 
   return false;
 }
@@ -2072,6 +2130,7 @@ PVR_ERROR addon::GetCapabilities(kodi::addon::PVRCapabilities& capabilities)
   capabilities.SetHandlesInputStream(true);
   capabilities.SetHandlesDemuxing(true);
   capabilities.SetSupportsEPG(true);
+  capabilities.SetSupportsChannelScan(true);
 
   return PVR_ERROR::PVR_ERROR_NO_ERROR;
 }
@@ -2515,6 +2574,53 @@ int64_t addon::LengthLiveStream(void)
   }
 }
 
+namespace
+{
+enum modulation SelectModulationType(const struct settings& settings)
+{
+  // The user has the option to disable support for each type of channel
+  std::vector<std::string> channeltypes;
+  std::vector<enum modulation> modulationtypes;
+
+  channeltypes.emplace_back(kodi::addon::GetLocalizedString(30414));
+  modulationtypes.emplace_back(modulation::fm);
+
+  if (settings.hdradio_enable)
+  {
+    channeltypes.emplace_back(kodi::addon::GetLocalizedString(30415));
+    modulationtypes.emplace_back(modulation::hd);
+  }
+
+  if (settings.dabradio_enable)
+  {
+    channeltypes.emplace_back(kodi::addon::GetLocalizedString(30416));
+    modulationtypes.emplace_back(modulation::dab);
+  }
+
+  if (settings.wxradio_enable)
+  {
+    channeltypes.emplace_back(kodi::addon::GetLocalizedString(30417));
+    modulationtypes.emplace_back(modulation::wx);
+  }
+
+  assert(channeltypes.size() == modulationtypes.size());
+
+  enum modulation modulationtype = modulation::none;
+  if ((channeltypes.size() > 0) && (modulationtypes.size() > 0))
+  {
+    // If more than one modulation type is available, prompt the user to select one
+    if (modulationtypes.size() > 1)
+    {
+      const int selected =
+          kodi::gui::dialogs::Select::Show(kodi::addon::GetLocalizedString(30413), channeltypes);
+      if (selected >= 0)
+        modulationtype = modulationtypes[selected];
+    }
+  }
+  return modulationtype;
+}
+}
+
 //-----------------------------------------------------------------------------
 // addon::OpenDialogChannelAdd (CInstancePVRClient)
 //
@@ -2528,53 +2634,10 @@ PVR_ERROR addon::OpenDialogChannelAdd(kodi::addon::PVRChannel const& /*channel*/
 {
   // Create a copy of the current addon settings structure
   struct settings settings = copy_settings();
+  const enum modulation modulationtype = SelectModulationType(settings);
 
-  // The user has the option to disable support for each type of channel
-  std::vector<std::string> channeltypes;
-  std::vector<enum modulation> modulationtypes;
-
-  channeltypes.emplace_back(kodi::addon::GetLocalizedString(30414));
-  modulationtypes.emplace_back(modulation::fm);
-
-  if (settings.hdradio_enable)
-  {
-
-    channeltypes.emplace_back(kodi::addon::GetLocalizedString(30415));
-    modulationtypes.emplace_back(modulation::hd);
-  }
-
-  if (settings.dabradio_enable)
-  {
-
-    channeltypes.emplace_back(kodi::addon::GetLocalizedString(30416));
-    modulationtypes.emplace_back(modulation::dab);
-  }
-
-  if (settings.wxradio_enable)
-  {
-
-    channeltypes.emplace_back(kodi::addon::GetLocalizedString(30417));
-    modulationtypes.emplace_back(modulation::wx);
-  }
-
-  assert(channeltypes.size() == modulationtypes.size());
-
-  // If the user has no channel types enabled, just return without error
-  if ((channeltypes.size() == 0) || (modulationtypes.size() == 0))
-    return PVR_ERROR::PVR_ERROR_NO_ERROR;
-
-  // If more than one modulation type is available, prompt the user to select one
-  enum modulation modulationtype = modulationtypes[0];
-  if (modulationtypes.size() > 1)
-  {
-
-    int selected =
-        kodi::gui::dialogs::Select::Show(kodi::addon::GetLocalizedString(30413), channeltypes);
-    if (selected < 0)
-      return PVR_ERROR::PVR_ERROR_NO_ERROR;
-
-    modulationtype = modulationtypes[selected];
-  }
+  if (modulationtype == modulation::none)
+    return PVR_ERROR::PVR_ERROR_NO_ERROR; //  noting selected
 
   // TODO: see if there is a better way we can work with this
   if (m_pvrstream)
@@ -2640,7 +2703,69 @@ PVR_ERROR addon::OpenDialogChannelAdd(kodi::addon::PVRChannel const& /*channel*/
 
 PVR_ERROR addon::OpenDialogChannelScan(void)
 {
-  return PVR_ERROR::PVR_ERROR_NOT_IMPLEMENTED;
+  // Create a copy of the current addon settings structure
+  struct settings settings = copy_settings();
+  const enum modulation modulationtype = SelectModulationType(settings);
+
+  if (modulationtype == modulation::none)
+    return PVR_ERROR::PVR_ERROR_NO_ERROR; //  noting selected
+
+
+  //! @todo see if there is a better way we can work with this
+  if (m_pvrstream)
+  {
+
+    //! @todo localize
+    kodi::gui::dialogs::OK::ShowAndGetInput(
+        kodi::addon::GetLocalizedString(30405),
+        "Channel scan requires exclusive access to the connected RTL-SDR tuner device.",
+        "", "Active playback of PVR Radio streams must be stopped before continuing.");
+
+    return PVR_ERROR::PVR_ERROR_NO_ERROR;
+  }
+
+  try
+  {
+    bool result = false; // Result from channel scan helper
+
+    if (modulationtype == modulation::dab)
+      result = channelscan_dab(settings);
+    else
+    {
+      //! @todo add support for the other types
+      kodi::gui::dialogs::OK::ShowAndGetInput(
+          kodi::addon::GetLocalizedString(30405),
+          "Channel scan not yet supported for this modulation type");
+    }
+
+//    if (modulationtype == modulation::fm)
+//      result = channeladd_fm(settings, channelprops);
+//    else if (modulationtype == modulation::hd)
+//      result = channeladd_hd(settings, channelprops);
+//    else if (modulationtype == modulation::wx)
+//      result = channeladd_wx(settings, channelprops);
+
+    if (result == false)
+      return PVR_ERROR::PVR_ERROR_NO_ERROR;
+  }
+
+  catch (std::exception& ex)
+  {
+    //! @todo localize
+
+    // Log the error and inform the user that the operation failed, do not return an error code
+    handle_stdexception(__func__, ex);
+    kodi::gui::dialogs::OK::ShowAndGetInput(kodi::addon::GetLocalizedString(30407),
+                                            "An error occurred during channel scan:",
+                                            "", ex.what());
+  }
+
+  catch (...)
+  {
+    return handle_generalexception(__func__, PVR_ERROR::PVR_ERROR_FAILED);
+  }
+
+  return PVR_ERROR::PVR_ERROR_NO_ERROR;
 }
 
 //-----------------------------------------------------------------------------
