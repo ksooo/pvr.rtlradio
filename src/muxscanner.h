@@ -67,6 +67,8 @@ public:
     bool sync; // Sync (lock) flag
     std::string name; // Multiplex name
     std::vector<struct subchannel> subchannels; // Multiplex subchannels
+    bool signalpresent; // Signal presence flag
+    bool signaltimeout; // Signal presence flag
   };
 
   // callback

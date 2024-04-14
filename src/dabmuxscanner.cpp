@@ -73,7 +73,7 @@ dabmuxscanner::dabmuxscanner(uint32_t samplerate, callback const& callback)
   options.disableCoarseCorrector = !kodi::addon::GetSettingBoolean("dabradio_coarse_corrector", true);
   options.freqsyncMethod = kodi::addon::GetSettingEnum<FreqsyncMethod>("dabradio_coarse_corrector_type", FreqsyncMethod::CorrelatePRS);
   m_receiver = make_aligned<RadioReceiver>(controllerinterface, inputinterface, options, 1);
-  m_receiver->restart(false);
+  m_receiver->restart(true); // restart in scan mode
 }
 
 //---------------------------------------------------------------------------
@@ -164,6 +164,26 @@ void dabmuxscanner::inputsamples(uint8_t const* samples, size_t length)
           m_muxdata.sync = false;
           invokecallback = true;
         }
+      }
+
+      // SignalPresenct
+      //
+      // Signal is present on the currently tuned frequency
+      else if (event.eventid == eventid_t::SignalPresent)
+      {
+        m_muxdata.signalpresent = true;
+        m_muxdata.signaltimeout = false;
+        invokecallback = true;
+      }
+
+      // SignalTimeout
+      //
+      // Signal is not present on the currently tuned frequency
+      else if (event.eventid == eventid_t::SignalTimeout)
+      {
+        m_muxdata.signalpresent = false;
+        m_muxdata.signaltimeout = true;
+        invokecallback = true;
       }
 
       // ServiceDetected
@@ -387,6 +407,21 @@ void dabmuxscanner::onSyncChange(bool isSync)
 {
   std::unique_lock<std::mutex> lock(m_eventslock);
   m_events.emplace(event_t{(isSync) ? eventid_t::Sync : eventid_t::LostSync, 0});
+}
+
+//---------------------------------------------------------------------------
+// dabmuxscanner::onSignalPresence (RadioControllerInterface)
+//
+// Invoked when a signal is suspected on the currently tuned frequency.
+//
+// Arguments:
+//
+//  isSignal    - signal presence flag
+
+void dabmuxscanner::onSignalPresence(bool isSignal)
+{
+  std::unique_lock<std::mutex> lock(m_eventslock);
+  m_events.emplace(event_t{isSignal ? eventid_t::SignalPresent : eventid_t::SignalTimeout, 0});
 }
 
 //---------------------------------------------------------------------------
