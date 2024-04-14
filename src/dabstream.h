@@ -40,6 +40,8 @@
 
 #pragma warning(push, 4)
 
+class CAutoGainControl;
+
 //---------------------------------------------------------------------------
 // Class dabstream
 //
@@ -341,6 +343,10 @@ private:
   std::atomic<bool> m_stopped{false}; // Data transfer stopped flag
   event_queue_t m_events; // queue<> of worker events
   mutable std::mutex m_eventslock; // Synchronization object
+
+  // AGC
+  //
+  std::unique_ptr<CAutoGainControl> m_agc;
 };
 
 //-----------------------------------------------------------------------------

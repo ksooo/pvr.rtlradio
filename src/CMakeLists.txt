@@ -1,4 +1,5 @@
-set(SOURCES dabmuxscanner.cpp
+set(SOURCES autogaincontrol.cpp
+            dabmuxscanner.cpp
             dabstream.cpp
             database.cpp
             filedevice.cpp
@@ -13,7 +14,8 @@ set(SOURCES dabmuxscanner.cpp
             uecp.cpp
             wxstream.cpp)
 
-set(HEADERS dabmuxscanner.h
+set(HEADERS autogaincontrol.h
+            dabmuxscanner.h
             dabstream.h
             database.h
             filedevice.h

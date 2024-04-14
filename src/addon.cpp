@@ -2594,6 +2594,7 @@ PVR_ERROR addon::OpenDialogChannelAdd(kodi::addon::PVRChannel const& /*channel*/
   {
 
     struct channelprops channelprops = {}; // New channel properties
+    channelprops.autogain = true;
     bool result = false; // Result from channel add helper
 
     if (modulationtype == modulation::fm)

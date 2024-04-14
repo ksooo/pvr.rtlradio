@@ -22,6 +22,7 @@
 
 #include "channelsettings.h"
 
+#include "autogaincontrol.h"
 #include "dabmuxscanner.h"
 #include "hdmuxscanner.h"
 #include "exception_control/string_exception.h"
@@ -774,9 +775,16 @@ channelsettings::channelsettings(std::unique_ptr<rtldevice> device,
   m_device->set_center_frequency(m_channelprops.frequency + m_signalprops.offset);
   m_device->set_frequency_correction(m_tunerprops.freqcorrection + m_channelprops.freqcorrection);
   m_device->set_sample_rate(m_signalprops.samplerate);
-  m_device->set_automatic_gain_control(m_channelprops.autogain);
-  if (!m_channelprops.autogain)
+
+  if (m_channelprops.autogain)
+  {
+    m_agc = std::make_unique<CAutoGainControl>(*m_device);
+  }
+  else
+  {
+    m_device->set_automatic_gain_control(false);
     m_device->set_gain(m_channelprops.manualgain);
+  }
 }
 
 //---------------------------------------------------------------------------
@@ -789,6 +797,7 @@ channelsettings::~channelsettings()
     m_device->cancel_async(); // Cancel any async read operations
   if (m_worker.joinable())
     m_worker.join(); // Wait for thread to exit
+  m_agc.reset();
   m_device.reset(); // Release RTL-SDR device
 }
 
@@ -1123,6 +1132,9 @@ void channelsettings::worker(scalar_condition<bool>& started)
     m_signalmeter->inputsamples(buffer, count);
     if (m_muxscanner)
       m_muxscanner->inputsamples(buffer, count);
+
+    if (m_agc)
+      m_agc->Update(buffer, count);
   };
 
   // Begin streaming from the device and inform the caller that the thread is running
@@ -1193,9 +1205,18 @@ bool channelsettings::OnClick(int controlId)
 
     case CONTROL_RADIO_AUTOMATICGAIN:
       m_channelprops.autogain = m_radio_autogain->IsSelected();
-      m_device->set_automatic_gain_control(m_channelprops.autogain);
-      if (!m_channelprops.autogain)
+
+      if (m_channelprops.autogain)
+      {
+        m_agc = std::make_unique<CAutoGainControl>(*m_device);
+      }
+      else
+      {
+        m_agc.reset();
+        m_device->set_automatic_gain_control(false);
         m_device->set_gain(m_channelprops.manualgain);
+      }
+
       m_slider_manualgain->SetEnabled(!m_channelprops.autogain);
       update_gain();
       return true;

@@ -22,6 +22,7 @@
 
 #include "fmstream.h"
 
+#include "autogaincontrol.h"
 #include "exception_control/string_exception.h"
 #include "utils/align.h"
 #include "utils/value_size_defines.h"
@@ -105,9 +106,15 @@ fmstream::fmstream(std::unique_ptr<rtldevice> device,
   m_resampler->Init(m_demodulator->GetInputBufferLimit());
 
   // Adjust the device gain as specified by the channel properties
-  m_device->set_automatic_gain_control(channelprops.autogain);
-  if (channelprops.autogain == false)
+  if (channelprops.autogain)
+  {
+    m_agc = std::make_unique<CAutoGainControl>(*m_device);
+  }
+  else
+  {
+    m_device->set_automatic_gain_control(false);
     m_device->set_gain(channelprops.manualgain);
+  }
 
   // Create a worker thread on which to perform the transfer operations
   scalar_condition<bool> started{false};
@@ -153,6 +160,7 @@ void fmstream::close(void)
     m_device->cancel_async(); // Cancel any async read operations
   if (m_worker.joinable())
     m_worker.join(); // Wait for thread
+  m_agc.reset();
   m_device.reset(); // Release RTL-SDR device
 }
 
@@ -557,6 +565,9 @@ void fmstream::transfer(scalar_condition<bool>& started)
         };
       }
     }
+
+    if (m_agc)
+      m_agc->Update(buffer, count);
 
     // Push the converted samples into the queue<> for processing.  If there is insufficient space
     // left in the queue<>, the samples aren't being processed quickly enough to keep up with the rate
