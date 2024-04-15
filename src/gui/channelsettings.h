@@ -95,6 +95,8 @@ public:
   // Gets the updated subchannel properties from the dialog box
   void get_subchannel_properties(std::vector<struct subchannelprops>& subchannelprops) const;
 
+  void processData(uint8_t const* buffer, size_t count);
+
 private:
   channelsettings(channelsettings const&) = delete;
   channelsettings& operator=(channelsettings const&) = delete;
@@ -255,7 +257,8 @@ private:
   // mux_data
   //
   // Updates the state of the multiplex information
-  void mux_data(struct muxscanner::multiplex const& muxdata);
+  void process_mux_data(const struct muxscanner::multiplex& muxdata);
+  static void mux_data_cb(const struct muxscanner::multiplex& muxdata, void* ctx);
 
   // nearest_valid_gain
   //
@@ -276,6 +279,8 @@ private:
   //
   // Worker thread procedure used to pump data into the signal meter
   void worker(scalar_condition<bool>& started);
+
+  static void async_read_cb(uint8_t const* buffer, size_t count, void* ctx);
 
   //-------------------------------------------------------------------------
   // Member Variables

@@ -58,7 +58,7 @@ public:
   // create (static)
   //
   // Factory method, creates a new dabmuxscanner instance
-  static std::unique_ptr<dabmuxscanner> create(uint32_t samplerate, callback const& callback);
+  static std::unique_ptr<dabmuxscanner> create(uint32_t samplerate, callback callback, void* ctx);
 
   // inputsamples
   //
@@ -81,7 +81,7 @@ private:
 
   // Instance Constructor
   //
-  dabmuxscanner(uint32_t samplerate, callback const& callback);
+  dabmuxscanner(uint32_t samplerate, callback callback, void* ctx);
 
   //-----------------------------------------------------------------------
   // Private Type Declarations
@@ -176,6 +176,7 @@ private:
   // Member Variables
 
   callback const m_callback; // Callback function
+  void* m_ctx = nullptr; // Callback function context pointer
   struct multiplex m_muxdata = {}; // Multiplex data
 
   // DEMODULATOR

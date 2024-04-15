@@ -59,8 +59,8 @@ inline std::string trim(const std::string& str)
 //	samplerate		- Sample rate of the input data
 //	callback		- Callback function to invoke on status change
 
-dabmuxscanner::dabmuxscanner(uint32_t samplerate, callback const& callback)
-  : m_callback(callback), m_ringbuffer(RING_BUFFER_SIZE)
+dabmuxscanner::dabmuxscanner(uint32_t samplerate, callback callback, void* ctx)
+  : m_callback(callback), m_ctx(ctx), m_ringbuffer(RING_BUFFER_SIZE)
 {
   assert(samplerate == SAMPLE_RATE);
   if (samplerate != SAMPLE_RATE)
@@ -96,9 +96,9 @@ dabmuxscanner::~dabmuxscanner()
 //	samplerate		- Sample rate of the input data
 //	callback		- Callback function to invoke on status change
 
-std::unique_ptr<dabmuxscanner> dabmuxscanner::create(uint32_t samplerate, callback const& callback)
+std::unique_ptr<dabmuxscanner> dabmuxscanner::create(uint32_t samplerate, callback callback, void* ctx)
 {
-  return std::unique_ptr<dabmuxscanner>(new dabmuxscanner(samplerate, callback));
+  return std::unique_ptr<dabmuxscanner>(new dabmuxscanner(samplerate, callback, ctx));
 }
 
 //---------------------------------------------------------------------------
@@ -270,7 +270,7 @@ void dabmuxscanner::inputsamples(uint8_t const* samples, size_t length)
 
   // If anything about the multiplex has changed, invoke the callback
   if (invokecallback)
-    m_callback(m_muxdata);
+    m_callback(m_muxdata, m_ctx);
 }
 
 //---------------------------------------------------------------------------

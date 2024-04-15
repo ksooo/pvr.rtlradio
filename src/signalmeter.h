@@ -28,7 +28,6 @@
 #include "dsp_fm/fft.h"
 #include "props.h"
 
-#include <functional>
 #include <memory>
 
 #pragma warning(push, 4)

@@ -399,7 +399,7 @@ size_t tcpdevice::read(uint8_t* buffer, size_t count) const
 //	callback		- Asynchronous read callback function
 //	bufferlength	- Output buffer length in bytes
 
-void tcpdevice::read_async(rtldevice::asynccallback const& callback, uint32_t bufferlength) const
+void tcpdevice::read_async(asynccallback callback, void* ctx, uint32_t bufferlength) const
 {
   std::unique_ptr<uint8_t[]> buffer(new uint8_t[bufferlength]); // Input data buffer
   size_t offset = 0; // Buffer offset
@@ -419,7 +419,7 @@ void tcpdevice::read_async(rtldevice::asynccallback const& callback, uint32_t bu
       if (offset == bufferlength)
       {
 
-        callback(&buffer[0], offset); // Buffer is full, invoke callback
+        callback(&buffer[0], offset, ctx); // Buffer is full, invoke callback
         offset = 0; // Reset buffer offset
       }
     }

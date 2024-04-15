@@ -26,7 +26,6 @@
 
 #include "props.h"
 
-#include <functional>
 #include <string>
 #include <vector>
 
@@ -74,7 +73,7 @@ public:
   // callback
   //
   // Callback function invoked when the multiplex properties have changed
-  using callback = std::function<void(struct multiplex const& status)>;
+  typedef void(*callback)(struct multiplex const& status, void* ctx);
 
   //-----------------------------------------------------------------------
   // Member Functions

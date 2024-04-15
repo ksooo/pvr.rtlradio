@@ -1007,8 +1007,15 @@ void channelsettings::meter_status(struct signalmeter::signal_status const& stat
     m_edit_signalsnr->SetText(kodi::addon::GetLocalizedString(10006)); // "N/A"
 }
 
+void channelsettings::mux_data_cb(const struct muxscanner::multiplex& muxdata, void* ctx)
+{
+  channelsettings* pThis = reinterpret_cast<channelsettings*>(ctx);
+  if (pThis)
+    pThis->process_mux_data(muxdata);
+}
+
 //---------------------------------------------------------------------------
-// channelsettings::mux_data (private)
+// channelsettings::process_mux_data (private)
 //
 // Updates the state of the multiplex data
 //
@@ -1016,7 +1023,7 @@ void channelsettings::meter_status(struct signalmeter::signal_status const& stat
 //
 //	muxdata		- Updated multiplex data from the mux scanner
 
-void channelsettings::mux_data(struct muxscanner::multiplex const& muxdata)
+void channelsettings::process_mux_data(struct muxscanner::multiplex const& muxdata)
 {
   std::unique_lock<std::mutex> lock(m_muxdatalock);
 
@@ -1109,6 +1116,25 @@ void channelsettings::update_gain(void)
     m_edit_signalgain->SetText(kodi::addon::GetLocalizedString(30334)); // "Auto"
 }
 
+void channelsettings::processData(uint8_t const* buffer, size_t count)
+{
+  // Feed the signal meter, and optionally the multiplex scanner
+  m_signalmeter->inputsamples(buffer, count);
+  if (m_muxscanner)
+    m_muxscanner->inputsamples(buffer, count);
+
+  if (m_agc)
+    m_agc->Update(buffer, count);
+}
+
+// Asynchronous read callback function for the RTL-SDR device
+void channelsettings::async_read_cb(uint8_t const* buffer, size_t count, void* ctx)
+{
+  channelsettings* pThis = reinterpret_cast<channelsettings*>(ctx);
+  if (pThis)
+    pThis->processData(buffer, count);
+}
+
 //---------------------------------------------------------------------------
 // channelsettings::worker (private)
 //
@@ -1123,20 +1149,6 @@ void channelsettings::worker(scalar_condition<bool>& started)
   assert(m_device);
   assert(m_signalmeter);
 
-  // read_callback_func (local)
-  //
-  // Asynchronous read callback function for the RTL-SDR device
-  auto read_callback_func = [&](uint8_t const* buffer, size_t count) -> void
-  {
-    // Feed the signal meter, and optionally the multiplex scanner
-    m_signalmeter->inputsamples(buffer, count);
-    if (m_muxscanner)
-      m_muxscanner->inputsamples(buffer, count);
-
-    if (m_agc)
-      m_agc->Update(buffer, count);
-  };
-
   // Begin streaming from the device and inform the caller that the thread is running
   m_device->begin_stream();
   started = true;
@@ -1144,7 +1156,7 @@ void channelsettings::worker(scalar_condition<bool>& started)
   // Continuously read data from the device until cancel_async() has been called
   try
   {
-    m_device->read_async(read_callback_func, static_cast<uint32_t>(32 KiB));
+    m_device->read_async(&channelsettings::async_read_cb, this, static_cast<uint32_t>(32 KiB));
   }
   catch (...)
   {
@@ -1384,11 +1396,10 @@ bool channelsettings::OnInit(void)
     if (m_channelprops.modulation == modulation::hd)
       m_muxscanner =
           hdmuxscanner::create(m_signalprops.samplerate, m_channelprops.frequency,
-                               std::bind(&channelsettings::mux_data, this, std::placeholders::_1));
+                               &channelsettings::mux_data_cb, this);
     else if (m_channelprops.modulation == modulation::dab)
       m_muxscanner =
-          dabmuxscanner::create(m_signalprops.samplerate,
-                                std::bind(&channelsettings::mux_data, this, std::placeholders::_1));
+          dabmuxscanner::create(m_signalprops.samplerate, &channelsettings::mux_data_cb, this);
 
     // Create a worker thread on which to pump data into the signal meter
     scalar_condition<bool> started{false};

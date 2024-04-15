@@ -629,6 +629,23 @@ void hdstream::signalquality(int& quality, int& snr) const
   snr = static_cast<int>((mer * 100.0f) / 13.0f);
 }
 
+void hdstream::processData(uint8_t const* buffer, size_t count)
+{
+  // Pipe the samples into NRSC5, it will invoke the necessary callback(s)
+  nrsc5_pipe_samples_cu8(m_nrsc5, const_cast<uint8_t*>(buffer), static_cast<unsigned int>(count));
+
+  if (m_agc)
+    m_agc->Update(buffer, count);
+}
+
+// Asynchronous read callback function for the RTL-SDR device
+void hdstream::async_read_cb(uint8_t const* buffer, size_t count, void* ctx)
+{
+  hdstream* pThis = reinterpret_cast<hdstream*>(ctx);
+  if (pThis)
+    pThis->processData(buffer, count);
+}
+
 //---------------------------------------------------------------------------
 // hdstream::worker (private)
 //
@@ -643,18 +660,6 @@ void hdstream::worker(scalar_condition<bool>& started)
   assert(m_device);
   assert(m_nrsc5);
 
-  // read_callback_func (local)
-  //
-  // Asynchronous read callback function for the RTL-SDR device
-  auto read_callback_func = [&](uint8_t const* buffer, size_t count) -> void
-  {
-    // Pipe the samples into NRSC5, it will invoke the necessary callback(s)
-    nrsc5_pipe_samples_cu8(m_nrsc5, const_cast<uint8_t*>(buffer), static_cast<unsigned int>(count));
-
-    if (m_agc)
-      m_agc->Update(buffer, count);
-  };
-
   // Begin streaming from the device and inform the caller that the thread is running
   m_device->begin_stream();
   started = true;
@@ -663,7 +668,7 @@ void hdstream::worker(scalar_condition<bool>& started)
   // 32 KiB = ~1/100 of a second of data
   try
   {
-    m_device->read_async(read_callback_func, 32 KiB);
+    m_device->read_async(&hdstream::async_read_cb, this, 32 KiB);
   }
   catch (...)
   {

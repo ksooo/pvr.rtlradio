@@ -54,8 +54,8 @@ inline std::string trim(const std::string& str)
 //	frequency		- Input data frequency in Hz
 //	callback		- Callback function to invoke on status change
 
-hdmuxscanner::hdmuxscanner(uint32_t samplerate, uint32_t frequency, callback const& callback)
-  : m_callback(callback)
+hdmuxscanner::hdmuxscanner(uint32_t samplerate, uint32_t frequency, callback callback, void* ctx)
+  : m_callback(callback), m_ctx(ctx)
 {
   assert(samplerate == SAMPLE_RATE);
   if (samplerate != SAMPLE_RATE)
@@ -93,9 +93,10 @@ hdmuxscanner::~hdmuxscanner()
 
 std::unique_ptr<hdmuxscanner> hdmuxscanner::create(uint32_t samplerate,
                                                    uint32_t frequency,
-                                                   callback const& callback)
+                                                   callback callback,
+                                                   void* ctx)
 {
-  return std::unique_ptr<hdmuxscanner>(new hdmuxscanner(samplerate, frequency, callback));
+  return std::unique_ptr<hdmuxscanner>(new hdmuxscanner(samplerate, frequency, callback, ctx));
 }
 
 //---------------------------------------------------------------------------
@@ -151,7 +152,7 @@ void hdmuxscanner::nrsc5_callback(nrsc5_event_t const* event)
     {
 
       m_muxdata.sync = true;
-      m_callback(m_muxdata);
+      m_callback(m_muxdata, m_ctx);
     }
   }
 
@@ -165,7 +166,7 @@ void hdmuxscanner::nrsc5_callback(nrsc5_event_t const* event)
     {
 
       m_muxdata.sync = false;
-      m_callback(m_muxdata);
+      m_callback(m_muxdata, m_ctx);
     }
   }
 
@@ -221,7 +222,7 @@ void hdmuxscanner::nrsc5_callback(nrsc5_event_t const* event)
     }
 
     if (invokecallback)
-      m_callback(m_muxdata);
+      m_callback(m_muxdata, m_ctx);
   }
 
   // NRSC5_EVENT_SIS
@@ -235,7 +236,7 @@ void hdmuxscanner::nrsc5_callback(nrsc5_event_t const* event)
     {
 
       m_muxdata.name = name;
-      m_callback(m_muxdata);
+      m_callback(m_muxdata, m_ctx);
     }
   }
 }

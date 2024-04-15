@@ -198,7 +198,7 @@ size_t filedevice::read(uint8_t* buffer, size_t count) const
 //	callback		- Asynchronous read callback function
 //	bufferlength	- Output buffer length in bytes
 
-void filedevice::read_async(rtldevice::asynccallback const& callback, uint32_t bufferlength) const
+void filedevice::read_async(asynccallback callback, void* ctx, uint32_t bufferlength) const
 {
   std::unique_ptr<uint8_t[]> buffer(new uint8_t[bufferlength]); // Input data buffer
 
@@ -214,7 +214,7 @@ void filedevice::read_async(rtldevice::asynccallback const& callback, uint32_t b
 
       // Try to read enough data to fill the input buffer
       size_t cb = read(&buffer[0], bufferlength);
-      callback(&buffer[0], cb);
+      callback(&buffer[0], cb, ctx);
     }
 
     m_stopped = true; // Operation has been stopped

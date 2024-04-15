@@ -151,6 +151,8 @@ public:
   // Gets the signal quality as percentages
   void signalquality(int& quality, int& snr) const override;
 
+  void processData(uint8_t const* buffer, size_t count);
+
 private:
   dabstream(dabstream const&) = delete;
   dabstream& operator=(dabstream const&) = delete;
@@ -237,6 +239,8 @@ private:
   //
   // Worker thread procedure used to transfer and process data
   void worker(scalar_condition<bool>& started);
+
+  static void async_read_cb(uint8_t const* buffer, size_t count, void* ctx);
 
   //-----------------------------------------------------------------------
   // InputInterface Implementation

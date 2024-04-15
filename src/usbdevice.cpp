@@ -353,6 +353,22 @@ size_t usbdevice::read(uint8_t* buffer, size_t count) const
   return static_cast<size_t>(bytesread);
 }
 
+namespace
+{
+struct ReadfuncData
+{
+  void* ctx;
+  rtldevice::asynccallback callback;
+};
+
+void readfunc(unsigned char* buf, uint32_t len, void* ctx)
+{
+  ReadfuncData const* data = reinterpret_cast<ReadfuncData const*>(ctx);
+  if (data)
+    (data->callback)(reinterpret_cast<uint8_t const*>(buf), static_cast<size_t>(len), data->ctx);
+}
+} // unnamed namespace
+
 //---------------------------------------------------------------------------
 // usbdevice::read_async
 //
@@ -360,27 +376,20 @@ size_t usbdevice::read(uint8_t* buffer, size_t count) const
 //
 // Arguments:
 //
-//	callback		- Asynchronous read callback function
-//	bufferlength	- Output buffer length in bytes
+//  callback    - Asynchronous read callback function
+//  bufferlength  - Output buffer length in bytes
 
-void usbdevice::read_async(rtldevice::asynccallback const& callback, uint32_t bufferlength) const
+void usbdevice::read_async(asynccallback callback, void* ctx, uint32_t bufferlength) const
 {
   assert(m_device != nullptr);
+  assert(ctx != nullptr);
 
-  // rtlsdr_read_async_cb_t callback conversion function
-  auto callreadfunc = [](unsigned char* buf, uint32_t len, void* ctx) -> void
-  {
-    asynccallback const* func = reinterpret_cast<asynccallback const*>(ctx);
-    if (func)
-      (*func)(reinterpret_cast<uint8_t const*>(buf), static_cast<size_t>(len));
-  };
-
-  // Get the address of the callback std::function<> to pass as a context pointer
-  void const* pcallback = std::addressof(callback);
+  ReadfuncData data;
+  data.ctx = ctx;
+  data.callback = callback;
 
   // rtlsdr_read_async returns the underlying libusb error code when it fails
-  int result =
-      rtlsdr_read_async(m_device, callreadfunc, const_cast<void*>(pcallback), 0, bufferlength);
+  int result = rtlsdr_read_async(m_device, &readfunc, &data, 0, bufferlength);
   if (result < 0)
     throw string_exception(__func__, ": ", libusb_exception(result).what());
 }

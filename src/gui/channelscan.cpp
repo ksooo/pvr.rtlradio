@@ -133,11 +133,10 @@ void CChannelScan::ScanNextChannel()
     if (channel.modulation == modulation::hd)
       m_muxscanner =
           hdmuxscanner::create(signalprops.samplerate, channel.frequency,
-                               std::bind(&CChannelScan::mux_data, this, std::placeholders::_1));
+                               &CChannelScan::mux_data_cb, this);
     else if (channel.modulation == modulation::dab)
       m_muxscanner =
-          dabmuxscanner::create(signalprops.samplerate,
-                                std::bind(&CChannelScan::mux_data, this, std::placeholders::_1));
+          dabmuxscanner::create(signalprops.samplerate, &CChannelScan::mux_data_cb, this);
 
     // Create a worker thread on which to pump data into agc and mux scanner
     scalar_condition<bool> started{false};
@@ -167,7 +166,14 @@ bool CChannelScan::Start()
   return true;
 }
 
-void CChannelScan::mux_data(const struct muxscanner::multiplex& muxdata)
+void CChannelScan::mux_data_cb(const struct muxscanner::multiplex& muxdata, void* ctx)
+{
+  CChannelScan* pThis = reinterpret_cast<CChannelScan*>(ctx);
+  if (pThis)
+    pThis->process_mux_data(muxdata);
+}
+
+void CChannelScan::process_mux_data(const struct muxscanner::multiplex& muxdata)
 {
 //  std::unique_lock<std::mutex> lock(m_muxdatalock);
 
@@ -179,19 +185,26 @@ void CChannelScan::mux_data(const struct muxscanner::multiplex& muxdata)
     m_muxcv.notify_all();
 }
 
+void CChannelScan::processData(uint8_t const* buffer, size_t count)
+{
+  if (m_muxscanner)
+    m_muxscanner->inputsamples(buffer, count);
+
+  if (m_agc)
+    m_agc->Update(buffer, count);
+}
+
+// Asynchronous read callback function for the RTL-SDR device
+void CChannelScan::async_read_cb(uint8_t const* buffer, size_t count, void* ctx)
+{
+  CChannelScan* pThis = reinterpret_cast<CChannelScan*>(ctx);
+  if (pThis)
+    pThis->processData(buffer, count);
+}
+
 void CChannelScan::worker(scalar_condition<bool>& started)
 {
   assert(m_device);
-
-  // Asynchronous read callback function for the RTL-SDR device
-  auto read_callback_func = [&](uint8_t const* buffer, size_t count) -> void
-  {
-    if (m_muxscanner)
-      m_muxscanner->inputsamples(buffer, count);
-
-    if (m_agc)
-      m_agc->Update(buffer, count);
-  };
 
   // Begin streaming from the device and inform the caller that the thread is running
   m_device->begin_stream();
@@ -200,7 +213,7 @@ void CChannelScan::worker(scalar_condition<bool>& started)
   // Continuously read data from the device until cancel_async() has been called
   try
   {
-    m_device->read_async(read_callback_func, static_cast<uint32_t>(32 KiB));
+    m_device->read_async(async_read_cb, this, static_cast<uint32_t>(32 KiB));
   }
   catch (...)
   {

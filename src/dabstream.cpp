@@ -439,6 +439,92 @@ void dabstream::signalquality(int& quality, int& snr) const
   quality = snr = 0; // TODO
 }
 
+void dabstream::processData(uint8_t const* buffer, size_t count)
+{
+  // Trigger an InputFailure event if no data has been returned from the device
+  if (count == 0)
+    m_streamok.store(false);
+
+  // Copy the input data into the ring buffer
+  assert(count <= std::numeric_limits<int32_t>::max());
+  m_ringbuffer.putDataIntoBuffer(buffer, static_cast<int32_t>(count));
+
+  // Check for and process any new events
+  std::unique_lock<std::mutex> eventslock(m_eventslock);
+  if (m_events.empty() == false)
+  {
+
+    // The threading model is a bit weird here; the callback that queued a new
+    // event needs to be free to continue execution otherwise the DSP may deadlock
+    // while we process that event. Combat this by swapping the queue<> with a new
+    // one, release the lock, then go ahead and process each of the queued events
+
+    event_queue_t events; // Empty event queue<>
+    m_events.swap(events); // Swap with existing queue<>
+    eventslock.unlock(); // Release the queue<> lock
+
+    bool foundsub = false; // Flag indicating the desired subchannel was found
+
+    while (!events.empty())
+    {
+
+      eventid_t eventid = events.front(); // eventid_t
+      events.pop(); // Remove from queue<>
+
+      switch (eventid)
+      {
+
+        // InputFailure
+        //
+        // Something has gone wrong with the input stream
+        case eventid_t::InputFailure:
+
+          throw string_exception("Input Failure"); // TODO: message
+          break;
+
+        // ServiceDetected
+        //
+        // A new service has been detected
+        case eventid_t::ServiceDetected:
+
+          if (foundsub)
+            break; // Subchannel has already been found; ignore
+
+          // Determine if the desired subchannel is now present in the decoded services
+          const std::vector<Service> servicelist = m_receiver->getServiceList();
+          for (auto const& service : servicelist)
+          {
+            for (auto const& component : m_receiver->getComponents(service))
+            {
+
+              if (component.subchannelId == static_cast<int16_t>(m_subchannel))
+              {
+
+                // The desired subchannel has been found; begin audio playback
+                ProgrammeHandlerInterface& phi = *static_cast<ProgrammeHandlerInterface*>(this);
+                m_receiver->playSingleProgramme(phi, {}, service);
+
+                foundsub = true; //  Stop processing service events
+              }
+            }
+          }
+          break;
+      }
+    }
+  }
+
+  if (m_agc)
+    m_agc->Update(buffer, count);
+}
+
+// Asynchronous read callback function for the RTL-SDR device
+void dabstream::async_read_cb(uint8_t const* buffer, size_t count, void* ctx)
+{
+  dabstream* pThis = reinterpret_cast<dabstream*>(ctx);
+  if (pThis)
+    pThis->processData(buffer, count);
+}
+
 //---------------------------------------------------------------------------
 // dabstream::worker (private)
 //
@@ -450,90 +536,8 @@ void dabstream::signalquality(int& quality, int& snr) const
 
 void dabstream::worker(scalar_condition<bool>& started)
 {
-  std::vector<Service> servicelist; // vector<> of current services
-  bool foundsub = false; // Flag indicating the desired subchannel was found
-
   assert(m_device);
   assert(m_receiver);
-
-  // read_callback_func (local)
-  //
-  // Asynchronous read callback function for the RTL-SDR device
-  auto read_callback_func = [&](uint8_t const* buffer, size_t count) -> void
-  {
-    // Trigger an InputFailure event if no data has been returned from the device
-    if (count == 0)
-      m_streamok.store(false);
-
-    // Copy the input data into the ring buffer
-    assert(count <= std::numeric_limits<int32_t>::max());
-    m_ringbuffer.putDataIntoBuffer(buffer, static_cast<int32_t>(count));
-
-    // Check for and process any new events
-    std::unique_lock<std::mutex> eventslock(m_eventslock);
-    if (m_events.empty() == false)
-    {
-
-      // The threading model is a bit weird here; the callback that queued a new
-      // event needs to be free to continue execution otherwise the DSP may deadlock
-      // while we process that event. Combat this by swapping the queue<> with a new
-      // one, release the lock, then go ahead and process each of the queued events
-
-      event_queue_t events; // Empty event queue<>
-      m_events.swap(events); // Swap with existing queue<>
-      eventslock.unlock(); // Release the queue<> lock
-
-      while (!events.empty())
-      {
-
-        eventid_t eventid = events.front(); // eventid_t
-        events.pop(); // Remove from queue<>
-
-        switch (eventid)
-        {
-
-          // InputFailure
-          //
-          // Something has gone wrong with the input stream
-          case eventid_t::InputFailure:
-
-            throw string_exception("Input Failure"); // TODO: message
-            break;
-
-          // ServiceDetected
-          //
-          // A new service has been detected
-          case eventid_t::ServiceDetected:
-
-            if (foundsub)
-              break; // Subchannel has already been found; ignore
-
-            // Determine if the desired subchannel is now present in the decoded services
-            servicelist = m_receiver->getServiceList();
-            for (auto const& service : servicelist)
-            {
-              for (auto const& component : m_receiver->getComponents(service))
-              {
-
-                if (component.subchannelId == static_cast<int16_t>(m_subchannel))
-                {
-
-                  // The desired subchannel has been found; begin audio playback
-                  ProgrammeHandlerInterface& phi = *static_cast<ProgrammeHandlerInterface*>(this);
-                  m_receiver->playSingleProgramme(phi, {}, service);
-
-                  foundsub = true; //  Stop processing service events
-                }
-              }
-            }
-            break;
-        }
-      }
-    }
-
-    if (m_agc)
-      m_agc->Update(buffer, count);
-  };
 
   // Begin streaming from the device via the receiver and inform the caller that the thread is running
   m_receiver->restart(false);
@@ -543,7 +547,7 @@ void dabstream::worker(scalar_condition<bool>& started)
   // 40 KiB = ~1/100 of a second of data
   try
   {
-    m_device->read_async(read_callback_func, 40 KiB);
+    m_device->read_async(&dabstream::async_read_cb, this, 40 KiB);
   }
   catch (...)
   {

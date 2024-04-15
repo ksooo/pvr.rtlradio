@@ -31,6 +31,8 @@ public:
 
   bool Start();
 
+  void processData(uint8_t const* buffer, size_t count);
+
 private:
   CChannelScan() = delete;
   CChannelScan(const CChannelScan&) = delete;
@@ -43,10 +45,13 @@ private:
   void ScanNextChannel();
 
   // Updates the state of the multiplex information
-  void mux_data(const struct muxscanner::multiplex& muxdata);
+  void process_mux_data(const struct muxscanner::multiplex& muxdata);
+  static void mux_data_cb(const struct muxscanner::multiplex& muxdata, void* ctx);
 
   // Worker thread procedure used to pump data into the mux scanner and agc
   void worker(scalar_condition<bool>& started);
+
+  static void async_read_cb(uint8_t const* buffer, size_t count, void* ctx);
 
   // Worker thread procedure used to drive next channel scan and progress dialog
   void control(scalar_condition<bool>& started);

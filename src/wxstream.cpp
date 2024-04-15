@@ -483,6 +483,66 @@ void wxstream::signalquality(int& quality, int& snr) const
   snr = std::max(0, std::min(100, static_cast<int>(100.0 * demodsnr)));
 }
 
+void wxstream::processData(uint8_t const* buffer, size_t count)
+{
+  // The I/Q samples from the device come in as a pair of 8 bit unsigned integers
+  size_t const readsize = m_demodulator->GetInputBufferLimit() * 2;
+
+  std::unique_ptr<TYPECPX[]> samples; // Array of I/Q samples to return
+
+  // If the proper amount of data was returned by the callback, convert it into
+  // the floating-point I/Q sample data for the demodulator to process
+  if (count == readsize)
+  {
+
+    samples = std::unique_ptr<TYPECPX[]>(new TYPECPX[readsize]);
+    for (int index = 0; index < m_demodulator->GetInputBufferLimit(); index++)
+    {
+
+      // The demodulator expects the I/Q samples in the range of -32767.0 through +32767.0
+      // (32767.0 / 127.5) = 256.9960784313725
+      samples[index] = {
+
+#ifdef FMDSP_USE_DOUBLE_PRECISION
+          (static_cast<TYPEREAL>(buffer[(index * 2)]) - 127.5) * 256.9960784313725, // I
+          (static_cast<TYPEREAL>(buffer[(index * 2) + 1]) - 127.5) * 256.9960784313725, // Q
+#else
+          (static_cast<TYPEREAL>(buffer[(index * 2)]) - 127.5f) * 256.9960784313725f, // I
+          (static_cast<TYPEREAL>(buffer[(index * 2) + 1]) - 127.5f) * 256.9960784313725f, // Q
+#endif
+      };
+    }
+  }
+
+  if (m_agc)
+    m_agc->Update(buffer, count);
+
+  // Push the converted samples into the queue<> for processing.  If there is insufficient space
+  // left in the queue<>, the samples aren't being processed quickly enough to keep up with the rate
+  std::unique_lock<std::mutex> lock(m_queuelock);
+  if (m_queue.size() < MAX_SAMPLE_QUEUE)
+    m_queue.emplace(std::move(samples));
+  else
+  {
+
+    m_queue = sample_queue_t(); // Replace the queue<>
+    m_queue.push(nullptr); // Push a resync packet (null)
+    if (samples)
+      m_queue.emplace(std::move(samples)); // Push samples
+  }
+
+  // Notify any threads waiting on the lock that the queue<> has been updated
+  m_cv.notify_all();
+}
+
+// Asynchronous read callback function for the RTL-SDR device
+void wxstream::async_read_cb(uint8_t const* buffer, size_t count, void* ctx)
+{
+  wxstream* pThis = reinterpret_cast<wxstream*>(ctx);
+  if (pThis)
+    pThis->processData(buffer, count);
+}
+
 //---------------------------------------------------------------------------
 // wxstream::transfer (private)
 //
@@ -497,61 +557,6 @@ void wxstream::transfer(scalar_condition<bool>& started)
   assert(m_demodulator);
   assert(m_device);
 
-  // The I/Q samples from the device come in as a pair of 8 bit unsigned integers
-  size_t const readsize = m_demodulator->GetInputBufferLimit() * 2;
-
-  // read_callback_func (local)
-  //
-  // Asynchronous read callback function for the RTL-SDR device
-  auto read_callback_func = [&](uint8_t const* buffer, size_t count) -> void
-  {
-    std::unique_ptr<TYPECPX[]> samples; // Array of I/Q samples to return
-
-    // If the proper amount of data was returned by the callback, convert it into
-    // the floating-point I/Q sample data for the demodulator to process
-    if (count == readsize)
-    {
-
-      samples = std::unique_ptr<TYPECPX[]>(new TYPECPX[readsize]);
-      for (int index = 0; index < m_demodulator->GetInputBufferLimit(); index++)
-      {
-
-        // The demodulator expects the I/Q samples in the range of -32767.0 through +32767.0
-        // (32767.0 / 127.5) = 256.9960784313725
-        samples[index] = {
-
-#ifdef FMDSP_USE_DOUBLE_PRECISION
-            (static_cast<TYPEREAL>(buffer[(index * 2)]) - 127.5) * 256.9960784313725, // I
-            (static_cast<TYPEREAL>(buffer[(index * 2) + 1]) - 127.5) * 256.9960784313725, // Q
-#else
-            (static_cast<TYPEREAL>(buffer[(index * 2)]) - 127.5f) * 256.9960784313725f, // I
-            (static_cast<TYPEREAL>(buffer[(index * 2) + 1]) - 127.5f) * 256.9960784313725f, // Q
-#endif
-        };
-      }
-    }
-
-    if (m_agc)
-      m_agc->Update(buffer, count);
-
-    // Push the converted samples into the queue<> for processing.  If there is insufficient space
-    // left in the queue<>, the samples aren't being processed quickly enough to keep up with the rate
-    std::unique_lock<std::mutex> lock(m_queuelock);
-    if (m_queue.size() < MAX_SAMPLE_QUEUE)
-      m_queue.emplace(std::move(samples));
-    else
-    {
-
-      m_queue = sample_queue_t(); // Replace the queue<>
-      m_queue.push(nullptr); // Push a resync packet (null)
-      if (samples)
-        m_queue.emplace(std::move(samples)); // Push samples
-    }
-
-    // Notify any threads waiting on the lock that the queue<> has been updated
-    m_cv.notify_all();
-  };
-
   // Begin streaming from the device and inform the caller that the thread is running
   m_device->begin_stream();
   started = true;
@@ -559,7 +564,8 @@ void wxstream::transfer(scalar_condition<bool>& started)
   // Continuously read data from the device until cancel_async() has been called
   try
   {
-    m_device->read_async(read_callback_func, static_cast<uint32_t>(readsize));
+    size_t const readsize = m_demodulator->GetInputBufferLimit() * 2;
+    m_device->read_async(&wxstream::async_read_cb, this, static_cast<uint32_t>(readsize));
   }
   catch (...)
   {

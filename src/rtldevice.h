@@ -24,11 +24,11 @@
 #define __RTLDEVICE_H_
 #pragma once
 
-#include <functional>
 #include <cstdint>
 #include <vector>
 
 #pragma warning(push, 4)
+
 
 //---------------------------------------------------------------------------
 // Class rtldevice
@@ -41,7 +41,7 @@ public:
   // asynccallback
   //
   // Callback function passed to readasync
-  using asynccallback = std::function<void(uint8_t const*, size_t)>;
+  typedef void(*asynccallback)(uint8_t const* buf, size_t len, void* ctx);
 
   // Constructor / Destructor
   //
@@ -79,7 +79,7 @@ public:
   // read_async
   //
   // Asynchronously reads data from the device
-  virtual void read_async(asynccallback const& callback, uint32_t bufferlength) const = 0;
+  virtual void read_async(asynccallback callback, void* ctx, uint32_t bufferlength) const = 0;
 
   // set_automatic_gain_control
   //
