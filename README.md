@@ -7,14 +7,14 @@ FM Radio Digital Signal Processing derived from [__CuteSDR__](https://sourceforg
 Hybrid Digital (HD) Radio Digital Signal Processing derived from [__NRSC5__](https://github.com/theori-io/nrsc5)   
 Digital Audio Broadcast (DAB) Digital Signal Processing adapted from project [__welle.io__](https://github.com/AlbrechtL/welle.io)
 
-[![Build and run tests](https://github.com/kodi-pvr/pvr.rtlradio/actions/workflows/build.yml/badge.svg?branch=Omega)](https://github.com/kodi-pvr/pvr.rtlradio/actions/workflows/build.yml)
-[![Build Status](https://dev.azure.com/teamkodi/kodi-pvr/_apis/build/status/kodi-pvr.pvr.rtlradio?branchName=Omega)](https://dev.azure.com/teamkodi/kodi-pvr/_build/latest?definitionId=85&branchName=Omega)
-[![Build Status](https://jenkins.kodi.tv/view/Addons/job/kodi-pvr/job/pvr.rtlradio/job/Omega/badge/icon)](https://jenkins.kodi.tv/blue/organizations/jenkins/kodi-pvr%2Fpvr.rtlradio/branches/)
+[![Build and run tests](https://github.com/kodi-pvr/pvr.rtlradio/actions/workflows/build.yml/badge.svg?branch=Piers)](https://github.com/kodi-pvr/pvr.rtlradio/actions/workflows/build.yml)
+[![Build Status](https://dev.azure.com/teamkodi/kodi-pvr/_apis/build/status/kodi-pvr.pvr.rtlradio?branchName=Piers)](https://dev.azure.com/teamkodi/kodi-pvr/_build/latest?definitionId=85&branchName=Piers)
+[![Build Status](https://jenkins.kodi.tv/view/Addons/job/kodi-pvr/job/pvr.rtlradio/job/Piers/badge/icon)](https://jenkins.kodi.tv/blue/organizations/jenkins/kodi-pvr%2Fpvr.rtlradio/branches/)
 
 ## Build instructions
 
 When building the addon you have to use the correct branch depending on which version of Kodi you're building against. 
-For example, if you're building the `Omega` branch of Kodi you should checkout the `Omega` branch of this repository. 
+For example, if you're building the `Piers` branch of Kodi you should checkout the `Piers` branch of this repository. 
 Also make sure you follow this README from the branch in question.
 
 ### Linux
