@@ -1,2 +1,5 @@
+v22.0.0
+- Initial release for Piers (PVR Add-on API v8.4.0)
+
 v21.0.0
 - Initial Team Kodi release
