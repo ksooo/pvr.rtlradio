@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon
   id="pvr.rtlradio"
-  version="21.0.0"
+  version="22.1.0"
   name="RTL-SDR Radio PVR Client"
   provider-name="Michael Brehm (djp952), Team Kodi">
   <requires>@ADDON_DEPENDS@</requires>

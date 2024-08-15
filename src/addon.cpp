@@ -2318,9 +2318,11 @@ PVR_ERROR addon::GetChannelsAmount(int& amount)
 // Arguments:
 //
 //	channel		- channel to get the stream properties for
+//  source
 //	properties	- properties required to play the stream
 
 PVR_ERROR addon::GetChannelStreamProperties(kodi::addon::PVRChannel const& /*channel*/,
+                                            PVR_SOURCE source,
                                             std::vector<kodi::addon::PVRStreamProperty>& properties)
 {
   properties.emplace_back(PVR_STREAM_PROPERTY_ISREALTIMESTREAM, "true");
